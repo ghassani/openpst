@@ -1,0 +1,8 @@
+Debug/*
+Release/*
+lib/serial/*
+lib/xerces/*
+lib/meidconverter/*
+OpenPST.pro.user
+.cproject
+.project
