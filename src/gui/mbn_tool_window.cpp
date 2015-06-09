@@ -45,39 +45,18 @@ void MbnToolWindow::InspectFile()
         return;
     }
 
-    fseek(fp, 8, SEEK_SET);
-
-    mbn_header_t header;
-    size_t bytesRead = fread((uint8_t*)&header, 1, sizeof(mbn_header_t), fp);
-
-    logHex((uint8_t*)&header, sizeof(mbn_header_t));
-
-
-    log(msgTmp.sprintf("Image ID: 0x%04X", header.image_id));
-    log(msgTmp.sprintf("Header Version: 0x%04X", header.header_vsn_num));
-    log(msgTmp.sprintf("Image Src Offset: 0x%04X", header.image_src));
-    log(msgTmp.sprintf("Image Dest Ptr: 0x%08X", header.image_dest_ptr));
-    log(msgTmp.sprintf("Image Size: 0x%04X - %zd Bytes", header.image_size, header.image_size));
-    log(msgTmp.sprintf("Code Size: 0x%04X - %zd Bytes", header.code_size, header.code_size));
-    log(msgTmp.sprintf("Signature Ptr: 0x%08X", header.signature_ptr));
-    log(msgTmp.sprintf("Signature Size: 0x%04X - %zd Bytes", header.signature_size, header.signature_size));
-    log(msgTmp.sprintf("Cert Chain Ptr: 0x%08X", header.cert_chain_ptr));
-    log(msgTmp.sprintf("Cert Chain Size: 0x%04X - %zd Bytes", header.cert_chain_size, header.cert_chain_size));
-
-
-    rewind(fp);
-
-
     printf("SBL Header:\n");
 
     sbl_mbn_header_t sblHeader;
 
-    bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
+    size_t bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
 
-    logHex((uint8_t*)&sblHeader, sizeof(sbl_mbn_header_t));
+    //logHex((uint8_t*)&sblHeader, sizeof(sbl_mbn_header_t));
 
     fclose(fp);
 
+    log(msgTmp.sprintf("Codeword: 0x%04X", sblHeader.codeword));
+    log(msgTmp.sprintf("Magic: 0x%04X", sblHeader.magic));
     log(msgTmp.sprintf("Image ID: 0x%04X", sblHeader.image_id));
    // log(msgTmp.sprintf("Header Version: 0x%04X", sblHeader.header_vsn_num));
     log(msgTmp.sprintf("Image Src Offset: 0x%04X", sblHeader.image_src));
@@ -88,6 +67,9 @@ void MbnToolWindow::InspectFile()
     log(msgTmp.sprintf("Signature Size: 0x%04X - %zd Bytes", sblHeader.signature_size, sblHeader.signature_size));
     log(msgTmp.sprintf("Cert Chain Ptr: 0x%08X", sblHeader.cert_chain_ptr));
     log(msgTmp.sprintf("Cert Chain Size: 0x%04X - %zd Bytes", sblHeader.cert_chain_size, sblHeader.cert_chain_size));
+    log(msgTmp.sprintf("Cert Chain Ptr: 0x%04X", sblHeader.oem_root_cert_sel));
+    log(msgTmp.sprintf("Cert Chain Ptr: 0x%04X", sblHeader.oem_num_root_certs));
+
 }
 
 
