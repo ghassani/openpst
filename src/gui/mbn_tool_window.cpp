@@ -51,20 +51,20 @@ void MbnToolWindow::LoadFile()
 
     ui->savePathInput->setText(fileName.replace("\.[A-Za-z]{1,}$", "_edited$1"));
 
-    log(tmp.sprintf("SBL Header Size: %zd", sizeof(sbl_mbn_header_t)));
+    log(tmp.sprintf("SBL Header Size: %zd", sizeof(eighty_byte_mbn_header_t)));
 
-    sbl_mbn_header_t sblHeader;
+    eighty_byte_mbn_header_t sblHeader;
 
-    size_t bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
+    size_t bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(eighty_byte_mbn_header_t), fp);
 
-    //logHex((uint8_t*)&sblHeader, sizeof(sbl_mbn_header_t));
+    //logHex((uint8_t*)&sblHeader, sizeof(eighty_byte_mbn_header_t));
 
     fclose(fp);
 
     log(tmp.sprintf("File Size: %zd bytes", fileSize));
 
-    // code_size = fileSize - sizeof(sbl_mbn_header_t) - sblHeader.image_size - sblHeader.image_size
-    // image_size = fileSize - sizeof(sbl_mbn_header_t)
+    // code_size = fileSize - sizeof(eighty_byte_mbn_header_t) - sblHeader.image_size - sblHeader.image_size
+    // image_size = fileSize - sizeof(eighty_byte_mbn_header_t)
 
     if (ui->flipEndianCheckbox->isChecked()) {
         log(tmp.sprintf("Image Size: %zd bytes", flip_endian32(sblHeader.image_size)));
@@ -143,9 +143,9 @@ void MbnToolWindow::readX509Chain()
     size_t fileSize = ftell(fp);
     rewind(fp);
 
-    sbl_mbn_header_t sblHeader;
+    eighty_byte_mbn_header_t sblHeader;
 
-    fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
+    fread((uint8_t*)&sblHeader, 1, sizeof(eighty_byte_mbn_header_t), fp);
 
     rewind(fp);
 
@@ -155,10 +155,10 @@ void MbnToolWindow::readX509Chain()
     uint32_t certChainPtr = flip_endian32(sblHeader.cert_chain_ptr);
     uint32_t certSize     = sblHeader.cert_chain_size;
     uint32_t sigSize     = sblHeader.signature_size;
-    uint32_t offset       = sizeof(sbl_mbn_header_t) + imgSrc + codeSize;
+    uint32_t offset       = sizeof(eighty_byte_mbn_header_t) + imgSrc + codeSize;
 
     if (offset > fileSize) {
-        log(tmp.sprintf("Offset Exceeds File Size: %u | %u %u %u %u", fileSize, offset, sizeof(sbl_mbn_header_t), imgSrc, codeSize));
+        log(tmp.sprintf("Offset Exceeds File Size: %u | %u %u %u %u", fileSize, offset, sizeof(eighty_byte_mbn_header_t), imgSrc, codeSize));
         return;
     }
 
