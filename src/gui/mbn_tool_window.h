@@ -21,7 +21,8 @@ public:
 
 public slots:
     void BrowseForFile();
-    void InspectFile();
+    void LoadFile();
+    void readX509Chain();
 
 private:
     Ui::MbnToolWindow *ui;

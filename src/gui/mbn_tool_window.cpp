@@ -7,7 +7,8 @@ MbnToolWindow::MbnToolWindow(QWidget *parent) :
     ui->setupUi(this);
 
     QObject::connect(ui->fileBrowseButton, SIGNAL(clicked()), this, SLOT(BrowseForFile()));
-    QObject::connect(ui->inspectButton, SIGNAL(clicked()), this, SLOT(InspectFile()));
+    QObject::connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(LoadFile()));
+    QObject::connect(ui->readx509ChainButton, SIGNAL(clicked()), this, SLOT(readX509Chain()));
 
 }
 
@@ -26,12 +27,105 @@ void MbnToolWindow::BrowseForFile()
     }
 }
 
-void MbnToolWindow::InspectFile()
+void MbnToolWindow::LoadFile()
 {
-    QString msgTmp;
+    QString tmp;
     QString fileName = ui->filePathInput->text();
 
-    log(msgTmp.sprintf("Size: %zd", sizeof(mbn_header_t)));
+    if (!fileName.length()) {
+        log("Please Enter or Browse For a Image File");
+        return;
+    }
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+
+    if (!fp) {
+        log("Error Opening File");
+        return;
+    }    
+
+    fseek(fp, 0, SEEK_END);
+    size_t fileSize = ftell(fp);
+    rewind(fp);
+
+
+    ui->savePathInput->setText(fileName.replace("\.[A-Za-z]{1,}$", "_edited$1"));
+
+    log(tmp.sprintf("SBL Header Size: %zd", sizeof(sbl_mbn_header_t)));
+
+    sbl_mbn_header_t sblHeader;
+
+    size_t bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
+
+    //logHex((uint8_t*)&sblHeader, sizeof(sbl_mbn_header_t));
+
+    fclose(fp);
+
+    log(tmp.sprintf("File Size: %zd bytes", fileSize));
+
+    // code_size = fileSize - sizeof(sbl_mbn_header_t) - sblHeader.image_size - sblHeader.image_size
+    // image_size = fileSize - sizeof(sbl_mbn_header_t)
+
+    if (ui->flipEndianCheckbox->isChecked()) {
+        log(tmp.sprintf("Image Size: %zd bytes", flip_endian32(sblHeader.image_size)));
+        log(tmp.sprintf("Code Size: %zd bytes", flip_endian32(sblHeader.code_size)));
+        log(tmp.sprintf("Signature Size: %zd bytes", flip_endian32(sblHeader.signature_size)));
+        log(tmp.sprintf("Cert Chain Size: %zd bytes", flip_endian32(sblHeader.cert_chain_size)));
+
+        ui->mbnHeaderCodewordValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.codeword)));
+        ui->mbnHeaderMagicValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.magic)));
+        ui->mbnHeaderImageIdValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_id)));
+        ui->mbnHeaderReserved1Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved1)));
+        ui->mbnHeaderReserved2Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved2)));
+        ui->mbnHeaderImageSrcValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_src)));
+        ui->mbnHeaderImageDestPtrValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_dest_ptr)));
+        ui->mbnHeaderImageSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_size)));
+        ui->mbnHeaderCodeSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.code_size)));
+        ui->mbnHeaderSignaturePtrValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.signature_ptr)));
+        ui->mbnHeaderSignatureSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.signature_size)));
+        ui->mbnHeaderCertChainPtrValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.cert_chain_ptr)));
+        ui->mbnHeaderCertChainSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.cert_chain_size)));
+        ui->mbnHeaderOemRootCertSelectionValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.oem_root_cert_sel)));
+        ui->mbnHeaderOemNumberRootCertsValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.oem_num_root_certs)));
+        ui->mbnHeaderReserved3Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved3)));
+        ui->mbnHeaderReserved4Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved4)));
+        ui->mbnHeaderReserved5Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved5)));
+        ui->mbnHeaderReserved6Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved6)));
+        ui->mbnHeaderReserved7Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved7)));
+    } else {
+        log(tmp.sprintf("Image Size: %zd bytes", sblHeader.image_size));
+        log(tmp.sprintf("Code Size: %zd bytes", sblHeader.code_size));
+        log(tmp.sprintf("Signature Size: %zd bytes", sblHeader.signature_size));
+        log(tmp.sprintf("Cert Chain Size: %zd bytes", sblHeader.cert_chain_size));
+
+        ui->mbnHeaderCodewordValue->setText(tmp.sprintf("%04X", sblHeader.codeword));
+        ui->mbnHeaderMagicValue->setText(tmp.sprintf("%04X", sblHeader.magic));
+        ui->mbnHeaderImageIdValue->setText(tmp.sprintf("%04X", sblHeader.image_id));
+        ui->mbnHeaderReserved1Value->setText(tmp.sprintf("%04X", sblHeader.reserved1));
+        ui->mbnHeaderReserved2Value->setText(tmp.sprintf("%04X", sblHeader.reserved2));
+        ui->mbnHeaderImageSrcValue->setText(tmp.sprintf("%04X", sblHeader.image_src));
+        ui->mbnHeaderImageDestPtrValue->setText(tmp.sprintf("%04X", sblHeader.image_dest_ptr));
+        ui->mbnHeaderImageSizeValue->setText(tmp.sprintf("%04X", sblHeader.image_size));
+        ui->mbnHeaderCodeSizeValue->setText(tmp.sprintf("%04X", sblHeader.code_size));
+        ui->mbnHeaderSignaturePtrValue->setText(tmp.sprintf("%04X", sblHeader.signature_ptr));
+        ui->mbnHeaderSignatureSizeValue->setText(tmp.sprintf("%04X", sblHeader.signature_size));
+        ui->mbnHeaderCertChainPtrValue->setText(tmp.sprintf("%04X", sblHeader.cert_chain_ptr));
+        ui->mbnHeaderCertChainSizeValue->setText(tmp.sprintf("%04X", sblHeader.cert_chain_size));
+        ui->mbnHeaderOemRootCertSelectionValue->setText(tmp.sprintf("%04X", sblHeader.oem_root_cert_sel));
+        ui->mbnHeaderOemNumberRootCertsValue->setText(tmp.sprintf("%04X", sblHeader.oem_num_root_certs));
+        ui->mbnHeaderReserved3Value->setText(tmp.sprintf("%04X", sblHeader.reserved3));
+        ui->mbnHeaderReserved4Value->setText(tmp.sprintf("%04X", sblHeader.reserved4));
+        ui->mbnHeaderReserved5Value->setText(tmp.sprintf("%04X", sblHeader.reserved5));
+        ui->mbnHeaderReserved6Value->setText(tmp.sprintf("%04X", sblHeader.reserved6));
+        ui->mbnHeaderReserved7Value->setText(tmp.sprintf("%04X", sblHeader.reserved7));
+    }
+
+}
+
+void MbnToolWindow::readX509Chain()
+{
+    QString tmp;
+    QString fileName = ui->filePathInput->text();
 
     if (!fileName.length()) {
         log("Please Enter or Browse For a Image File");
@@ -45,33 +139,47 @@ void MbnToolWindow::InspectFile()
         return;
     }
 
-    printf("SBL Header:\n");
+    fseek(fp, 0, SEEK_END);
+    size_t fileSize = ftell(fp);
+    rewind(fp);
 
     sbl_mbn_header_t sblHeader;
 
-    size_t bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
+    fread((uint8_t*)&sblHeader, 1, sizeof(sbl_mbn_header_t), fp);
 
-    //logHex((uint8_t*)&sblHeader, sizeof(sbl_mbn_header_t));
+    rewind(fp);
+
+    uint32_t codeSize     = sblHeader.code_size;
+    uint32_t imgSize       = sblHeader.image_size;
+    uint32_t imgSrc       = sblHeader.image_src;
+    uint32_t certChainPtr = flip_endian32(sblHeader.cert_chain_ptr);
+    uint32_t certSize     = sblHeader.cert_chain_size;
+    uint32_t sigSize     = sblHeader.signature_size;
+    uint32_t offset       = sizeof(sbl_mbn_header_t) + imgSrc + codeSize;
+
+    if (offset > fileSize) {
+        log(tmp.sprintf("Offset Exceeds File Size: %u | %u %u %u %u", fileSize, offset, sizeof(sbl_mbn_header_t), imgSrc, codeSize));
+        return;
+    }
+
+    uint8_t* fileBuffer = new uint8_t[fileSize];
+
+    fread(fileBuffer, 1, fileSize, fp);
+
+    uint8_t* sig = &fileBuffer[offset];
+
+    hexdump(sig, sigSize);
+
+    uint8_t* cert = &fileBuffer[offset + sigSize];
+
+    hexdump(cert, certSize);
+
+
+
+    free(fileBuffer);
 
     fclose(fp);
-
-    log(msgTmp.sprintf("Codeword: 0x%04X", sblHeader.codeword));
-    log(msgTmp.sprintf("Magic: 0x%04X", sblHeader.magic));
-    log(msgTmp.sprintf("Image ID: 0x%04X", sblHeader.image_id));
-   // log(msgTmp.sprintf("Header Version: 0x%04X", sblHeader.header_vsn_num));
-    log(msgTmp.sprintf("Image Src Offset: 0x%04X", sblHeader.image_src));
-    log(msgTmp.sprintf("Image Dest Ptr: 0x%08X", sblHeader.image_dest_ptr));
-    log(msgTmp.sprintf("Image Size: 0x%04X - %zd Bytes", sblHeader.image_size, sblHeader.image_size));
-    log(msgTmp.sprintf("Code Size: 0x%04X - %zd Bytes", sblHeader.code_size, sblHeader.code_size));
-    log(msgTmp.sprintf("Signature Ptr: 0x%08X", sblHeader.signature_ptr));
-    log(msgTmp.sprintf("Signature Size: 0x%04X - %zd Bytes", sblHeader.signature_size, sblHeader.signature_size));
-    log(msgTmp.sprintf("Cert Chain Ptr: 0x%08X", sblHeader.cert_chain_ptr));
-    log(msgTmp.sprintf("Cert Chain Size: 0x%04X - %zd Bytes", sblHeader.cert_chain_size, sblHeader.cert_chain_size));
-    log(msgTmp.sprintf("Cert Chain Ptr: 0x%04X", sblHeader.oem_root_cert_sel));
-    log(msgTmp.sprintf("Cert Chain Ptr: 0x%04X", sblHeader.oem_num_root_certs));
-
 }
-
 
 /**
  * @brief MbnToolWindow::log

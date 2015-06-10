@@ -267,12 +267,14 @@ PACKED(typedef struct streaming_dload_qfprom_write_rx_t { // 0x33
     uint32_t rowAddress;
 } streaming_dload_qfprom_write_rx_t);
 
+/*
 PACKED(typedef struct streaming_dload_qfprom_read_tx_t { // 0x34
     uint8_t command;
     uint3_qc_streaming_dload_h2_t rowAddress;
     uint32_t addressType; // 0x00 - Corrected Reads, 0x01 - Raw Reads
     uint32_t msb;
 } streaming_dload_qfprom_read_tx_t);
+*/
 
 PACKED(typedef struct streaming_dload_qfprom_read_rx_t { // 0x35
     uint8_t command;

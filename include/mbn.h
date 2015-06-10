@@ -47,40 +47,40 @@ PACKED(struct mbn_header_t {
 });
 
 PACKED(struct sbl_mbn_header_t {
-    unsigned int  codeword;            /* Codeword/magic number defining flash type
+    uint32_t  codeword;            /* Codeword/magic number defining flash type
                                 information. */
-    unsigned int  magic;               /* Magic number */
-    unsigned int  image_id;        /* image content */
-    unsigned int  RESERVED_1;          /* RESERVED */
-    unsigned int  RESERVED_2;          /* RESERVED */
-    unsigned int  image_src;             /* Location of RPM_SBL in flash or e-hostdl in RAM. This is given in
+    uint32_t  magic;               /* Magic number */
+    uint32_t  image_id;        /* image content */
+    uint32_t  reserved1;          /* RESERVED */
+    uint32_t  reserved2;          /* RESERVED */
+    uint32_t  image_src;             /* Location of RPM_SBL in flash or e-hostdl in RAM. This is given in
                                 byte offset from beginning of flash/RAM.  */
-    unsigned int image_dest_ptr;        /* Pointer to location to store RPM_SBL/e-hostdl in RAM.
+    uint32_t image_dest_ptr;        /* Pointer to location to store RPM_SBL/e-hostdl in RAM.
                                 Also, entry point at which execution begins.
                                 */
-    unsigned int  image_size;      /* Size of RPM_SBL image in bytes */
-    unsigned int  code_size;       /* Size of code region in RPM_SBL image in bytes */
-    unsigned int signature_ptr;         /* Pointer to images attestation signature */
-    unsigned int  signature_size;        /* Size of the attestation signature in
+    uint32_t  image_size;      /* Size of RPM_SBL image in bytes */
+    uint32_t  code_size;       /* Size of code region in RPM_SBL image in bytes */
+    uint32_t signature_ptr;         /* Pointer to images attestation signature */
+    uint32_t  signature_size;        /* Size of the attestation signature in
                                 bytes */
-    unsigned int cert_chain_ptr;  /* Pointer to the chain of attestation
+    uint32_t cert_chain_ptr;  /* Pointer to the chain of attestation
                                 certificates associated with the image. */
-    unsigned int  cert_chain_size; /* Size of the attestation chain in bytes */
+    uint32_t  cert_chain_size; /* Size of the attestation chain in bytes */
 
-    unsigned int  oem_root_cert_sel;  /* Root certificate to use for authentication.
+    uint32_t  oem_root_cert_sel;  /* Root certificate to use for authentication.
                                 Only used if SECURE_BOOT1 table_sel fuse is
                                 OEM_TABLE. 1 indicates the first root
                                 certificate in the chain should be used, etc */
-    unsigned int  oem_num_root_certs; /* Number of root certificates in image.
+    uint32_t  oem_num_root_certs; /* Number of root certificates in image.
                                 Only used if SECURE_BOOT1 table_sel fuse is
                                 OEM_TABLE. Denotes the number of certificates
                                 OEM has provisioned                          */
 
-    unsigned int  RESERVED_5;          /* RESERVED */
-    unsigned int  RESERVED_6;          /* RESERVED */
-    unsigned int  RESERVED_7;          /* RESERVED */
-    unsigned int  RESERVED_8;          /* RESERVED */
-    unsigned int  RESERVED_9;          /* RESERVED */
+    uint32_t  reserved3;          /* RESERVED */
+    uint32_t  reserved4;          /* RESERVED */
+    uint32_t  reserved5;          /* RESERVED */
+    uint32_t  reserved6;          /* RESERVED */
+    uint32_t  reserved7;          /* RESERVED */
 });
 /*
 PACKED(struct sbl_mbn_header_t {

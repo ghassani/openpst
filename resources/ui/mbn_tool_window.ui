@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>283</height>
+    <height>634</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MBN Tool</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="inspectButton">
+   <widget class="QPushButton" name="loadButton">
     <property name="geometry">
      <rect>
       <x>710</x>
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Inspect</string>
+     <string>Load</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="filePathInput">
@@ -63,14 +63,569 @@
      <string>Browse for MBN Image</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="useOldMbnHeaderCheckbox">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>60</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Use Old MBN Header</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderCodewordValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>86</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderCodewordLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>59</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Codeword</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderMagicLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>59</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Magic</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderMagicValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>116</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderImageIdLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>59</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Image ID</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderImageIdValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>146</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved1Label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 1</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved2Value">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>206</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderImageSrcLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>230</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Image Src</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderImageSrcValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>236</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved1Value">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>176</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved2Label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>200</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 2</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderImageDestPtrLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Image Dest Ptr</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderSignatureSizeValue">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>120</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderCodeSizeLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>320</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Code Size</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderImageSizeValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>296</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderCodeSizeValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>326</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderSignaturePtrValue">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>90</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderCertChainPtrValue">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>150</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderImageDestPtrValue">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>266</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderImageSizeLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>290</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Image Size</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderCertChainPtrLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>144</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cert Chain Ptr</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderSignatureSizeLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>114</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Signature Size</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderSignaturePtrLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>84</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Signature Ptr</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderCertChainSizeValue">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>180</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderOemNumberRootCertsLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>234</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OEM Number Root Certs</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderOemRootCertSelectionLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>204</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OEM Root Cert Selection</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderOemRootCertSelectionValue">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>210</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderOemNumberRootCertsValue">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>240</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderCertChainSizeLabel">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>174</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cert Chain Size</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved4Value">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>300</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved3Value">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>270</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved4label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>290</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 4</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved3Label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>260</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 3</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved5Value">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>330</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved6Value">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>360</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved6Label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>350</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 6</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved5Label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>320</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 5</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveButton">
+    <property name="geometry">
+     <rect>
+      <x>709</x>
+      <y>440</y>
+      <width>71</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="savePathInput">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>440</y>
+      <width>691</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
    <widget class="QPlainTextEdit" name="log">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
-      <width>781</width>
-      <height>161</height>
+      <y>470</y>
+      <width>771</width>
+      <height>101</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mbnHeaderReserved7Label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>380</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reserved 7</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="mbnHeaderReserved7Value">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>390</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="flipEndianCheckbox">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>60</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Flip Endian</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="displayDataAsSelect">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>90</y>
+      <width>79</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>HEX</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DEC</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="readx509ChainButton">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>170</y>
+      <width>131</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Read X509 Chain</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="readSignatureButton">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>200</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Read Signature</string>
     </property>
    </widget>
   </widget>
@@ -80,7 +635,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

@@ -7,6 +7,7 @@
 #include "serial/sahara_serial.h"
 #include "helper/sahara_helper.h"
 #include "qc_sahara.h"
+#include "qc_streaming_dload.h"
 #include "util.h"
 #include <QFileDialog>
 
@@ -35,16 +36,12 @@ public slots:
     void SendImage();
     void SendCommandButtonAction();
     void SendDone();
+    void SendStreamingDloadHello();
 
 private:
     Ui::SaharaWindow *ui;
     openpst::SaharaSerial port;
     serial::PortInfo currentPort;
-    uint8_t* readBuffer;
-    size_t readBufferSize = 1024;
-
-    sahara_hello_rx_t deviceState;
-    sahara_read_data_rx_t requestedImage;
 
     void log(const char* message);
     void log(std::string message);

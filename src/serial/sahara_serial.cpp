@@ -322,7 +322,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t* responseData, siz
                 cmdResponseData = (uint8_t*) realloc(cmdResponseData, newSize);
 
                 if (cmdResponseData == NULL) {
-                    printf("Could Not Allocate %zd More Bytes For Data\n", execResponse->size);
+                    printf("Could Not Allocate %u More Bytes For Data\n", execResponse->size);
                     free(cmdResponseData);
                     return 0;
                 }
@@ -512,7 +512,7 @@ int SaharaSerial::sendDone()
 
     hexdump((uint8_t*)&packet, lastTxSize);
 
-    lastRxSize = read(buffer, sizeof(bufferSize));
+    lastRxSize = read(buffer, bufferSize);
 
     if (!lastRxSize) {
         printf("Expected response but 0 bytes received from device\n");
@@ -557,7 +557,7 @@ int SaharaSerial::sendReset()
 
     hexdump((uint8_t*)&packet, lastTxSize);
 
-    lastRxSize = read(buffer, sizeof(bufferSize));
+    lastRxSize = read(buffer, bufferSize);
 
     if (!lastRxSize) {
         printf("Expected response but 0 bytes received from device\n");

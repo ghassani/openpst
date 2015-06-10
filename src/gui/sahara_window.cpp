@@ -48,9 +48,9 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
     QObject::connect(ui->saharaSendImageBrowse,         SIGNAL(clicked()), this, SLOT(BrowseForImage()));
     QObject::connect(ui->saharaSendImageButton,         SIGNAL(clicked()), this, SLOT(SendImage()));
     QObject::connect(ui->saharaSendCommandButton,       SIGNAL(clicked()), this, SLOT(SendCommandButtonAction()));
+    QObject::connect(ui->streamingDloadHelloButton,     SIGNAL(clicked()), this, SLOT(SendStreamingDloadHello()));
 
 
-    memset(&requestedImage, 0x00, sizeof(requestedImage));
 }
 
 SaharaWindow::~SaharaWindow()
@@ -119,7 +119,7 @@ void SaharaWindow::ConnectToPort()
         return;
     }
 
-    ui->portDisconnectButton->setEnabled(true);
+    //ui->portDisconnectButton->setEnabled(true);
 
     QString connectionText = "Connecting to ";
 
@@ -373,7 +373,48 @@ void SaharaWindow::DisconnectPort()
         port.close();
     }
 
-    ui->portDisconnectButton->setEnabled(false);
+    //ui->portDisconnectButton->setEnabled(false);
+}
+
+
+/**
+ * @brief SaharaWindow::SendStreamingDloadHello
+ */
+void SaharaWindow::SendStreamingDloadHello()
+{
+
+    if (!port.isOpen()) {
+        log("Port Not Open");
+        return;
+    }
+
+    if (!ui->streamingDloadHelloMagiInput->text().length()) {
+        log("No Magic Set");
+        return;
+    }
+
+    streaming_dload_hello_tx_t dloadHello;
+    uint32_t outsize = 0;
+    uint8_t* outbuf = NULL;
+    std::string magic = ui->streamingDloadHelloMagiInput->text().toStdString();
+
+    dloadHello.command = STREAMING_DLOAD_HELLO;
+    memcpy(dloadHello.magic, magic.c_str(), magic.size());
+    dloadHello.version = 0x04;
+    dloadHello.compatibleVersion = 0x04;
+    dloadHello.featureBits = 0x08;
+
+    dload_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
+
+    size_t bytesWritten = port.write(outbuf, outsize);
+    printf("Wrote %zd bytes\n", bytesWritten);
+    hexdump(outbuf, bytesWritten);
+
+    size_t bytesRead = port.read(port.buffer, port.bufferSize);
+    printf("Read %zd bytes\n", bytesRead);
+    hexdump(port.buffer, bytesRead);
+
+    //ui->portDisconnectButton->setEnabled(false);
 }
 
 /**

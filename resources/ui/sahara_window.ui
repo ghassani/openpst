@@ -44,9 +44,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>350</y>
+      <y>355</y>
       <width>861</width>
-      <height>211</height>
+      <height>210</height>
      </rect>
     </property>
    </widget>
@@ -109,7 +109,7 @@
    </widget>
    <widget class="QPushButton" name="portDisconnectButton">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -136,7 +136,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
@@ -477,20 +477,155 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="saharaReadPortButton">
+    </widget>
+    <widget class="QWidget" name="saharaTabStreamingDload">
+     <attribute name="title">
+      <string>Streaming DLOAD</string>
+     </attribute>
+     <widget class="QLineEdit" name="streamingDloadHelloMagiInput">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>197</y>
-        <width>161</width>
-        <height>20</height>
+        <x>10</x>
+        <y>30</y>
+        <width>261</width>
+        <height>27</height>
        </rect>
       </property>
       <property name="text">
-       <string>Attempt Read (Max Size)</string>
+       <string>QCOM fast download protocol host</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="streamingDloadHelloVersionInput">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>30</y>
+        <width>113</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="streamingDloadHelloCompatVersionInput">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>30</y>
+        <width>113</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Magic</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloVersionLabel">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>10</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Version</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloFeatureBitsLabel">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>10</y>
+        <width>91</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Feature Bits</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="streamingDloadHelloFeatureBitsInput">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>30</y>
+        <width>113</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloCompatVersionLabel">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>10</y>
+        <width>101</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Compat. Version</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton">
+      <property name="geometry">
+       <rect>
+        <x>650</x>
+        <y>30</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Say Hello</string>
       </property>
      </widget>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="saharaReadPortButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>320</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Attempt Read (Max Size)</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clearLogButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>570</y>
+      <width>91</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear Log</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -499,7 +634,7 @@
      <x>0</x>
      <y>0</y>
      <width>884</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQC_Tools">
