@@ -1,52 +1,9 @@
-/*
- * mbn.h
- * support for .mbn file format (found in .bbfw files)
- *
- * Copyright (c) 2012 Nikias Bassen. All Rights Reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @see https://github.com/libimobiledevice/idevicerestore/blob/master/src/mbn.h
- */
-#ifndef _mbn_h
-#define _mbn_h
+#ifndef _MBN_H
+#define _MBN_H
 
 #include <definitions.h>
-#include <stdint.h>
 
-PACKED(struct mbn_header_t {
-  uint32_t image_id;           /**< Identifies the type of image this header
-                                  represents (OEM SBL, AMSS, Apps boot loader,
-                                  etc.). */
-  uint32_t header_vsn_num;     /**< Header version number. */
-  uint32_t image_src;          /**< Offset from end of the Boot header where the
-                                  image starts. */
-  uint8_t* image_dest_ptr;     /**< Pointer to location to store image in RAM.
-                                  Also, entry point at which image execution
-                                  begins. */
-  uint32_t image_size;         /**< Size of complete image in bytes */
-  uint32_t code_size;          /**< Size of code region of image in bytes */
-  uint8_t* signature_ptr;      /**< Pointer to images attestation signature */
-  uint32_t signature_size;     /**< Size of the attestation signature in
-                                 bytes */
-  uint8_t* cert_chain_ptr;     /**< Pointer to the chain of attestation
-                                 certificates associated with the image. */
-  uint32_t cert_chain_size;    /**< Size of the attestation chain in bytes */
-});
-
-PACKED(struct sbl_mbn_header_t {
+PACKED(struct eighty_byte_mbn_header_t {
     uint32_t  codeword;            /* Codeword/magic number defining flash type
                                 information. */
     uint32_t  magic;               /* Magic number */
@@ -82,33 +39,28 @@ PACKED(struct sbl_mbn_header_t {
     uint32_t  reserved6;          /* RESERVED */
     uint32_t  reserved7;          /* RESERVED */
 });
-/*
-PACKED(struct sbl_mbn_header_t {
-  uint32_t codeword;
-  uint32_t magic;
-  uint32_t image_id;
-  uint32_t reserved1;
-  uint32_t reserved2;
-  uint32_t image_src;
-  uint8_t* image_dest_ptr;
-  uint32_t image_size;
-  uint32_t code_size;
-  uint8_t* signature_ptr;
-  uint32_t signature_size;
-  uint8_t* cert_chain_ptr;
-  uint32_t cert_chain_size;
-  uint32_t oem_root_cert_sel;
-  uint32_t oem_num_root_certs;
-  uint32_t reserved_5;
-  uint32_t reserved_6;
-  uint32_t reserved_7;
-  uint32_t reserved_8;
-  uint32_t reserved_9;
-});*/
 
-#define MBN_HEADER_SIZE = 80;
+PACKED(struct fourty_byte_mbn_header_t {
+  uint32_t image_id;           /**< Identifies the type of image this header
+                                  represents (OEM SBL, AMSS, Apps boot loader,
+                                  etc.). */
+  uint32_t header_vsn_num;     /**< Header version number. */
+  uint32_t image_src;          /**< Offset from end of the Boot header where the
+                                  image starts. */
+  uint8_t* image_dest_ptr;     /**< Pointer to location to store image in RAM.
+                                  Also, entry point at which image execution
+                                  begins. */
+  uint32_t image_size;         /**< Size of complete image in bytes */
+  uint32_t code_size;          /**< Size of code region of image in bytes */
+  uint8_t* signature_ptr;      /**< Pointer to images attestation signature */
+  uint32_t signature_size;     /**< Size of the attestation signature in
+                                 bytes */
+  uint8_t* cert_chain_ptr;     /**< Pointer to the chain of attestation
+                                 certificates associated with the image. */
+  uint32_t cert_chain_size;    /**< Size of the attestation chain in bytes */
+});
 
-enum MBN_IMAGE_ : uint32_t {
+enum MBN_IMAGE {
     MBN_IMAGE_NONE           = 0x00,
     MBN_IMAGE_OEM_SBL_IMG    = 0x01,
     MBN_IMAGE_AMSS_IMG       = 0x02,
@@ -142,4 +94,4 @@ enum MBN_IMAGE_ : uint32_t {
     MBN_IMAGE_WDT            = 0x1E,
     MBN_IMAGE_MBA            = 0x1F,
 };
-#endif // _mbn_h
+#endif // _MBN_H
