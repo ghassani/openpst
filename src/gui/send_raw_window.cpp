@@ -1,3 +1,7 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
 #include "send_raw_window.h"
 #include "ui_send_raw_window.h"
 

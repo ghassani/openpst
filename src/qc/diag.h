@@ -1,4 +1,22 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _QC_DIAG_H
+#define _QC_DIAG_H
+
 #include "definitions.h"
+
+/* QCDM protocol frames are pseudo Async HDLC frames which end with a 3-byte
+*  trailer. This trailer consists of the 16-bit CRC of the frame plus an ending
+* "async control character" whose value is 0x7E.  The frame *and* the CRC are
+* escaped before adding the trailing control character so that the control
+* character (0x7E) and the escape marker (0x7D) are never seen in the frame.
+*/
+#define DIAG_ESC_CHAR     0x7D  /* Escape sequence 1st character value */
+#define DIAG_ESC_MASK     0x20  /* Escape sequence complement value */
+#define DIAG_CONTROL_CHAR 0x7E
+#define DIAG_TRAILER_LEN  3
 
 enum DIAG_COMMAND : uint8_t  {
 	DIAG_BAD_CMD_F = 0x13,
@@ -44,13 +62,11 @@ enum DIAG_COMMAND : uint8_t  {
 	DIAG_SUBSYS_CMD_VER_2_F = 0x80,
 	DIAG_VERNO_F = 0,
 	DIAG_VOC_PCM_LB_F = 0x31,
-	DIAG_VOC_PKT_LB_F = 50,
-	DIAG_BAD_MODE_F = 0x18
+    DIAG_VOC_PKT_LB_F = 50
 };
-
-enum DIAG_PHONE_MODE
-{
-	MODE_OFFLINE_A_F,
+/*
+enum DIAG_PHONE_MODE {
+    MODE_OFFLINE_A_F,
 	MODE_OFFLINE_D_F,
 	MODE_RESET_F,
 	MODE_FTM_F,
@@ -59,3 +75,5 @@ enum DIAG_PHONE_MODE
 	MODE_POWER_OFF_F,
 	MODE_MAX_F
 }
+*/
+#endif // _QC_DIAG_H

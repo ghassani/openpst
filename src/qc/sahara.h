@@ -1,9 +1,13 @@
 /**
+* LICENSE PLACEHOLDER
+*/
+
+/**
 * @see https://github.com/posixninja/DBLTool/blob/master/dbltool/dbl.h
 * @see http://forum.xda-developers.com/showpost.php?p=54829011&postcount=73
 */
-#ifndef _qc_sahara_h
-#define _qc_sahara_h
+#ifndef _QC_SAHARA_H
+#define _QC_SAHARA_H
 
 /**
  * These are all known commands, both rx and tx.
@@ -376,4 +380,4 @@ typedef struct { // 0x11
     uint64_t length;
 } sahara_memory_read_64_tx_t;
 
-#endif // _qc_sahara_h
+#endif // _QC_SAHARA_H

@@ -1,15 +1,21 @@
-#ifndef SAHARAWINDOW_H
-#define SAHARAWINDOW_H
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _GUI_SAHARAWINDOW_H
+#define _GUI_SAHARAWINDOW_H
 
 #include <QMainWindow>
 #include <QVariant>
+#include <QFileDialog>
+#include <iostream>
+#include <stdio.h>
 #include "ui_sahara_window.h"
 #include "serial/sahara_serial.h"
-#include "helper/sahara_helper.h"
-#include "qc_sahara.h"
-#include "qc_streaming_dload.h"
-#include "util.h"
-#include <QFileDialog>
+#include "qc/sahara.h"
+#include "qc/streaming_dload.h"
+#include "qc/hdlc.h"
+#include "util/hexdump.h"
 
 namespace Ui {
 class SaharaWindow;
@@ -52,4 +58,4 @@ private:
 
 };
 
-#endif // SAHARAWINDOW_H
+#endif // _GUI_SAHARAWINDOW_H

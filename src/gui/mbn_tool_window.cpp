@@ -1,3 +1,7 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
 #include "mbn_tool_window.h"
 
 MbnToolWindow::MbnToolWindow(QWidget *parent) :

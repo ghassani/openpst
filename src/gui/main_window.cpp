@@ -1,3 +1,7 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
 #include "main_window.h"
 
 
