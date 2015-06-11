@@ -25,9 +25,9 @@ public slots:
     void startMbnTool();
 
 private:
-    SaharaWindow   *saharaWindow  = NULL;
-    SendRawWindow  *sendRawWindow = NULL;
-    MbnToolWindow  *mbnToolWindow = NULL;
+    SaharaWindow   *saharaWindow;
+    SendRawWindow  *sendRawWindow;
+    MbnToolWindow  *mbnToolWindow;
     Ui::MainWindow *ui;
 };
 

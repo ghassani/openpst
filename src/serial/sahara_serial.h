@@ -13,6 +13,7 @@ class SaharaSerial : public serial::Serial {
         SaharaSerial(std::string port, int baudrate = 115200 ) :
             serial::Serial (port, baudrate, serial::Timeout::simpleTimeout(1000))
         {
+            bufferSize = 1024;
             buffer = new uint8_t[1024];
             memset(&deviceState, 0x00, sizeof(deviceState));
             memset(&readState, 0x00, sizeof(readState));
@@ -119,7 +120,7 @@ class SaharaSerial : public serial::Serial {
         sahara_transfer_response_rx_t lastError;
 
         uint8_t* buffer;
-        size_t bufferSize = 1024;
+        size_t bufferSize;
         size_t lastRxSize,
                lastTxSize;
 };
