@@ -690,6 +690,7 @@ const char* SaharaSerial::getNamedErrorStatus(uint32_t status)
         case SAHARA_NAK_HASH_TABLE_NOT_FOUND:          return "Hash Table Not Found";
         case SAHARA_NAK_TARGET_INIT_FAILURE:           return "Target Init Failure";
         case SAHARA_NAK_IMAGE_AUTH_FAILURE:            return "Image Auth Failure";
+        case SAHARA_NAK_INVALID_IMG_HASH_TABLE_SIZE:   return "Invalid ELF Hash Table Size";
         default:
             return "Unknown";
         }
