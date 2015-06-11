@@ -1,5 +1,9 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _GUI_MAINWINDOW_H
+#define _GUI_MAINWINDOW_H
 
 #include <QMainWindow>
 #include "ui_main_window.h"
@@ -31,4 +35,4 @@ private:
     Ui::MainWindow *ui;
 };
 
-#endif // MAINWINDOW_H
+#endif // _GUI_MAINWINDOW_H

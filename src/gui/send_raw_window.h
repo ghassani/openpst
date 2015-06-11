@@ -1,5 +1,9 @@
-#ifndef SENDRAWWINDOW_H
-#define SENDRAWWINDOW_H
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _GUI_SENDRAWWINDOW_H
+#define _GUI_SENDRAWWINDOW_H
 
 #include <QMainWindow>
 #include "ui_send_raw_window.h"
@@ -20,4 +24,4 @@ private:
     Ui::SendRawWindow *ui;
 };
 
-#endif // SENDRAWWINDOW_H
+#endif // _GUI_SENDRAWWINDOW_H

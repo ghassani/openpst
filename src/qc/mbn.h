@@ -1,5 +1,9 @@
-#ifndef _MBN_H
-#define _MBN_H
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _QC_MBN_H
+#define _QC_MBN_H
 
 #include <definitions.h>
 
@@ -94,4 +98,4 @@ enum MBN_IMAGE {
     MBN_IMAGE_WDT            = 0x1E,
     MBN_IMAGE_MBA            = 0x1F,
 };
-#endif // _MBN_H
+#endif // _QC_MBN_H

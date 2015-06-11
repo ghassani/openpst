@@ -1,7 +1,8 @@
-#include "sahara_window.h"
+/**
+* LICENSE PLACEHOLDER
+*/
 
-#include <iostream>
-#include <stdio.h>
+#include "sahara_window.h"
 
 SaharaWindow::SaharaWindow(QWidget *parent) :
     QMainWindow(parent),

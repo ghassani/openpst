@@ -1,9 +1,13 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
 /*
  * @see DCN 80-V5348-1 J
  */
 
-#ifndef _qc_streaming_dload_h
-#define _qc_streaming_dload_h
+#ifndef _QC_STREAMING_DLOAD_H
+#define _QC_STREAMING_DLOAD_H
 
 #include "definitions.h"
 
@@ -284,5 +288,5 @@ PACKED(typedef struct streaming_dload_qfprom_read_rx_t { // 0x35
 } streaming_dload_qfprom_read_rx_t);
 
 
-#endif // _qc_streaming_dload_h
+#endif // _QC_STREAMING_DLOAD_H
 

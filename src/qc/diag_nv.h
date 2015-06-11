@@ -1,3 +1,10 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _QC_DIAG_NV_H
+#define _QC_DIAG_NV_H
+
 enum NV_ITEM {
 	NV_A_KEY_CHKSUM_I = 0x1a,
 	NV_A_KEY_I = 0x19,

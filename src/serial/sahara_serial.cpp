@@ -1,6 +1,24 @@
+/**
+* LICENSE PLACEHOLDER
+*/
+
 #include "sahara_serial.h"
 
 using namespace openpst;
+
+SaharaSerial::SaharaSerial(std::string port, int baudrate ) :
+    serial::Serial (port, baudrate, serial::Timeout::simpleTimeout(1000))
+{
+    bufferSize = 1024;
+    buffer = new uint8_t[1024];
+    memset(&deviceState, 0x00, sizeof(deviceState));
+    memset(&readState, 0x00, sizeof(readState));
+}
+
+SaharaSerial::~SaharaSerial()
+{
+    delete buffer;
+}
 
 /**
  * @brief SaharaSerial::sendPacket

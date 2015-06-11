@@ -1,11 +1,16 @@
-#ifndef MBNTOOLWINDOW_H
-#define MBNTOOLWINDOW_H
+/**
+* LICENSE PLACEHOLDER
+*/
+
+#ifndef _GUI_MBNTOOLWINDOW_H
+#define _GUI_MBNTOOLWINDOW_H
 
 #include <QMainWindow>
 #include <QFileDialog>
 #include "ui_mbn_tool_window.h"
-#include "mbn.h"
-#include "util.h"
+#include "qc/mbn.h"
+#include "util/hexdump.h"
+#include "util/endian.h"
 
 namespace Ui {
 class MbnToolWindow;
@@ -32,4 +37,4 @@ private:
     void logHex(uint8_t* data, size_t amount);
 
 };
-#endif // MBNTOOLWINDOW_H
+#endif // _GUI_MBNTOOLWINDOW_H

@@ -1,5 +1,9 @@
-#include "gui/main_window.h"
+/**
+* LICENSE PLACEHOLDER
+*/
+
 #include <QApplication>
+#include "gui/main_window.h"
 
 /**
  * @brief main
