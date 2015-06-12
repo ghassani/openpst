@@ -4,9 +4,9 @@ OpenPST aims to be a open source tool to service and work with cell phones on Wi
 
 Nothing much here right now..
 
-### Expected Launch Features
+### Currently Worked On Features
 - Sahara Protocol
-- DLOAD Protocl
+- MBN Inspection
 - Streaming DLOAD Protocol
 - Raw Write/Read on Ports
 - ADB Partition Backup and Inspection Utilities

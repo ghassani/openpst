@@ -8,6 +8,7 @@
 #include "definitions.h"
 #include "serial/serial.h"
 #include "qc/sahara.h"
+#include "qc/mbn.h"
 #include "util/hexdump.h"
 
 namespace openpst {

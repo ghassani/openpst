@@ -11,11 +11,11 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->saharaSayHelloSwitchCommandSelect->addItem("", -1);
-    ui->saharaSayHelloSwitchCommandSelect->addItem("Image Transfer Pending",   SAHARA_MODE_IMAGE_TX_PENDING);
-    ui->saharaSayHelloSwitchCommandSelect->addItem("Image Transfer Complete",  SAHARA_MODE_IMAGE_TX_COMPLETE);
-    ui->saharaSayHelloSwitchCommandSelect->addItem("Memory Debug",             SAHARA_MODE_MEMORY_DEBUG);
-    ui->saharaSayHelloSwitchCommandSelect->addItem("Client Command Mode",      SAHARA_MODE_COMMAND);
+    ui->saharaWriteHelloSwitchCommandSelect->addItem("", -1);
+    ui->saharaWriteHelloSwitchCommandSelect->addItem("Image Transfer Pending",   SAHARA_MODE_IMAGE_TX_PENDING);
+    ui->saharaWriteHelloSwitchCommandSelect->addItem("Image Transfer Complete",  SAHARA_MODE_IMAGE_TX_COMPLETE);
+    ui->saharaWriteHelloSwitchCommandSelect->addItem("Memory Debug",             SAHARA_MODE_MEMORY_DEBUG);
+    ui->saharaWriteHelloSwitchCommandSelect->addItem("Client Command Mode",      SAHARA_MODE_COMMAND);
 
     ui->saharaSendClientCommandSelect->addItem("", -1);
     ui->saharaSendClientCommandSelect->addItem("NOP",                       SAHARA_EXEC_CMD_NOP);
@@ -40,9 +40,10 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
     UpdatePortList();
 
     QObject::connect(ui->portRefreshButton,             SIGNAL(clicked()), this, SLOT(UpdatePortList()));
-    QObject::connect(ui->saharaReceiveHelloButton,      SIGNAL(clicked()), this, SLOT(ConnectToPort()));
-    QObject::connect(ui->saharaSayHelloButton,          SIGNAL(clicked()), this, SLOT(SayHello()));
+    QObject::connect(ui->saharaReadHelloButton,         SIGNAL(clicked()), this, SLOT(ReadHello()));
+    QObject::connect(ui->saharaWriteHelloButton,        SIGNAL(clicked()), this, SLOT(WriteHello()));
     QObject::connect(ui->portDisconnectButton,          SIGNAL(clicked()), this, SLOT(DisconnectPort()));
+    QObject::connect(ui->portConnectButton,             SIGNAL(clicked()), this, SLOT(ConnectToPort()));
     QObject::connect(ui->saharaSwitchModeButton,        SIGNAL(clicked()), this, SLOT(SwitchMode()));
     QObject::connect(ui->saharaSendClientCommandButton, SIGNAL(clicked()), this, SLOT(SendClientCommand()));
     QObject::connect(ui->saharaReadPortButton,          SIGNAL(clicked()), this, SLOT(ReadSome()));
@@ -50,16 +51,21 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
     QObject::connect(ui->saharaSendImageButton,         SIGNAL(clicked()), this, SLOT(SendImage()));
     QObject::connect(ui->saharaSendCommandButton,       SIGNAL(clicked()), this, SLOT(SendCommandButtonAction()));
     QObject::connect(ui->streamingDloadHelloButton,     SIGNAL(clicked()), this, SLOT(SendStreamingDloadHello()));
-
-
+    QObject::connect(ui->clearLogButton,                SIGNAL(clicked()), this, SLOT(ClearLog()));
 }
 
+/**
+ * @brief SaharaWindow::~SaharaWindow
+ */
 SaharaWindow::~SaharaWindow()
 {
     this->close();
     delete ui;
 }
 
+/**
+ * @brief SaharaWindow::UpdatePortList
+ */
 void SaharaWindow::UpdatePortList()
 {
     if (port.isOpen()) {
@@ -96,6 +102,9 @@ void SaharaWindow::UpdatePortList()
     }
 }
 
+/**
+ * @brief SaharaWindow::ConnectToPort
+ */
 void SaharaWindow::ConnectToPort()
 {
     QString selected = ui->portList->currentData().toString();
@@ -140,6 +149,14 @@ void SaharaWindow::ConnectToPort()
         return;
     }
 
+    ReadHello();
+}
+
+/**
+ * @brief SaharaWindow::ReadHello
+ */
+void SaharaWindow::ReadHello()
+{
     if (!port.receiveHello()) {
         log("Did not receive hello. Not in sahara mode or requires restart.");
         return DisconnectPort();
@@ -153,14 +170,17 @@ void SaharaWindow::ConnectToPort()
     ui->deviceStateMinVersionValue->setText(tmp.sprintf("%i", port.deviceState.minVersion));
     ui->deviceStatePreferredMaxSizeValue->setText(tmp.sprintf("%i", port.deviceState.maxCommandPacketSize));
 
-    int index = ui->saharaSayHelloSwitchCommandSelect->findData(port.deviceState.mode);
+    int index = ui->saharaWriteHelloSwitchCommandSelect->findData(port.deviceState.mode);
 
     if ( index != -1 ) {
-       ui->saharaSayHelloSwitchCommandSelect->setCurrentIndex(index);
+       ui->saharaWriteHelloSwitchCommandSelect->setCurrentIndex(index);
     }
 }
 
-void SaharaWindow::SayHello()
+/**
+ * @brief SaharaWindow::WriteHello
+ */
+void SaharaWindow::WriteHello()
 {
     if (!port.isOpen()) {
         log("Select a port and receive hello first");
@@ -169,7 +189,7 @@ void SaharaWindow::SayHello()
 
     QString tmp;
 
-    if (!port.sendHello(ui->saharaSayHelloSwitchCommandSelect->currentData().toUInt(), 0x00)) {
+    if (!port.sendHello(ui->saharaWriteHelloSwitchCommandSelect->currentData().toUInt(), 0x00)) {
         log("Error Saying Hello");
         return DisconnectPort();
     }
@@ -179,14 +199,14 @@ void SaharaWindow::SayHello()
     if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
 
         log(tmp.sprintf("Device Requesting %zd Bytes of Image 0x%02x - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
-        log(tmp.sprintf("Device Requesting %zd Bytes of Image (Possible Alternate) 0x%02x - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImageAlt(port.readState.imageId)));
-
     }
 }
 
+/**
+ * @brief SaharaWindow::BrowseForImage
+ */
 void SaharaWindow::BrowseForImage()
 {
-
     QString fileName = QFileDialog::getOpenFileName(this, "Select Image To Send", "", "Image Files (*.mbn *.bin *.img)");
 
     if (fileName.length()) {
@@ -194,6 +214,9 @@ void SaharaWindow::BrowseForImage()
     }
 }
 
+/**
+ * @brief SaharaWindow::SendImage
+ */
 void SaharaWindow::SendImage()
 {
     if (!port.isOpen()) {
@@ -300,7 +323,9 @@ void SaharaWindow::SendReset()
 }
 
 
-
+/**
+ * @brief SaharaWindow::SendDone
+ */
 void SaharaWindow::SendDone()
 {
     if (!port.isOpen()) {
@@ -416,6 +441,22 @@ void SaharaWindow::SendStreamingDloadHello()
     hexdump(port.buffer, bytesRead);
 
     //ui->portDisconnectButton->setEnabled(false);
+}
+
+/**
+ * @brief SaharaWindow::ClearLog
+ */
+void SaharaWindow::ClearLog()
+{
+   ui->log->clear();
+}
+
+/**
+ * @brief SaharaWindow::SaveLog
+ */
+void SaharaWindow::SaveLog()
+{
+   log("Not Implemented Yet");
 }
 
 /**
