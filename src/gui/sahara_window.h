@@ -33,7 +33,8 @@ public slots:
     void UpdatePortList();
     void ConnectToPort();
     void DisconnectPort();
-    void SayHello();
+    void ReadHello();
+    void WriteHello();
     void SwitchMode();
     void SendClientCommand();
     void SendReset();
@@ -43,6 +44,8 @@ public slots:
     void SendCommandButtonAction();
     void SendDone();
     void SendStreamingDloadHello();
+    void ClearLog();
+    void SaveLog();
 
 private:
     Ui::SaharaWindow *ui;
