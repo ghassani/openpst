@@ -1,8 +1,17 @@
 Debug/*
+GeneratedFiles/*
 Release/*
 lib/serial/*
 lib/xerces/*
 lib/meidconverter/*
+Win32/*
+x64/*
+OpenPST.opensdf
 OpenPST.pro.user
+OpenPST.sdf
+OpenPST.sln
+OpenPST.v12*
+OpenPST.vcx*
 .cproject
+.gitattributes
 .project
