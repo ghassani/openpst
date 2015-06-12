@@ -199,8 +199,6 @@ void SaharaWindow::WriteHello()
     if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
 
         log(tmp.sprintf("Device Requesting %zd Bytes of Image 0x%02x - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
-        log(tmp.sprintf("Device Requesting %zd Bytes of Image (Possible Alternate) 0x%02x - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImageAlt(port.readState.imageId)));
-
     }
 }
 
