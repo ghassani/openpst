@@ -747,39 +747,3 @@ const char* SaharaSerial::getNamedRequestedImage(uint32_t imageId)
             return "Unknown";
     }
 }
-
-/**
- * @brief SaharaSerial::getNamedRequestedImageAlt
- * @param imageId
- * @return
- */
-const char* SaharaSerial::getNamedRequestedImageAlt(uint32_t imageId)
-{
-    switch(imageId) {
-        case SAHARA_IMAGE_ALT_NONE:        return "None";
-        case SAHARA_IMAGE_ALT_OEM_SBL:     return "OEM SBL";
-        case SAHARA_IMAGE_ALT_AMSS:        return "AMSS";
-        case SAHARA_IMAGE_ALT_QCSBL:       return "QCSBL";
-        case SAHARA_IMAGE_ALT_HASH:        return "Hash";
-        case SAHARA_IMAGE_ALT_NANDPRG:     return "NANDPRG";
-        case SAHARA_IMAGE_ALT_CFG_DATA:    return "CFG DATA";
-        case SAHARA_IMAGE_ALT_NORPRG:      return "NORPRG";
-        case SAHARA_IMAGE_ALT_HOSTDL:      return "HOSTDL";
-        case SAHARA_IMAGE_ALT_FSBL:        return "FSBL";
-        case SAHARA_IMAGE_ALT_DBL:         return "DBL";
-        case SAHARA_IMAGE_ALT_DBL_OLD:     return "OLD DBL";
-        case SAHARA_IMAGE_ALT_OSBL:        return "OSBL";
-        case SAHARA_IMAGE_ALT_APPS:        return "APPS";
-        case SAHARA_IMAGE_ALT_APPSBL:      return "APPSBL";
-        case SAHARA_IMAGE_ALT_DSP1:        return "DSP1";
-        case SAHARA_IMAGE_ALT_DSP2:        return "DSP2";
-        case SAHARA_IMAGE_ALT_EHOSTDL:     return "EHOSTDL";
-        case SAHARA_IMAGE_ALT_RAMFS1:      return "RAMFS1";
-        case SAHARA_IMAGE_ALT_RAMFS2:      return "RAMFS2";
-        case SAHARA_IMAGE_ALT_ADSP_Q5:     return "ADSPQ5";
-        case SAHARA_IMAGE_ALT_APPS_KERNEL: return "APPS KERNEL";
-        default:
-            return "Unknown";
-    }
-
-}
