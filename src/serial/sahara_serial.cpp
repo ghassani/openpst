@@ -712,37 +712,37 @@ const char* SaharaSerial::getNamedErrorStatus(uint32_t status)
 const char* SaharaSerial::getNamedRequestedImage(uint32_t imageId)
 {
     switch(imageId) {
-        case SAHARA_IMAGE_NONE:          return "None";
-        case SAHARA_IMAGE_OEM_SBL_IMG:   return "OEM SBL";
-        case SAHARA_IMAGE_AMSS_IMG:      return "AMSS";
-        case SAHARA_IMAGE_QCSBL_IMG:     return "QCSBL";
-        case SAHARA_IMAGE_HASH_IMG:      return "Hash";
-        case SAHARA_IMAGE_APPSBL_IMG:    return "APPSBL";
-        case SAHARA_IMAGE_HOSTDL:        return "HOSTDL";
-        case SAHARA_IMAGE_DSP1:          return "DSP1";
-        case SAHARA_IMAGE_FSBL:          return "FSBL";
-        case SAHARA_IMAGE_DBL:           return "DBL";
-        case SAHARA_IMAGE_OSBL:          return "OSBL";
-        case SAHARA_IMAGE_DSP2:          return "DSP2";
-        case SAHARA_IMAGE_EHOSTDL:       return "EHOSTDL";
-        case SAHARA_IMAGE_NANDPRG:       return "NANDPRG";
-        case SAHARA_IMAGE_NORPRG:        return "NORPRG";
-        case SAHARA_IMAGE_RAMFS1:        return "RAMFS1";
-        case SAHARA_IMAGE_RAMFS2:        return "RAMFS2";
-        case SAHARA_IMAGE_ADSP_Q5:       return "ADSP Q5";
-        case SAHARA_IMAGE_APPS_KERNEL:   return "APPS Kernel";
-        case SAHARA_IMAGE_BACKUP_RAMFS:  return "Backup RAMFS";
-        case SAHARA_IMAGE_SBL1:          return "SBL1";
-        case SAHARA_IMAGE_SBL2:          return "SBL2";
-        case SAHARA_IMAGE_RPM:           return "RPM";
-        case SAHARA_IMAGE_SBL3:          return "SBL3";
-        case SAHARA_IMAGE_TZ:            return "TZ";
-        case SAHARA_IMAGE_SSD_KEYS:      return "SSD Keys";
-        case SAHARA_IMAGE_GEN:           return "GEN";
-        case SAHARA_IMAGE_DSP3:          return "DSP3";
-        case SAHARA_IMAGE_ACDB:          return "ACDB";
-        case SAHARA_IMAGE_WDT:           return "WDT";
-        case SAHARA_IMAGE_MBA:           return "MBA";
+        case MBN_IMAGE_NONE:          return "None";
+        case MBN_IMAGE_OEM_SBL_IMG:   return "OEM SBL";
+        case MBN_IMAGE_AMSS_IMG:      return "AMSS";
+        case MBN_IMAGE_QCSBL_IMG:     return "QCSBL";
+        case MBN_IMAGE_HASH_IMG:      return "Hash";
+        case MBN_IMAGE_APPSBL_IMG:    return "APPSBL";
+        case MBN_IMAGE_HOSTDL:        return "HOSTDL";
+        case MBN_IMAGE_DSP1:          return "DSP1";
+        case MBN_IMAGE_FSBL:          return "FSBL";
+        case MBN_IMAGE_DBL:           return "DBL";
+        case MBN_IMAGE_OSBL:          return "OSBL";
+        case MBN_IMAGE_DSP2:          return "DSP2";
+        case MBN_IMAGE_EHOSTDL:       return "EHOSTDL";
+        case MBN_IMAGE_NANDPRG:       return "NANDPRG";
+        case MBN_IMAGE_NORPRG:        return "NORPRG";
+        case MBN_IMAGE_RAMFS1:        return "RAMFS1";
+        case MBN_IMAGE_RAMFS2:        return "RAMFS2";
+        case MBN_IMAGE_ADSP_Q5:       return "ADSP Q5";
+        case MBN_IMAGE_APPS_KERNEL:   return "APPS Kernel";
+        case MBN_IMAGE_BACKUP_RAMFS:  return "Backup RAMFS";
+        case MBN_IMAGE_SBL1:          return "SBL1";
+        case MBN_IMAGE_SBL2:          return "SBL2";
+        case MBN_IMAGE_RPM:           return "RPM";
+        case MBN_IMAGE_SBL3:          return "SBL3";
+        case MBN_IMAGE_TZ:            return "TZ";
+        case MBN_IMAGE_SSD_KEYS:      return "SSD Keys";
+        case MBN_IMAGE_GEN:           return "GEN";
+        case MBN_IMAGE_DSP3:          return "DSP3";
+        case MBN_IMAGE_ACDB:          return "ACDB";
+        case MBN_IMAGE_WDT:           return "WDT";
+        case MBN_IMAGE_MBA:           return "MBA";
         default:
             return "Unknown";
     }
