@@ -5,7 +5,7 @@
 #ifndef _SERIAL_DM_SERIAL_H
 #define _SERIAL_DM_SERIAL_H
 
-#include "definitions.h"
+#include "include/definitions.h"
 #include "serial/serial.h"
 #include "qc/diag.h"
 #include "qc/hdlc.h"

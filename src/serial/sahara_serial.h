@@ -5,7 +5,7 @@
 #ifndef _SERIAL_SAHARA_SERIAL_H_
 #define _SERIAL_SAHARA_SERIAL_H_
 
-#include "definitions.h"
+#include "include/definitions.h"
 #include "serial/serial.h"
 #include "qc/sahara.h"
 #include "qc/mbn.h"

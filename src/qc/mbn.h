@@ -5,7 +5,7 @@
 #ifndef _QC_MBN_H
 #define _QC_MBN_H
 
-#include <definitions.h>
+#include "include/definitions.h"
 
 PACKED(struct eighty_byte_mbn_header_t {
     uint32_t  codeword;            /* Codeword/magic number defining flash type

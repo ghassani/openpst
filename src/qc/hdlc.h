@@ -5,7 +5,7 @@
 #ifndef _UTIL_HDLC_H
 #define _UTIL_HDLC_H
 
-#include "definitions.h"
+#include "include/definitions.h"
 #include "crc.h"
 #include <iostream>
 #include <stdio.h>

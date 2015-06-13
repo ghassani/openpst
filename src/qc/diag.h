@@ -5,7 +5,7 @@
 #ifndef _QC_DIAG_H
 #define _QC_DIAG_H
 
-#include "definitions.h"
+#include "include/definitions.h"
 
 /* QCDM protocol frames are pseudo Async HDLC frames which end with a 3-byte
 *  trailer. This trailer consists of the 16-bit CRC of the frame plus an ending
