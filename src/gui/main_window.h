@@ -10,6 +10,7 @@
 #include "sahara_window.h"
 #include "send_raw_window.h"
 #include "mbn_tool_window.h"
+#include "qcdm_window.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,11 +28,13 @@ public slots:
     void startSaharaMode();
     void startPortRawWriteRead();
     void startMbnTool();
+    void startQcdm();
 
 private:
     SaharaWindow   *saharaWindow;
     SendRawWindow  *sendRawWindow;
     MbnToolWindow  *mbnToolWindow;
+    QcdmWindow     *qcdmWindow;
     Ui::MainWindow *ui;
 };
 

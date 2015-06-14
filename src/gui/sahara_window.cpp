@@ -118,7 +118,7 @@ void SaharaWindow::ConnectToPort()
     std::vector<serial::PortInfo>::iterator iter = devices.begin();
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
-        if (selected.compare(device.port.c_str(), Qt::CaseInsensitive) == 0 && strstr(device.hardware_id.c_str(), "05c6:9008")) {
+        if (selected.compare(device.port.c_str(), Qt::CaseInsensitive) == 0) {
             currentPort = device;
             break;
         }
@@ -128,8 +128,6 @@ void SaharaWindow::ConnectToPort()
         log("Invalid Port Type");
         return;
     }
-
-    //ui->portDisconnectButton->setEnabled(true);
 
     QString connectionText = "Connecting to ";
 
@@ -149,6 +147,8 @@ void SaharaWindow::ConnectToPort()
         return;
     }
 
+    log("Connected");
+
     ReadHello();
 }
 
@@ -157,6 +157,8 @@ void SaharaWindow::ConnectToPort()
  */
 void SaharaWindow::ReadHello()
 {
+    log("Reading Hello");
+
     if (!port.receiveHello()) {
         log("Did not receive hello. Not in sahara mode or requires restart.");
         return DisconnectPort();
@@ -430,7 +432,7 @@ void SaharaWindow::SendStreamingDloadHello()
     dloadHello.compatibleVersion = 0x04;
     dloadHello.featureBits = 0x08;
 
-    dload_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
+    hdlc_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
 
     size_t bytesWritten = port.write(outbuf, outsize);
     printf("Wrote %zd bytes\n", bytesWritten);
@@ -439,6 +441,10 @@ void SaharaWindow::SendStreamingDloadHello()
     size_t bytesRead = port.read(port.buffer, port.bufferSize);
     printf("Read %zd bytes\n", bytesRead);
     hexdump(port.buffer, bytesRead);
+
+    if (outbuf != NULL) {
+        free(outbuf);
+    }
 
     //ui->portDisconnectButton->setEnabled(false);
 }

@@ -7,6 +7,23 @@
 
 #include "include/definitions.h"
 
+#ifndef DIAG_NV_ITEM_SIZE
+#define	DIAG_NV_ITEM_SIZE	128
+#endif
+
+#ifndef DIAG_MAX_RX_PKT_SIZ
+#define DIAG_MAX_RX_PKT_SIZ (2048 * 2)
+#endif
+
+#ifndef DIAG_MAX_TX_PKT_SIZ
+#define DIAG_MAX_TX_PKT_SIZ (2048 * 2)
+#endif
+
+#ifndef DIAG_RX_TIMEOUT
+#define DIAG_RX_TIMEOUT (15*1000)
+#endif
+
+
 /* QCDM protocol frames are pseudo Async HDLC frames which end with a 3-byte
 *  trailer. This trailer consists of the 16-bit CRC of the frame plus an ending
 * "async control character" whose value is 0x7E.  The frame *and* the CRC are
@@ -18,7 +35,7 @@
 #define DIAG_CONTROL_CHAR 0x7E
 #define DIAG_TRAILER_LEN  3
 
-enum DIAG_COMMAND : uint8_t  {
+enum DIAG_COMMAND {
 	DIAG_BAD_CMD_F = 0x13,
 	DIAG_BAD_LEN_F = 0x15,
 	DIAG_BAD_MODE_F = 0x18,
@@ -64,7 +81,7 @@ enum DIAG_COMMAND : uint8_t  {
 	DIAG_VOC_PCM_LB_F = 0x31,
     DIAG_VOC_PKT_LB_F = 50
 };
-/*
+
 enum DIAG_PHONE_MODE {
     MODE_OFFLINE_A_F,
 	MODE_OFFLINE_D_F,
@@ -74,6 +91,23 @@ enum DIAG_PHONE_MODE {
 	MODE_LPM_F,
 	MODE_POWER_OFF_F,
 	MODE_MAX_F
-}
-*/
+};
+
+
+typedef struct {
+    uint8_t command;
+    uint8_t spc[6];
+} qcdm_spc_tx_t;
+
+typedef struct{
+    uint8_t command;
+    uint8_t status;
+} qcdm_spc_rx_t;
+
+typedef struct {
+    uint8_t cmd;
+    uint16_t nvItem;
+    uint8_t data[DIAG_NV_ITEM_SIZE];
+} qcdm_nv_rx_t;
+
 #endif // _QC_DIAG_H

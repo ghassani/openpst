@@ -136,7 +136,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
@@ -146,6 +146,9 @@
       <string>Provision XML</string>
      </attribute>
      <widget class="QLineEdit" name="saharaXmlFilePath">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -156,6 +159,9 @@
       </property>
      </widget>
      <widget class="QToolButton" name="saharaXmlFileBrowseButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>400</x>
@@ -182,6 +188,9 @@
       </property>
      </widget>
      <widget class="QPushButton" name="saharaXmlProvisionButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>440</x>

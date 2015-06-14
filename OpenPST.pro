@@ -28,12 +28,13 @@ SOURCES += \
     src/gui/sahara_window.cpp \
     src/gui/send_raw_window.cpp \
     src/serial/sahara_serial.cpp \
-    src/serial/dm_serial.cpp
+    src/gui/qcdm_window.cpp \
+    src/serial/qcdm_serial.cpp
 
 HEADERS  += \
     lib/serial/include/serial/serial.h \
     lib/serial/include/serial/v8stdint.h \
-    src/definitions.h \
+    src/include/definitions.h \
     src/qc/mbn.h \
     src/qc/diag.h \
     src/qc/diag_nv.h \
@@ -46,11 +47,12 @@ HEADERS  += \
     src/util/endian.h \
     src/util/sleep.h \
     src/gui/main_window.h \
+    src/gui/qcdm_window.h \
     src/gui/mbn_tool_window.h \
     src/gui/sahara_window.h \
     src/gui/send_raw_window.h \
     src/serial/sahara_serial.h \
-    src/serial/dm_serial.h
+    src/serial/qcdm_serial.h
 
 linux-g++ {
     SOURCES += \
@@ -82,4 +84,5 @@ macx {
 FORMS    += resources/ui/main_window.ui \
     resources/ui/mbn_tool_window.ui \
     resources/ui/sahara_window.ui \
-    resources/ui/send_raw_window.ui
+    resources/ui/send_raw_window.ui \
+    resources/ui/qcdm_window.ui
