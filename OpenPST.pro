@@ -18,7 +18,7 @@ INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
 #serial_lib.target = serial_lib
 #serial_lib.commands = cd lib/serial && make 
 
-QMAKE_EXTRA_TARGETS += serial_lib
+#QMAKE_EXTRA_TARGETS += serial_lib
 
 SOURCES += \
     lib/serial/src/serial.cc \
