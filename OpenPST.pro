@@ -1,7 +1,5 @@
 #-------------------------------------------------
-#
-# Project created by QtCreator 2015-05-31T13:35:14
-#
+# PLACEHOLDER
 #-------------------------------------------------
 
 QT       += core gui
@@ -14,6 +12,13 @@ TARGET = OpenPST
 TEMPLATE = app
 
 INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
+
+#serial_lib = build/serial.lib
+#LIBS += serial_lib
+#serial_lib.target = serial_lib
+#serial_lib.commands = cd lib/serial && make 
+
+QMAKE_EXTRA_TARGETS += serial_lib
 
 SOURCES += \
     lib/serial/src/serial.cc \
@@ -54,31 +59,31 @@ HEADERS  += \
     src/serial/sahara_serial.h \
     src/serial/qcdm_serial.h
 
-linux-g++ {
+linux:unix:!macx {
     SOURCES += \
-    lib/serial/src/impl/unix.cc \
-    lib/serial/src/impl/list_ports/list_ports_linux.cc
+        lib/serial/src/impl/unix.cc \
+        lib/serial/src/impl/list_ports/list_ports_linux.cc
 
     HEADERS += \
-    lib/serial/include/serial/impl/unix.h
+        lib/serial/include/serial/impl/unix.h
 }
 
 win32 {
     SOURCES += \
-    lib/serial/src/impl/win.cc \
-    lib/serial/src/impl/list_ports/list_ports_win.cc
+        lib/serial/src/impl/win.cc \
+        lib/serial/src/impl/list_ports/list_ports_win.cc
 
     HEADERS += \
-    lib/serial/include/serial/impl/win.h
+        lib/serial/include/serial/impl/win.h
 }
 
 macx {
     SOURCES += \
-    lib/serial/src/impl/unix.cc \
-    lib/serial/src/impl/list_ports/list_ports_osx.cc
+        lib/serial/src/impl/unix.cc \
+        lib/serial/src/impl/list_ports/list_ports_osx.cc
 
     HEADERS += \
-    lib/serial/include/serial/impl/unix.h
+        lib/serial/include/serial/impl/unix.h
 }
 
 FORMS    += resources/ui/main_window.ui \
@@ -86,3 +91,5 @@ FORMS    += resources/ui/main_window.ui \
     resources/ui/sahara_window.ui \
     resources/ui/send_raw_window.ui \
     resources/ui/qcdm_window.ui
+
+
