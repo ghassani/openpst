@@ -50,7 +50,7 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 
     size_t bytesWritten = Serial::write(packet, packetSize);
 
-    printf("Dumping %u bytes written\n", bytesWritten);
+    printf("Dumping %lu bytes written\n", bytesWritten);
     
     hexdump(packet, bytesWritten);
 
@@ -81,7 +81,7 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
         return bytesRead;
     }
 
-    printf("Dumping %u bytes read\n", bytesRead);
+    printf("Dumping %lu bytes read\n", bytesRead);
 
     hexdump(buf, bytesRead);
 
@@ -91,7 +91,7 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
     hdlc_unescape(buf, bytesRead, &resp, &respSize);
 
     if (respSize != bytesRead) {
-        printf("Dumping %u bytes escaped\n", respSize);
+        printf("Dumping %lu bytes escaped\n", respSize);
         hexdump(resp, respSize);
     }
 
