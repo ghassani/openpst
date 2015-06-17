@@ -23,7 +23,7 @@ class SaharaWindow;
 
 class SaharaWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
     explicit SaharaWindow(QWidget *parent = 0);

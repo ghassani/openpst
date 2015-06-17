@@ -18,7 +18,7 @@ class QcdmWindow;
 
 class QcdmWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
     explicit QcdmWindow(QWidget *parent = 0);

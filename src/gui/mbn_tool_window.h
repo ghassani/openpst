@@ -18,7 +18,7 @@ class MbnToolWindow;
 
 class MbnToolWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
     explicit MbnToolWindow(QWidget *parent = 0);

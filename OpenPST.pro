@@ -68,6 +68,22 @@ linux:unix:!macx {
         lib/serial/include/serial/impl/unix.h
 }
 
+linux {
+        CONFIG(debug, debug|release) {
+        DESTDIR = linux/debug
+    } else {
+        DESTDIR = linux/release
+    }
+}
+
+unix:!linux:!macx {
+    CONFIG(debug, debug|release) {
+        DESTDIR = unix/debug
+    } else {
+        DESTDIR = unix/release
+    }
+}
+
 win32 {
     SOURCES += \
         lib/serial/src/impl/win.cc \
@@ -75,6 +91,14 @@ win32 {
 
     HEADERS += \
         lib/serial/include/serial/impl/win.h
+
+    LIBS += -lshell32 -ladvapi32 -lsetupapi
+
+    CONFIG(debug, debug|release) {
+        DESTDIR = win32/debug
+    } else {
+        DESTDIR = win32/release
+    }
 }
 
 macx {
@@ -84,6 +108,12 @@ macx {
 
     HEADERS += \
         lib/serial/include/serial/impl/unix.h
+
+    CONFIG(debug, debug|release) {
+        DESTDIR = osx/debug
+    } else {
+        DESTDIR = osx/release
+    }
 }
 
 FORMS    += resources/ui/main_window.ui \

@@ -14,7 +14,7 @@ class SendRawWindow;
 
 class SendRawWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
     explicit SendRawWindow(QWidget *parent = 0);

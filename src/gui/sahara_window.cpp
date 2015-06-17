@@ -92,6 +92,8 @@ void SaharaWindow::UpdatePortList()
 
             logMsg.append(" on port ").append(device.port.c_str());
 
+            std::cout << device.port.c_str() << std::endl;
+            std::cout << device.description.c_str() << std::endl;
             if (device.description.length()) {
                 logMsg.append(" - ").append(device.description.c_str());
             }
@@ -149,7 +151,7 @@ void SaharaWindow::ConnectToPort()
 
     log("Connected");
 
-    ReadHello();
+
 }
 
 /**
