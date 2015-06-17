@@ -2,8 +2,8 @@
 * LICENSE PLACEHOLDER
 */
 
-#ifndef _GUI_SAHARAWINDOW_H
-#define _GUI_SAHARAWINDOW_H
+#ifndef _GUI_SAHARA_WINDOW_H
+#define _GUI_SAHARA_WINDOW_H
 
 #include <QMainWindow>
 #include <QVariant>
@@ -61,4 +61,4 @@ private:
 
 };
 
-#endif // _GUI_SAHARAWINDOW_H
+#endif // _GUI_SAHARA_WINDOW_H

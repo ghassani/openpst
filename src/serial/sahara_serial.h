@@ -5,7 +5,7 @@
 #ifndef _SERIAL_SAHARA_SERIAL_H_
 #define _SERIAL_SAHARA_SERIAL_H_
 
-#include "definitions.h"
+#include "include/definitions.h"
 #include "serial/serial.h"
 #include "qc/sahara.h"
 #include "qc/mbn.h"
@@ -103,12 +103,6 @@ class SaharaSerial : public serial::Serial {
          * @return
          */
         const char* getNamedRequestedImage(uint32_t imageId);
-        /**
-         * @brief getNamedRequestedImageAlt
-         * @param imageId
-         * @return
-         */
-        const char* getNamedRequestedImageAlt(uint32_t imageId);
 
         sahara_hello_rx_t deviceState;
         sahara_read_data_rx_t readState;

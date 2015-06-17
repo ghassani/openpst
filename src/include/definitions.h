@@ -1,6 +1,6 @@
 
-#ifndef _DEFINITIONS_H
-#define _DEFINITIONS_H
+#ifndef _INCLUDE_DEFINITIONS_H
+#define _INCLUDE_DEFINITIONS_H
 
 
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -18,4 +18,4 @@
 #endif
 
 
-#endif //_DEFINITIONS_H
+#endif //_INCLUDE_DEFINITIONS_H

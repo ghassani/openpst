@@ -4,7 +4,10 @@
 
 #include "main_window.h"
 
-
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -14,10 +17,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->startSaharaButton, SIGNAL(clicked()), this, SLOT(startSaharaMode()));
     QObject::connect(ui->startPortRawWriteReadButton, SIGNAL(clicked()), this, SLOT(startPortRawWriteRead()));
     QObject::connect(ui->startMbnToolButton, SIGNAL(clicked()), this, SLOT(startMbnTool()));
+    QObject::connect(ui->startQcdmButton, SIGNAL(clicked()), this, SLOT(startQcdm()));
 
 
 }
 
+/**
+ * @brief MainWindow::~MainWindow
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -33,6 +40,9 @@ MainWindow::~MainWindow()
     }
 }
 
+/**
+ * @brief MainWindow::startSaharaMode
+ */
 void MainWindow::startSaharaMode()
 {
     saharaWindow = new SaharaWindow(this);
@@ -40,6 +50,9 @@ void MainWindow::startSaharaMode()
     saharaWindow->show();
 }
 
+/**
+ * @brief MainWindow::startMbnTool
+ */
 void MainWindow::startMbnTool()
 {
     mbnToolWindow = new MbnToolWindow(this);
@@ -47,11 +60,23 @@ void MainWindow::startMbnTool()
     mbnToolWindow->show();
 }
 
-
+/**
+ * @brief MainWindow::startPortRawWriteRead
+ */
 void MainWindow::startPortRawWriteRead()
 {
     sendRawWindow = new SendRawWindow(this);
 
     sendRawWindow->show();
 
+}
+
+/**
+ * @brief MainWindow::startQcdm
+ */
+void MainWindow::startQcdm()
+{
+    qcdmWindow = new QcdmWindow(this);
+
+    qcdmWindow->show();
 }

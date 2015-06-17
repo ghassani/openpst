@@ -118,7 +118,7 @@ void SaharaWindow::ConnectToPort()
     std::vector<serial::PortInfo>::iterator iter = devices.begin();
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
-        if (selected.compare(device.port.c_str(), Qt::CaseInsensitive) == 0 && strstr(device.hardware_id.c_str(), "05c6:9008")) {
+        if (selected.compare(device.port.c_str(), Qt::CaseInsensitive) == 0) {
             currentPort = device;
             break;
         }
@@ -128,8 +128,6 @@ void SaharaWindow::ConnectToPort()
         log("Invalid Port Type");
         return;
     }
-
-    //ui->portDisconnectButton->setEnabled(true);
 
     QString connectionText = "Connecting to ";
 
@@ -149,6 +147,8 @@ void SaharaWindow::ConnectToPort()
         return;
     }
 
+    log("Connected");
+
     ReadHello();
 }
 
@@ -157,6 +157,8 @@ void SaharaWindow::ConnectToPort()
  */
 void SaharaWindow::ReadHello()
 {
+    log("Reading Hello");
+
     if (!port.receiveHello()) {
         log("Did not receive hello. Not in sahara mode or requires restart.");
         return DisconnectPort();
@@ -231,7 +233,7 @@ void SaharaWindow::SendImage()
         return;
     }
 
-    if (port.readState.imageId == SAHARA_IMAGE_NONE) {
+    if (port.readState.imageId == MBN_IMAGE_NONE) {
         log("Device has not requested an image");
         return;
     }
@@ -430,7 +432,7 @@ void SaharaWindow::SendStreamingDloadHello()
     dloadHello.compatibleVersion = 0x04;
     dloadHello.featureBits = 0x08;
 
-    dload_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
+    hdlc_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
 
     size_t bytesWritten = port.write(outbuf, outsize);
     printf("Wrote %zd bytes\n", bytesWritten);
@@ -439,6 +441,10 @@ void SaharaWindow::SendStreamingDloadHello()
     size_t bytesRead = port.read(port.buffer, port.bufferSize);
     printf("Read %zd bytes\n", bytesRead);
     hexdump(port.buffer, bytesRead);
+
+    if (outbuf != NULL) {
+        free(outbuf);
+    }
 
     //ui->portDisconnectButton->setEnabled(false);
 }
@@ -520,55 +526,9 @@ void SaharaWindow::logRxHex(uint8_t* data, size_t amount)
  */
 void SaharaWindow::logHex(uint8_t* data, size_t amount)
 {   
-    unsigned int    dp, p;  /* data pointer */
-    const char      trans[] =
-        "................................ !\"#$%&'()*+,-./0123456789"
-        ":;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklm"
-        "nopqrstuvwxyz{|}~...................................."
-        "....................................................."
-        "........................................";
 
-    hexdump(data, amount);
-
-    QString lineBuff;
-    QString tmp;
-
-    for (dp = 1; dp <= amount; dp++) {
-        tmp.sprintf("%02x ", data[dp - 1]);
-        lineBuff.append(tmp);
-
-        if ((dp % 8) == 0) {
-            lineBuff.append(" ");
-        }
-
-        if ((dp % 16) == 0) {
-            lineBuff.append("| ");
-            p = dp;
-            for (dp -= 16; dp < p; dp++) {
-                tmp.sprintf("%c ", trans[data[dp]]);
-                lineBuff.append(tmp);
-            }
-            lineBuff.append("\n");
-        }
-    }
-
-    // tail
-    if ((amount % 16) != 0) {
-        p = dp = 16 - (amount % 16);
-        for (dp = p; dp > 0; dp--) {
-            lineBuff.append("   ");
-            if (((dp % 8) == 0) && (p != 8))
-                lineBuff.append(" ");
-        }
-        lineBuff.append(" | ");
-        for (dp = (amount - (16 - p)); dp < amount; dp++)
-            tmp.sprintf("%c ", trans[data[dp]]);
-            lineBuff.append(tmp);
-    }
-
-    lineBuff.append("\n");
-
-    log(lineBuff);
-
+    QString out;
+    hexdump(data, amount, out);
+    log(out);
     return;
 }

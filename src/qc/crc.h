@@ -5,7 +5,7 @@
 #ifndef _QC_CRC_H
 #define _QC_CRC_H
 
-#include "definitions.h"
+#include "include/definitions.h"
 #include <iostream>
 #include <stdio.h>
 

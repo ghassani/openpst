@@ -417,7 +417,7 @@ int SaharaSerial::sendImage(std::string file)
         return 0;
     }
 
-    if (readState.imageId == SAHARA_IMAGE_NONE) {
+    if (readState.imageId == MBN_IMAGE_NONE) {
         printf("Device has not requested an image\n");
         return 0;
     }
