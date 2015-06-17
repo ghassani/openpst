@@ -4,7 +4,7 @@
 
 #include <QApplication>
 #include "gui/main_window.h"
-#ifdef WIN32
+#ifdef _WIN32
 	#include <Windows.h>
 #endif
 
@@ -16,7 +16,7 @@
  */
 int main(int argc, char *argv[])
 {
-	#ifdef WIN32
+	#ifdef _WIN32
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
 		freopen("CONOUT$", "w", stderr);
