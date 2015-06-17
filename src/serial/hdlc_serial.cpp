@@ -62,7 +62,7 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 }
 
 /**
- * Reads and unescpaes theCRC'ed HDLC packet
+ * Reads and unescpaes the CRC'ed HDLC packet
  * read from the device
  *
  * @super Serial::read (uint8_t *buffer, size_t size);
@@ -83,12 +83,12 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 
     printf("Dumping %zd bytes read\n", bytesRead);
 
-    hexdump(buffer, bytesRead);
+    hexdump(buf, bytesRead);
 
     uint32_t respSize = 0;
     uint8_t* resp = NULL;
 
-    hdlc_unescape(buffer, bytesRead, &resp, &respSize);
+    hdlc_unescape(buf, bytesRead, &resp, &respSize);
 
     if (respSize != bytesRead) {
         printf("Dumping %zd bytes escaped\n", respSize);
