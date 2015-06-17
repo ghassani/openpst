@@ -2,8 +2,8 @@
 * LICENSE PLACEHOLDER
 */
 
-#ifndef _GUI_SENDRAWWINDOW_H
-#define _GUI_SENDRAWWINDOW_H
+#ifndef _GUI_SEND_RAW_WINDOW_H
+#define _GUI_SEND_RAW_WINDOW_H
 
 #include <QMainWindow>
 #include "ui_send_raw_window.h"
@@ -14,7 +14,7 @@ class SendRawWindow;
 
 class SendRawWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
     explicit SendRawWindow(QWidget *parent = 0);
@@ -24,4 +24,4 @@ private:
     Ui::SendRawWindow *ui;
 };
 
-#endif // _GUI_SENDRAWWINDOW_H
+#endif // _GUI_SEND_RAW_WINDOW_H

@@ -551,10 +551,10 @@ int SaharaSerial::sendDone()
 
     sahara_done_rx_t* doneResponse = (sahara_done_rx_t*) buffer;
 
-    if (doneResponse->imageTxStatus != SAHARA_MODE_IMAGE_TX_COMPLETE) {
+    /*if (doneResponse->imageTxStatus != SAHARA_MODE_IMAGE_TX_COMPLETE) {
         printf("Device Expecting Another Image. Device In Hello State\n");
         return 2;
-    }
+    }*/
 
 
     return 1;

@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StreamingDloadWindow</class>
+ <widget class="QMainWindow" name="StreamingDloadWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>884</width>
+    <height>662</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>OpenPST</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QComboBox" name="portList">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>10</y>
+      <width>301</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="portListLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>6</y>
+      <width>64</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>COM</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="log">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>454</y>
+      <width>861</width>
+      <height>111</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="logLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>430</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Operation Log</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveLogButton">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>570</y>
+      <width>91</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save Log</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="programNameText">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>0</y>
+      <width>221</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>18</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>OpenPST
+Streaming DLOAD</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="portRefreshButton">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>10</y>
+      <width>61</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Refresh</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="portDisconnectButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>10</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Disconnect</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="streamingDloadTabSet">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>861</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="documentMode">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="streamingDloadTabSimple">
+     <attribute name="title">
+      <string>Simple</string>
+     </attribute>
+     <widget class="QLineEdit" name="streamingDloadHelloMagicValue">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>261</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>QCOM fast download protocol host</string>
+      </property>
+      <property name="maxLength">
+       <number>32</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Magic</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloVersionLabel">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>10</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Version</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloFeatureBitsLabel">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>10</y>
+        <width>91</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Feature Bits</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadHelloCompatVersionLabel">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>10</y>
+        <width>101</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Compat. Version</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>30</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Say Hello</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="streamingDloadHelloFeatureBitValue">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>30</y>
+        <width>221</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="streamingDloadHelloCompatVersionValue">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>30</y>
+        <width>111</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="streamingDloadHelloVersionValue">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>30</y>
+        <width>111</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton_2">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>90</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send NOP</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton_3">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>90</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send Reset</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton_4">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>90</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send Power Off</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton_5">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>90</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send Open</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadHelloButton_6">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>90</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send Close</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="streamingDloadSecurityModeButton">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>90</y>
+        <width>99</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Security Mode</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="streamingDloadSecurityModeValue">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>111</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="streamingDloadSecurityModeLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>101</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Security Mode</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Read/Write</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="streamingDloadTabEcc">
+     <attribute name="title">
+      <string>ECC</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="streamingDloadTabQfprom">
+     <attribute name="title">
+      <string>QFPROM</string>
+     </attribute>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="clearLogButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>570</y>
+      <width>91</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear Log</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="portConnectButton">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>10</y>
+      <width>71</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>884</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuQC_Tools">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuQC_Tools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionTest">
+   <property name="text">
+    <string>test</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>portRefreshButton</sender>
+   <signal>clicked()</signal>
+   <receiver>StreamingDloadWindow</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>400</x>
+     <y>63</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>441</x>
+     <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

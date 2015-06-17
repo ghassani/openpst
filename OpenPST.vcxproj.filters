@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files\src">
+      <UniqueIdentifier>{6c41fa2b-f306-4ebd-ac3a-834c054f5ccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\src\qc">
+      <UniqueIdentifier>{5e052fd4-d9d2-4352-94a6-8249cfc34f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\src\include">
+      <UniqueIdentifier>{6c6de087-666f-415e-8f2a-e064d47eb79f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\src\util">
+      <UniqueIdentifier>{981121ae-26a7-45b8-b942-aba62b33c4f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\src\gui">
+      <UniqueIdentifier>{f93779e5-404d-4259-9715-d26c95ca9f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\src\serial">
+      <UniqueIdentifier>{aa515566-5f39-4436-a30c-52ff549fc5b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src">
+      <UniqueIdentifier>{f83fe8c0-6823-4866-a494-728ff322f361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\include">
+      <UniqueIdentifier>{8e108eb0-05d0-49fe-814c-5e9a4d0dd0a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\gui">
+      <UniqueIdentifier>{c5b5913e-53a8-4a9e-a5ab-14455467822b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\util">
+      <UniqueIdentifier>{418b7b40-805a-4171-bd05-97d6c747ee1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\qc">
+      <UniqueIdentifier>{be7c4c7a-0a63-4d05-b004-b0d829279c37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\serial">
+      <UniqueIdentifier>{22d0370f-47ca-47e2-be7d-071aadf79800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\resources">
+      <UniqueIdentifier>{437402e3-c808-4bd8-86db-63fe7c93548d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\resources\ui">
+      <UniqueIdentifier>{82f50a50-a9a3-4abe-a9cd-b432ee40cdc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug_Win32">
+      <UniqueIdentifier>{2da01578-5ee1-43cf-be42-a02ed83eb243}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release_Win32">
+      <UniqueIdentifier>{1cfdfa3d-a37a-4bc2-b885-97e3fe1ca84c}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qc\crc.cpp">
+      <Filter>Source Files\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\endian.cpp">
+      <Filter>Source Files\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qc\hdlc.cpp">
+      <Filter>Source Files\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\hexdump.cpp">
+      <Filter>Source Files\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\main_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\mbn_tool_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\qcdm_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\sahara_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\send_raw_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\qcdm_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\sahara_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\sleep.cpp">
+      <Filter>Source Files\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_main_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_main_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_mbn_tool_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_mbn_tool_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_qcdm_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_qcdm_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_sahara_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_sahara_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_send_raw_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_send_raw_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\hdlc_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\streaming_dload_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\streaming_dload_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\gui\main_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\gui\sahara_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\gui\send_raw_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\mbn.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\serial\qcdm_serial.h">
+      <Filter>Header Files\src\serial</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\sahara.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\serial\sahara_serial.h">
+      <Filter>Header Files\src\serial</Filter>
+    </CustomBuild>
+    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_send_raw_window.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\util\sleep.h">
+      <Filter>Header Files\src\util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\streaming_dload.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_sahara_window.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_qcdm_window.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_mbn_tool_window.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_main_window.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\gui\streaming_dload_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\streaming_dload_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\gui\mbn_tool_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\gui\qcdm_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\main_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\mbn_tool_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\qcdm_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\sahara_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\send_raw_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\crc.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\include\definitions.h">
+      <Filter>Header Files\src\include</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\diag.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\diag_nv.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\dload.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\util\endian.h">
+      <Filter>Header Files\src\util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\qc\hdlc.h">
+      <Filter>Header Files\src\util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\util\hexdump.h">
+      <Filter>Header Files\src\util</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\include\win_stdint.h">
+      <Filter>Header Files\src\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\win_inttypes.h">
+      <Filter>Header Files\src\include</Filter>
+    </ClInclude>
+    <ClInclude Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_streaming_dload_window.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\streaming_dload_serial.h">
+      <Filter>Header Files\src\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\hdlc_serial.h">
+      <Filter>Header Files\src\serial</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

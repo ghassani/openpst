@@ -92,6 +92,8 @@ void SaharaWindow::UpdatePortList()
 
             logMsg.append(" on port ").append(device.port.c_str());
 
+            std::cout << device.port.c_str() << std::endl;
+            std::cout << device.description.c_str() << std::endl;
             if (device.description.length()) {
                 logMsg.append(" - ").append(device.description.c_str());
             }
@@ -149,7 +151,7 @@ void SaharaWindow::ConnectToPort()
 
     log("Connected");
 
-    ReadHello();
+
 }
 
 /**
@@ -240,7 +242,8 @@ void SaharaWindow::SendImage()
 
     if (!port.sendImage(fileName.toStdString())) {
         log("Error Sending Image");
-        return DisconnectPort();
+		return;
+        //return DisconnectPort();
     }
 
 
@@ -337,10 +340,14 @@ void SaharaWindow::SendDone()
 
     log("Sending Done Command");
 
-    if (!port.sendDone()) {
-        log("Error Sending Done");
-        return DisconnectPort();
-    }
+	try {
+		if (!port.sendDone()) {
+			log("Error Sending Done");
+			return DisconnectPort();
+		}
+	} catch (serial::IOException e) {
+		log(e.what());
+	}
 
 }
 
@@ -395,13 +402,10 @@ void SaharaWindow::ReadSome()
  */
 void SaharaWindow::DisconnectPort()
 {
-    log("Closing Port..");
-
     if (port.isOpen()) {
-        port.close();
+		port.close();
+		log("Port Closed");
     }
-
-    //ui->portDisconnectButton->setEnabled(false);
 }
 
 
@@ -429,8 +433,8 @@ void SaharaWindow::SendStreamingDloadHello()
     dloadHello.command = STREAMING_DLOAD_HELLO;
     memcpy(dloadHello.magic, magic.c_str(), magic.size());
     dloadHello.version = 0x04;
-    dloadHello.compatibleVersion = 0x04;
-    dloadHello.featureBits = 0x08;
+    dloadHello.compatibleVersion = 0x02;
+    dloadHello.featureBits = 0x11;
 
     hdlc_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
 

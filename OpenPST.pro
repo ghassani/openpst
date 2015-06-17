@@ -18,7 +18,7 @@ INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
 #serial_lib.target = serial_lib
 #serial_lib.commands = cd lib/serial && make 
 
-#QMAKE_EXTRA_TARGETS += serial_lib
+QMAKE_EXTRA_TARGETS += serial_lib
 
 SOURCES += \
     lib/serial/src/serial.cc \
@@ -31,8 +31,11 @@ SOURCES += \
     src/gui/main_window.cpp \
     src/gui/mbn_tool_window.cpp \
     src/gui/sahara_window.cpp \
+    src/gui/streaming_dload_window.cpp \
     src/gui/send_raw_window.cpp \
     src/serial/sahara_serial.cpp \
+    src/serial/hdlc_serial.cpp \
+    src/serial/streaming_dload_serial.cpp \
     src/gui/qcdm_window.cpp \
     src/serial/qcdm_serial.cpp
 
@@ -55,8 +58,11 @@ HEADERS  += \
     src/gui/qcdm_window.h \
     src/gui/mbn_tool_window.h \
     src/gui/sahara_window.h \
+    src/gui/streaming_dload_window.h \
     src/gui/send_raw_window.h \
     src/serial/sahara_serial.h \
+    src/serial/streaming_dload_serial.h \
+    src/serial/hdlc_serial.h \
     src/serial/qcdm_serial.h
 
 linux:unix:!macx {
@@ -74,7 +80,9 @@ win32 {
         lib/serial/src/impl/list_ports/list_ports_win.cc
 
     HEADERS += \
-        lib/serial/include/serial/impl/win.h
+        lib/serial/include/serial/impl/win.h \ 
+        src/include/win_inttypes.h \ 
+        src/include/win_stdint.h 
 }
 
 macx {
@@ -90,6 +98,7 @@ FORMS    += resources/ui/main_window.ui \
     resources/ui/mbn_tool_window.ui \
     resources/ui/sahara_window.ui \
     resources/ui/send_raw_window.ui \
+    resources/ui/streaming_dload_window.ui \
     resources/ui/qcdm_window.ui
 
 
