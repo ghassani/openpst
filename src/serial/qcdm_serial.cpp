@@ -38,7 +38,7 @@ int QcdmSerial::sendSpc(const char* spc)
 
     qcdm_spc_tx_t packet;
     packet.command = DIAG_SPC_F;
-    memcpy(&packet.spc, spc, sizeof(spc));
+    memcpy(&packet.spc, spc, 6);
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
