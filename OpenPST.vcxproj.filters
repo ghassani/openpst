@@ -162,6 +162,12 @@
     <ClCompile Include="src\serial\hdlc_serial.cpp">
       <Filter>Source Files\src\serial</Filter>
     </ClCompile>
+    <ClCompile Include="src\gui\streaming_dload_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\streaming_dload_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\gui\main_window.h">
@@ -205,6 +211,12 @@
     </CustomBuild>
     <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_main_window.h">
       <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\gui\streaming_dload_window.h">
+      <Filter>Header Files\src\gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resources\ui\streaming_dload_window.ui">
+      <Filter>Form Files\resources\ui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -255,14 +267,20 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\serial\hdlc_serial.h">
-      <Filter>Header Files\src\gui</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\win_stdint.h">
       <Filter>Header Files\src\include</Filter>
     </ClInclude>
     <ClInclude Include="src\include\win_inttypes.h">
       <Filter>Header Files\src\include</Filter>
+    </ClInclude>
+    <ClInclude Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_streaming_dload_window.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\streaming_dload_serial.h">
+      <Filter>Header Files\src\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial\hdlc_serial.h">
+      <Filter>Header Files\src\serial</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,7 +34,9 @@ SOURCES += \
     src/gui/send_raw_window.cpp \
     src/serial/sahara_serial.cpp \
     src/gui/qcdm_window.cpp \
-    src/serial/qcdm_serial.cpp
+    src/gui/streaming_dload_window.cpp \
+    src/serial/qcdm_serial.cpp \
+    src/serial/streaming_dload_serial.cpp
 
 HEADERS  += \
     lib/serial/include/serial/serial.h \
@@ -56,7 +58,9 @@ HEADERS  += \
     src/gui/mbn_tool_window.h \
     src/gui/sahara_window.h \
     src/gui/send_raw_window.h \
+    src/gui/streaming_dload_window.h \
     src/serial/sahara_serial.h \
+    src/serial/streaming_dload_serial.h \
     src/serial/qcdm_serial.h
 
 linux:unix:!macx {
@@ -120,6 +124,7 @@ FORMS    += resources/ui/main_window.ui \
     resources/ui/mbn_tool_window.ui \
     resources/ui/sahara_window.ui \
     resources/ui/send_raw_window.ui \
-    resources/ui/qcdm_window.ui
+    resources/ui/qcdm_window.ui \
+    resources/ui/streaming_dload_window.ui
 
 

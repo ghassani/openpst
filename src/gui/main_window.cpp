@@ -19,7 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->startSaharaButton, SIGNAL(clicked()), this, SLOT(startSaharaMode()));
     QObject::connect(ui->startPortRawWriteReadButton, SIGNAL(clicked()), this, SLOT(startPortRawWriteRead()));
     QObject::connect(ui->startMbnToolButton, SIGNAL(clicked()), this, SLOT(startMbnTool()));
-    QObject::connect(ui->startQcdmButton, SIGNAL(clicked()), this, SLOT(startQcdm()));
+	QObject::connect(ui->startQcdmButton, SIGNAL(clicked()), this, SLOT(startQcdm()));
+	QObject::connect(ui->startStreamingDloadButton, SIGNAL(clicked()), this, SLOT(startStreamingDload()));
 
 
 }
@@ -29,17 +30,48 @@ MainWindow::MainWindow(QWidget *parent) :
  */
 MainWindow::~MainWindow()
 {
-    delete ui;
-
-    if (saharaWindow) {
+	if (saharaWindow != NULL) {
         saharaWindow->close();
         delete saharaWindow;
     }
 
-    if (sendRawWindow) {
+    if (sendRawWindow != NULL) {
         sendRawWindow->close();
         delete sendRawWindow;
     }
+
+	if (qcdmWindow != NULL) {
+		qcdmWindow->close();
+		delete sendRawWindow;
+	}
+
+	if (streamingDloadWindow != NULL) {
+		streamingDloadWindow->close();
+		delete streamingDloadWindow;
+	}
+
+	if (sendRawWindow != NULL) {
+		sendRawWindow->close();
+		delete sendRawWindow;
+	}
+
+	if (mbnToolWindow != NULL) {
+		mbnToolWindow->close();
+		delete mbnToolWindow;
+	}
+
+	delete ui;
+
+}
+
+/**
+* @brief MainWindow::startStreamingDload
+*/
+void MainWindow::startStreamingDload()
+{
+	streamingDloadWindow = new StreamingDloadWindow(this);
+
+	streamingDloadWindow->show();
 }
 
 /**

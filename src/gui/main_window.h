@@ -11,6 +11,7 @@
 #include "send_raw_window.h"
 #include "mbn_tool_window.h"
 #include "qcdm_window.h"
+#include "streaming_dload_window.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,13 +29,16 @@ public slots:
     void startSaharaMode();
     void startPortRawWriteRead();
     void startMbnTool();
-    void startQcdm();
+	void startQcdm();
+	void startStreamingDload();
 
 private:
-    SaharaWindow   *saharaWindow;
-    SendRawWindow  *sendRawWindow;
-    MbnToolWindow  *mbnToolWindow;
-    QcdmWindow     *qcdmWindow;
+    SaharaWindow		 *saharaWindow			   = NULL;
+	SendRawWindow		 *sendRawWindow			   = NULL;
+	MbnToolWindow		 *mbnToolWindow			   = NULL;
+	QcdmWindow			 *qcdmWindow			   = NULL;
+	StreamingDloadWindow *streamingDloadWindow     = NULL;
+
     Ui::MainWindow *ui;
 };
 

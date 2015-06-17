@@ -402,13 +402,10 @@ void SaharaWindow::ReadSome()
  */
 void SaharaWindow::DisconnectPort()
 {
-    log("Closing Port..");
-
     if (port.isOpen()) {
-        port.close();
+		port.close();
+		log("Port Closed");
     }
-
-    //ui->portDisconnectButton->setEnabled(false);
 }
 
 

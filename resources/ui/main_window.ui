@@ -45,24 +45,11 @@
      <string>Sahara</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="startDloadButton">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>200</y>
-      <width>91</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>DLOAD</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="startStreamingDloadButton">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>240</y>
+      <x>180</x>
+      <y>20</y>
       <width>141</width>
       <height>27</height>
      </rect>
@@ -71,37 +58,11 @@
      <string>Streaming DLOAD</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="startDiagButton">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>200</y>
-      <width>91</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>DIAG</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="startAdbButton">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>240</y>
-      <width>91</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>ADB</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="startPortRawWriteReadButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>50</y>
+      <x>480</x>
+      <y>60</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -113,8 +74,8 @@
    <widget class="QPushButton" name="startMbnToolButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>80</y>
+      <x>480</x>
+      <y>20</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -126,7 +87,7 @@
    <widget class="QPushButton" name="startQcdmButton">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>330</x>
       <y>20</y>
       <width>141</width>
       <height>27</height>
@@ -143,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>884</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQC_Tools">
