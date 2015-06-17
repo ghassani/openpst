@@ -97,9 +97,9 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 
     memcpy(buf, resp, respSize);
 
-    if (resp != NULL){
-        free(resp);
-    }
+    //if (resp != NULL){
+    //    free(resp);
+    //}
 
     return respSize;
 }
