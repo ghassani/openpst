@@ -5,7 +5,7 @@
 #include <QApplication>
 #include "gui/main_window.h"
 #ifdef _WIN32
-	#include <Windows.h>
+	#include <windows.h>
 #endif
 
 /**
