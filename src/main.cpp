@@ -4,7 +4,6 @@
 
 #include <QApplication>
 #include "gui/main_window.h"
-#include "windows.h"
 
 /**
  * @brief main
