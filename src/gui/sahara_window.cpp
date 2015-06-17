@@ -242,7 +242,8 @@ void SaharaWindow::SendImage()
 
     if (!port.sendImage(fileName.toStdString())) {
         log("Error Sending Image");
-        return DisconnectPort();
+		return;
+        //return DisconnectPort();
     }
 
 
@@ -339,10 +340,14 @@ void SaharaWindow::SendDone()
 
     log("Sending Done Command");
 
-    if (!port.sendDone()) {
-        log("Error Sending Done");
-        return DisconnectPort();
-    }
+	try {
+		if (!port.sendDone()) {
+			log("Error Sending Done");
+			return DisconnectPort();
+		}
+	} catch (serial::IOException e) {
+		log(e.what());
+	}
 
 }
 
@@ -431,8 +436,8 @@ void SaharaWindow::SendStreamingDloadHello()
     dloadHello.command = STREAMING_DLOAD_HELLO;
     memcpy(dloadHello.magic, magic.c_str(), magic.size());
     dloadHello.version = 0x04;
-    dloadHello.compatibleVersion = 0x04;
-    dloadHello.featureBits = 0x08;
+    dloadHello.compatibleVersion = 0x02;
+    dloadHello.featureBits = 0x11;
 
     hdlc_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
 

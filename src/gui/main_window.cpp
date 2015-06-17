@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+
     ui->setupUi(this);
 
     QObject::connect(ui->startSaharaButton, SIGNAL(clicked()), this, SLOT(startSaharaMode()));

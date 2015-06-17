@@ -258,5 +258,11 @@
     <ClInclude Include="src\serial\hdlc_serial.h">
       <Filter>Header Files\src\gui</Filter>
     </ClInclude>
+    <ClInclude Include="src\include\win_stdint.h">
+      <Filter>Header Files\src\include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\win_inttypes.h">
+      <Filter>Header Files\src\include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
