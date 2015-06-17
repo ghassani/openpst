@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>533</height>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>QCDM - Service Programming</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="qcdmTabWidget">
@@ -56,7 +56,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Send SPC</string>
+       <string>MSL / SPC</string>
       </property>
      </widget>
      <widget class="QPushButton" name="securitySendSpcButton">
@@ -107,7 +107,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>241</width>
+      <width>391</width>
       <height>27</height>
      </rect>
     </property>
@@ -115,9 +115,9 @@
    <widget class="QPushButton" name="portListRefreshButton">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>560</x>
       <y>10</y>
-      <width>99</width>
+      <width>61</width>
       <height>27</height>
      </rect>
     </property>
@@ -128,9 +128,9 @@
    <widget class="QPushButton" name="portDisconnectButton">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>470</x>
       <y>10</y>
-      <width>99</width>
+      <width>71</width>
       <height>27</height>
      </rect>
     </property>
@@ -141,14 +141,32 @@
    <widget class="QPushButton" name="portConnectButton">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>410</x>
       <y>10</y>
-      <width>99</width>
+      <width>61</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
      <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="programNameText">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>10</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>18</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>OpenPST</string>
     </property>
    </widget>
   </widget>
