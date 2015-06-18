@@ -150,7 +150,7 @@ void QcdmWindow::SecuritySendSpc()
     }
 
     if (ui->securitySpcValue->text().length() != 6) {
-        log("Enter a Valid 6 Digit SPC. You only entered");
+        log("Enter a Valid 6 Digit SPC");
         return;
     }
 
@@ -192,6 +192,6 @@ void QcdmWindow::log(std::string message)
  */
 void QcdmWindow::log(QString message)
 {
-    ui->log->appendPlainText(message);
+	ui->log->appendPlainText(message);
 }
 
