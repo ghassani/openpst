@@ -29,6 +29,7 @@ public slots:
     void ConnectToPort();
     void DisconnectPort();
     void SecuritySendSpc();
+	void SecuritySend16Password();
 
 private:
 	void log(int type, const char* message);

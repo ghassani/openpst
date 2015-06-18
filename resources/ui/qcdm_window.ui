@@ -72,6 +72,48 @@
        <string>Send</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="securitySend16PasswordButton">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>30</y>
+        <width>51</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Send</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>10</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>16 Digit Password</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="security16PasswordValue">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>30</y>
+        <width>111</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>FFFFFFFFFFFFFFFF</string>
+      </property>
+      <property name="maxLength">
+       <number>16</number>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabNvEditor">
      <attribute name="title">
