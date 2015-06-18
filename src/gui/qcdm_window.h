@@ -31,15 +31,18 @@ public slots:
     void SecuritySendSpc();
 
 private:
-    void log(const char* message);
-    void log(std::string message);
-    void log(QString message);
+	void log(int type, const char* message);
+	void log(int type, std::string message);
+    void log(int type, QString message);
 
     Ui::QcdmWindow *ui;
     openpst::QcdmSerial port;
     serial::PortInfo currentPort;
 
-
+	int LOGTYPE_DEBUG = 0;
+	int LOGTYPE_ERROR = -1;
+	int LOGTYPE_INFO = 1;
+	int LOGTYPE_WARNING = 2;
 
 };
 

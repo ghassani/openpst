@@ -7,20 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>604</height>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>QCDM - Service Programming</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="qcdmTabWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
+      <y>50</y>
       <width>781</width>
-      <height>341</height>
+      <height>291</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -35,7 +35,7 @@
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>81</width>
+        <width>51</width>
         <height>27</height>
        </rect>
       </property>
@@ -56,13 +56,13 @@
        </rect>
       </property>
       <property name="text">
-       <string>Send SPC</string>
+       <string>MSL / SPC</string>
       </property>
      </widget>
      <widget class="QPushButton" name="securitySendSpcButton">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>70</x>
         <y>30</y>
         <width>51</width>
         <height>27</height>
@@ -96,9 +96,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>410</y>
+      <y>350</y>
       <width>781</width>
-      <height>111</height>
+      <height>161</height>
      </rect>
     </property>
    </widget>
@@ -107,7 +107,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>241</width>
+      <width>391</width>
       <height>27</height>
      </rect>
     </property>
@@ -115,9 +115,9 @@
    <widget class="QPushButton" name="portListRefreshButton">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>560</x>
       <y>10</y>
-      <width>99</width>
+      <width>61</width>
       <height>27</height>
      </rect>
     </property>
@@ -128,9 +128,9 @@
    <widget class="QPushButton" name="portDisconnectButton">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>470</x>
       <y>10</y>
-      <width>99</width>
+      <width>71</width>
       <height>27</height>
      </rect>
     </property>
@@ -141,9 +141,9 @@
    <widget class="QPushButton" name="portConnectButton">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>410</x>
       <y>10</y>
-      <width>99</width>
+      <width>61</width>
       <height>27</height>
      </rect>
     </property>
@@ -151,28 +151,24 @@
      <string>Connect</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
+   <widget class="QLabel" name="programNameText">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>10</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>18</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>OpenPST</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
