@@ -68,40 +68,32 @@ SaharaWindow::~SaharaWindow()
  */
 void SaharaWindow::UpdatePortList()
 {
-    if (port.isOpen()) {
-        log("Port is currently open.");
-        return;
-    }
+	if (port.isOpen()) {
+		log("Port is currently open");
+		return;
+	}
 
-    std::vector<serial::PortInfo> devices = serial::list_ports();
-    std::vector<serial::PortInfo>::iterator iter = devices.begin();
+	std::vector<serial::PortInfo> devices = serial::list_ports();
+	std::vector<serial::PortInfo>::iterator iter = devices.begin();
 
-    ui->portList->clear();
-    ui->portList->addItem("- Select a Port -", 0);
+	ui->portList->clear();
+	ui->portList->addItem("- Select a Port -");
 
-    log("Rescanning for available devices..");
+	QString tmp;
 
-    QString logMsg;
+	log(tmp.sprintf("Found %d devices", devices.size()));
 
-    while (iter != devices.end()) {
-        serial::PortInfo device = *iter++;
-        if (!strstr("n/a", device.hardware_id.c_str())) {
-            ui->portList->addItem(device.port.c_str(), device.port.c_str());
+	while (iter != devices.end()) {
+		serial::PortInfo device = *iter++;
 
-            logMsg = device.hardware_id.c_str();
+		log(tmp.sprintf("%s %s %s",
+			device.port.c_str(),
+			device.hardware_id.c_str(),
+			device.description.c_str()
+		));
 
-            logMsg.append(" on port ").append(device.port.c_str());
-
-            std::cout << device.port.c_str() << std::endl;
-            std::cout << device.description.c_str() << std::endl;
-            if (device.description.length()) {
-                logMsg.append(" - ").append(device.description.c_str());
-            }
-
-            log(logMsg);
-
-        }
-    }
+		ui->portList->addItem(tmp, device.port.c_str());
+	}
 }
 
 /**
@@ -110,6 +102,7 @@ void SaharaWindow::UpdatePortList()
 void SaharaWindow::ConnectToPort()
 {
     QString selected = ui->portList->currentData().toString();
+	QString tmp;
 
     if (selected.compare("0") == 0) {
         log("Select a Port First");
@@ -131,12 +124,6 @@ void SaharaWindow::ConnectToPort()
         return;
     }
 
-    QString connectionText = "Connecting to ";
-
-    connectionText.append(currentPort.port.c_str()).append(" ...");
-
-    log(connectionText);
-
     try {
         port.setPort(currentPort.port);
 
@@ -144,14 +131,12 @@ void SaharaWindow::ConnectToPort()
             port.open();
         }
     } catch(serial::IOException e) {
-        log("Error Connecting To Serial Port");
+        log(tmp.sprintf("Error Connecting To Port %s", currentPort.port.c_str()));
         log(e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
         return;
     }
 
-    log("Connected");
-
-
+	log(tmp.sprintf("Connected to %s", currentPort.port.c_str()));
 }
 
 /**

@@ -31,7 +31,13 @@
 #define STREAMING_DLOAD_OPEN_MULTI_PAYLOAD_REQUIRED_FAIL			0x03
 #define STREAMING_DLOAD_OPEN_MULTI_BLOCK_WRITE_PROTECTED			0x04
 
-enum STREAMING_DLOAD_COMMAND : uint8_t {
+#define STREAMING_DLOAD_MAGIC_SIZE 32
+#define STREAMING_DLOAD_FLASH_ID_MAX_SIZE    32
+#define STREAMING_DLOAD_MESSAGE_SIZE  64
+#define STREAMING_DLOAD_MAX_SECTORS 32
+#define STREAMING_DLOAD_MAX_PACKET_SIZE 2048
+
+enum STREAMING_DLOAD_COMMAND {
     // 0x00 - Illegal
     STREAMING_DLOAD_HELLO                        = 0x01,
     STREAMING_DLOAD_HELLO_RESPONSE               = 0x02,
@@ -84,7 +90,7 @@ enum STREAMING_DLOAD_COMMAND : uint8_t {
 
 
 
-enum STREAMING_DLOAD_ERROR_CODE : uint32_t {
+enum STREAMING_DLOAD_ERROR_CODE {
     STREAMING_DLOAD_ERROR_ERROR_INVALID_DESTINATION_ADDRESS     = 0x02,
     STREAMING_DLOAD_ERROR_INVALID_LENGTH                        = 0x03,
     STREAMING_DLOAD_ERROR_UNEXPECTED_END_OF_PACKET              = 0x04,
@@ -105,28 +111,43 @@ enum STREAMING_DLOAD_ERROR_CODE : uint32_t {
     // 0x16 - 0x1A RESERVED FOR ERROR REASONS IN [Q2]
 };
 
+enum STREAMING_DLOAD_OPEN_MODE {
+	STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD		= 0x01,
+	STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD	= 0x02,
+	STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD		= 0x03
+};
 
 PACKED(typedef struct streaming_dload_hello_tx_t { // 0x01
     uint8_t command;
-    uint8_t magic[32];
+	uint8_t magic[STREAMING_DLOAD_MAGIC_SIZE];
     uint8_t version;
     uint8_t compatibleVersion;
     uint8_t featureBits;
 } streaming_dload_hello_tx_t);
 
+PACKED(typedef struct streaming_dload_hello_rx_header_t { // 0x02
+	uint8_t  command;
+	uint8_t  magic[STREAMING_DLOAD_MAGIC_SIZE];
+	uint8_t  version;
+	uint8_t  compatibleVersion;
+	uint32_t maxPreferredBlockSize;
+	uint32_t baseFlashAddress;
+	uint8_t  flashIdLength;
+} streaming_dload_hello_rx_header_t);
+
 PACKED(typedef struct streaming_dload_hello_rx_t { // 0x02
     uint8_t  command;
-    uint8_t  magic[32];
+	uint8_t  magic[STREAMING_DLOAD_MAGIC_SIZE];
     uint8_t  version;
     uint8_t  compatibleVersion;
     uint32_t maxPreferredBlockSize;
     uint32_t baseFlashAddress;
     uint8_t  flashIdLength;
-    uint8_t  flashIdenfier;
+	uint8_t  flashIdenfier[STREAMING_DLOAD_FLASH_ID_MAX_SIZE];
     uint16_t windowSize;
     uint16_t numberOfSectors;
-    uint16_t secrorSizes;
-    uint8_t  featureBits;
+    uint16_t sectorSizes[STREAMING_DLOAD_MAX_SECTORS * 4];
+	uint16_t featureBits;
 } streaming_dload_hello_rx_t);
 
 PACKED(typedef struct streaming_dload_read_tx_t { // 0x03

@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
-
     ui->setupUi(this);
 
     QObject::connect(ui->startSaharaButton, SIGNAL(clicked()), this, SLOT(startSaharaMode()));
@@ -21,8 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->startMbnToolButton, SIGNAL(clicked()), this, SLOT(startMbnTool()));
 	QObject::connect(ui->startQcdmButton, SIGNAL(clicked()), this, SLOT(startQcdm()));
 	QObject::connect(ui->startStreamingDloadButton, SIGNAL(clicked()), this, SLOT(startStreamingDload()));
-
-
 }
 
 /**
@@ -30,38 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
  */
 MainWindow::~MainWindow()
 {
-	if (saharaWindow != NULL) {
-        saharaWindow->close();
-        delete saharaWindow;
-    }
-
-    if (sendRawWindow != NULL) {
-        sendRawWindow->close();
-        delete sendRawWindow;
-    }
-
-	if (qcdmWindow != NULL) {
-		qcdmWindow->close();
-		delete sendRawWindow;
-	}
-
-	if (streamingDloadWindow != NULL) {
-		streamingDloadWindow->close();
-		delete streamingDloadWindow;
-	}
-
-	if (sendRawWindow != NULL) {
-		sendRawWindow->close();
-		delete sendRawWindow;
-	}
-
-	if (mbnToolWindow != NULL) {
-		mbnToolWindow->close();
-		delete mbnToolWindow;
-	}
-
 	delete ui;
-
 }
 
 /**

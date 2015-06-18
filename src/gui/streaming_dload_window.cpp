@@ -6,31 +6,30 @@
 
 
 StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
-QMainWindow(parent),
-ui(new Ui::StreamingDloadWindow),
-port("", 115200)
+	QMainWindow(parent),
+	ui(new Ui::StreamingDloadWindow),
+	port("", 115200)
 {
     ui->setupUi(this);
-
-	/*STREAMING_DLOAD_SECURITY_MODE_UNTRUSTED
-
-		ui->streamingDloadSecurityModeValue->set*/
+	 
+	this->statusBar()->setSizeGripEnabled(false);
 	
-	ui->streamingDloadHelloFeatureBitValue->addItem("0x01 - Uncompressed Download", STREAMING_DLOAD_FEATURE_BIT_UNCOMPRESSED_DOWNLOAD);
-	ui->streamingDloadHelloFeatureBitValue->addItem("0x02 - NAND Bootable Image", STREAMING_DLOAD_FEATURE_BIT_NAND_BOOTABLE_IMAGE);
-	ui->streamingDloadHelloFeatureBitValue->addItem("0x04 - NAND Bootloader", STREAMING_DLOAD_FEATURE_BIT_NAND_BOOT_LOADER);
-	ui->streamingDloadHelloFeatureBitValue->addItem("0x08 - Multi Image", STREAMING_DLOAD_FEATURE_BIT_MULTI_IMAGE);
-	ui->streamingDloadHelloFeatureBitValue->addItem("0x10 - Sector Address", STREAMING_DLOAD_FEATURE_BIT_SECTOR_ADDRESSES);
+	ui->securityModeValue->addItem("0x01 - Trusted", STREAMING_DLOAD_SECURITY_MODE_TRUSTED);
+	ui->securityModeValue->addItem("0x00 - Untrusted", STREAMING_DLOAD_SECURITY_MODE_UNTRUSTED);
+	ui->securityModeValue->setCurrentIndex(0);
 	
-	ui->streamingDloadSecurityModeValue->addItem("0x01 - Trusted", STREAMING_DLOAD_SECURITY_MODE_TRUSTED);
-	ui->streamingDloadSecurityModeValue->addItem("0x00 - Untrusted", STREAMING_DLOAD_SECURITY_MODE_UNTRUSTED);
+	ui->commandValue->addItem("0x09 - NOP", STREAMING_DLOAD_NOP);
+	ui->commandValue->addItem("0x0B - Reset", STREAMING_DLOAD_RESET);
+	ui->commandValue->addItem("0x09 - NOP", STREAMING_DLOAD_NOP);
 
 	UpdatePortList();
 
 	QObject::connect(ui->portRefreshButton, SIGNAL(clicked()), this, SLOT(UpdatePortList()));
 	QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(DisconnectPort()));
 	QObject::connect(ui->portConnectButton, SIGNAL(clicked()), this, SLOT(ConnectToPort()));	
-	QObject::connect(ui->streamingDloadHelloButton, SIGNAL(clicked()), this, SLOT(SendHello()));	
+	QObject::connect(ui->helloButton, SIGNAL(clicked()), this, SLOT(SendHello()));	
+	QObject::connect(ui->unlockButton, SIGNAL(clicked()), this, SLOT(SendUnlock()));
+	QObject::connect(ui->securityModeButton, SIGNAL(clicked()), this, SLOT(SetSecurityMode()));
 	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(ClearLog()));
 }
 
@@ -40,15 +39,13 @@ StreamingDloadWindow::~StreamingDloadWindow()
     delete ui;
 }
 
-
-
 /**
 * @brief StreamingDloadWindow::UpdatePortList
 */
 void StreamingDloadWindow::UpdatePortList()
 {
 	if (port.isOpen()) {
-		log("Port is currently open.");
+		log("Port is currently open");
 		return;
 	}
 
@@ -56,30 +53,22 @@ void StreamingDloadWindow::UpdatePortList()
 	std::vector<serial::PortInfo>::iterator iter = devices.begin();
 
 	ui->portList->clear();
-	ui->portList->addItem("- Select a Port -", 0);
+	ui->portList->addItem("- Select a Port -");
 
-	log("Rescanning for available devices..");
+	QString tmp;
 
-	QString logMsg;
+	log(tmp.sprintf("Found %d devices", devices.size()));
 
 	while (iter != devices.end()) {
 		serial::PortInfo device = *iter++;
-		if (!strstr("n/a", device.hardware_id.c_str())) {
-			ui->portList->addItem(device.port.c_str(), device.port.c_str());
 
-			logMsg = device.hardware_id.c_str();
+		log(tmp.sprintf("%s %s %s",
+			device.port.c_str(),
+			device.hardware_id.c_str(),
+			device.description.c_str()
+		));
 
-			logMsg.append(" on port ").append(device.port.c_str());
-
-			std::cout << device.port.c_str() << std::endl;
-			std::cout << device.description.c_str() << std::endl;
-			if (device.description.length()) {
-				logMsg.append(" - ").append(device.description.c_str());
-			}
-
-			log(logMsg);
-
-		}
+		ui->portList->addItem(tmp, device.port.c_str());
 	}
 }
 
@@ -89,6 +78,7 @@ void StreamingDloadWindow::UpdatePortList()
 void StreamingDloadWindow::ConnectToPort()
 {
 	QString selected = ui->portList->currentData().toString();
+	QString tmp;
 
 	if (selected.compare("0") == 0) {
 		log("Select a Port First");
@@ -110,12 +100,6 @@ void StreamingDloadWindow::ConnectToPort()
 		return;
 	}
 
-	QString connectionText = "Connecting to ";
-
-	connectionText.append(currentPort.port.c_str()).append(" ...");
-
-	log(connectionText);
-
 	try {
 		port.setPort(currentPort.port);
 
@@ -124,14 +108,12 @@ void StreamingDloadWindow::ConnectToPort()
 		}
 	}
 	catch (serial::IOException e) {
-		log("Error Connecting To Serial Port");
+		log(tmp.sprintf("Error Connecting To Port %s", currentPort.port.c_str()));
 		log(e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
 		return;
 	}
 
-	log("Connected");
-
-
+	log(tmp.sprintf("Connected to %s", currentPort.port.c_str()));
 }
 
 /**
@@ -145,8 +127,6 @@ void StreamingDloadWindow::DisconnectPort()
 	}
 }
 
-
-
 /**
 * @brief StreamingDloadWindow::SendHello
 */
@@ -158,58 +138,94 @@ void StreamingDloadWindow::SendHello()
 		return;
 	}
 
-	if (!ui->streamingDloadHelloMagicValue->text().length()) {
-		log("No Magic Set");
+	if (!ui->helloMagicValue->text().length()) {
+		log("Magic is required\n");
+		return;
+	}
+
+	if (!ui->helloVersionValue->text().length()) {
+		log("Version is required\n");
+		return;
+	}
+
+	if (!ui->helloCompatibleVersionValue->text().length()) {
+		log("Compatible version is required\n");
+		return;
+	}
+
+	if (!ui->helloFeatureBitsValue->text().length()) {
+		log("Feature bits are required\n");
+		return;
+	}
+	
+	QString tmp;
+	
+	std::string magic = ui->helloMagicValue->text().toStdString().c_str();
+	uint8_t version = std::stoul(ui->helloVersionValue->text().toStdString().c_str(), nullptr, 16);
+	uint8_t compatibleVersion = std::stoul(ui->helloCompatibleVersionValue->text().toStdString().c_str(), nullptr, 16);
+	uint8_t featureBits = std::stoul(ui->helloFeatureBitsValue->text().toStdString().c_str(), nullptr, 16);
+
+	if (!port.sendHello(magic, version, compatibleVersion, featureBits)) {
+		log("Error Sending Hello");
+		return;
+	}	
+
+	log(tmp.sprintf("Hello Response: %02X", port.deviceState.command));
+	log(tmp.sprintf("Magic: %s", port.deviceState.magic));
+	log(tmp.sprintf("Version: %02X", port.deviceState.version));
+	log(tmp.sprintf("Compatible Version: %02X", port.deviceState.compatibleVersion));
+	log(tmp.sprintf("Max Prefered Block Size: %d", port.deviceState.maxPreferredBlockSize));
+	log(tmp.sprintf("Base Flash Address: 0x%08X", port.deviceState.baseFlashAddress));
+	log(tmp.sprintf("Flash ID Length: %d", port.deviceState.flashIdLength));	
+	log(tmp.sprintf("Flash Identifier: %s", port.deviceState.flashIdenfier));
+	log(tmp.sprintf("Window Size: %d", port.deviceState.windowSize));
+	log(tmp.sprintf("Number of Sectors: %d", port.deviceState.numberOfSectors));
+
+	for (int i = 0; i < port.deviceState.numberOfSectors; i++) {
+		log(tmp.sprintf("Sector %d: %d", i, port.deviceState.sectorSizes[i*4]));
+	}
+
+	//log(tmp.sprintf("Sector Sizes: %d", port.deviceState.sectorSizes)); 
+	log(tmp.sprintf("Feature Bits: %04X", port.deviceState.featureBits));
+}
+
+/**
+* @brief StreamingDloadWindow::SetSecurityMode
+*/
+void StreamingDloadWindow::SetSecurityMode()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+	if (!port.setSecurityMode(ui->securityModeValue->currentData().toUInt())) {
+		log("Error Setting Security Mode");
+		return;
+	}
+}
+
+/**
+* @brief StreamingDloadWindow::SendUnlock
+*/
+void StreamingDloadWindow::SendUnlock()
+{
+
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+	if (!ui->unlockCodeValue->text().length()) {
+		ui->unlockCodeValue->setText("0000");
+	}
+
+	if (!port.sendUnlock(ui->unlockCodeValue->text().toStdString())) {
+		log("Error Sending Unlock");
 		return;
 	}
 
 
-	streaming_dload_hello_tx_t dloadHello;
-	uint32_t outsize = 0;
-	uint8_t* outbuf = NULL;
-
-	uint8_t version = atoi(ui->streamingDloadHelloVersionValue->currentText().toStdString().c_str());
-	uint8_t compatVersion = atoi(ui->streamingDloadHelloCompatVersionValue->currentText().toStdString().c_str());
-	uint8_t feature = atoi(ui->streamingDloadHelloFeatureBitValue->currentText().toStdString().c_str());
-
-	printf("Result: %02x %02x %02x\n", version, compatVersion, feature);
-	/*
-	std::string magic = ui->streamingDloadHelloMagicValue->text().toStdString().c_str();
-
-	dloadHello.command = STREAMING_DLOAD_HELLO;
-	memcpy(dloadHello.magic, magic.c_str(), magic.size());
-	dloadHello.version			 = atoi(ui->streamingDloadHelloVersionValue->currentData());
-	dloadHello.compatibleVersion = atoi(ui->streamingDloadHelloCompatVersionValue->text().toStdString().c_str());
-	dloadHello.featureBits		 = atoi(ui->streamingDloadHelloFeatureBitsValue->text().toStdString().c_str());
-
-	hdlc_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
-
-	size_t bytesWritten = port.write(outbuf, outsize);
-	printf("Wrote %zd bytes\n", bytesWritten);
-	hexdump(outbuf, bytesWritten);
-
-	size_t bytesRead = port.read(port.buffer, port.bufferSize);
-	printf("Read %zd bytes\n", bytesRead);
-	hexdump(port.buffer, bytesRead);
-
-	if (outbuf != NULL) {
-		free(outbuf);
-	}*/
-
-	//ui->portDisconnectButton->setEnabled(false);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
 * @brief StreamingDloadWindow::ClearLog
@@ -235,14 +251,6 @@ void StreamingDloadWindow::log(const char* message)
 {
 	ui->log->appendPlainText(message);
 }
-/**
-* @brief StreamingDloadWindow::log
-* @param message
-*/
-void StreamingDloadWindow::log(std::string message)
-{
-	ui->log->appendPlainText(message.c_str());
-}
 
 /**
 * @brief StreamingDloadWindow::log
@@ -251,46 +259,4 @@ void StreamingDloadWindow::log(std::string message)
 void StreamingDloadWindow::log(QString message)
 {
 	ui->log->appendPlainText(message);
-}
-
-/**
-* @brief StreamingDloadWindow::logTxHex
-* @param data
-* @param amount
-*/
-void StreamingDloadWindow::logTxHex(uint8_t* data, size_t amount)
-{
-
-	QString tmp;
-	log(tmp.sprintf("Dumping %zd bytes written", amount));
-	printf(tmp.append("\n").toStdString().c_str());
-	logHex(data, amount);
-}
-
-/**
-* @brief StreamingDloadWindow::logRxHex
-* @param data
-* @param amount
-*/
-void StreamingDloadWindow::logRxHex(uint8_t* data, size_t amount)
-{
-
-	QString tmp;
-	log(tmp.sprintf("Dumping %zd bytes read", amount));
-	printf(tmp.append("\n").toStdString().c_str());
-	logHex(data, amount);
-}
-
-/**
-* @brief StreamingDloadWindow::logHex
-* @param data
-* @param amount
-*/
-void StreamingDloadWindow::logHex(uint8_t* data, size_t amount)
-{
-
-	QString out;
-	hexdump(data, amount, out);
-	log(out);
-	return;
 }

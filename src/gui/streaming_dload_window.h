@@ -17,6 +17,7 @@ class StreamingDloadWindow;
 class StreamingDloadWindow : public QMainWindow
 {
 	
+	Q_OBJECT
 
 public:
     explicit StreamingDloadWindow(QWidget *parent = 0);
@@ -44,6 +45,16 @@ public slots:
      */
 	void SendHello();
 
+	/**
+	* @brief SendUnlock
+	*/
+	void SendUnlock();
+
+	/**
+	* @brief SetSecurityMode
+	*/
+	void SetSecurityMode();
+
     /**
      * @brief ClearLog
      */
@@ -56,11 +67,7 @@ public slots:
 
 
 	void log(const char* message);
-	void log(std::string message);
 	void log(QString message);
-	void logHex(uint8_t* data, size_t amount);
-	void logRxHex(uint8_t* data, size_t amount);
-	void logTxHex(uint8_t* data, size_t amount);
 
 private:
 	Ui::StreamingDloadWindow *ui;

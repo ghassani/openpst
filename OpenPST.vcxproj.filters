@@ -93,13 +93,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\qc\crc.cpp">
-      <Filter>Source Files\src\util</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\endian.cpp">
-      <Filter>Source Files\src\util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\qc\hdlc.cpp">
       <Filter>Source Files\src\util</Filter>
     </ClCompile>
     <ClCompile Include="src\util\hexdump.cpp">
@@ -168,6 +162,18 @@
     <ClCompile Include="src\serial\streaming_dload_serial.cpp">
       <Filter>Source Files\src\serial</Filter>
     </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_streaming_dload_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_streaming_dload_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qc\hdlc.cpp">
+      <Filter>Source Files\src\qc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qc\crc.cpp">
+      <Filter>Source Files\src\qc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\gui\main_window.h">
@@ -218,6 +224,9 @@
     <CustomBuild Include="resources\ui\streaming_dload_window.ui">
       <Filter>Form Files\resources\ui</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\qc\hdlc.h">
+      <Filter>Header Files\src\qc</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\gui\mbn_tool_window.h">
@@ -257,9 +266,6 @@
       <Filter>Header Files\src\qc</Filter>
     </CustomBuild>
     <CustomBuild Include="src\util\endian.h">
-      <Filter>Header Files\src\util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\qc\hdlc.h">
       <Filter>Header Files\src\util</Filter>
     </CustomBuild>
     <CustomBuild Include="src\util\hexdump.h">

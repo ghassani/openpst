@@ -33,13 +33,12 @@ public slots:
 	void startStreamingDload();
 
 private:
-    SaharaWindow		 *saharaWindow			   = NULL;
-	SendRawWindow		 *sendRawWindow			   = NULL;
-	MbnToolWindow		 *mbnToolWindow			   = NULL;
-	QcdmWindow			 *qcdmWindow			   = NULL;
-	StreamingDloadWindow *streamingDloadWindow     = NULL;
-
-    Ui::MainWindow *ui;
+	SaharaWindow		 *saharaWindow;
+	SendRawWindow		 *sendRawWindow;
+	MbnToolWindow		 *mbnToolWindow;
+	QcdmWindow			 *qcdmWindow;
+	StreamingDloadWindow *streamingDloadWindow;
+	Ui::MainWindow		 *ui;
 };
 
 #endif // _GUI_MAINWINDOW_H

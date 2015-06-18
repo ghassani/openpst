@@ -3,7 +3,6 @@
 */
 
 #include "hdlc.h"
-#include "diag.h"
 
 
 int hdlc_request(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize) {
@@ -27,8 +26,8 @@ int hdlc_request(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* ou
     memset(buffer, '\0', size + 2);
     memcpy(&buffer[1], outbuf, size); // copy our crc'd and escaped characters into final buffer
 
-    buffer[0] = DIAG_CONTROL_CHAR; // Add our beginning control character
-    buffer[size + 1] = DIAG_CONTROL_CHAR; // Add out ending control character
+    buffer[0] = HDLC_CONTROL_CHAR; // Add our beginning control character
+    buffer[size + 1] = HDLC_CONTROL_CHAR; // Add out ending control character
 
     free(inbuf); // We don't need this anymore
     free(outbuf); // We don't need this anymore
@@ -63,7 +62,7 @@ int hdlc_escape(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* out
     int i = 0;
     uint32_t size = 0;
     for (i = 0; i < insize; i++) {
-        if (input[i] == DIAG_CONTROL_CHAR || input[i] == DIAG_ESC_CHAR) {
+        if (input[i] == HDLC_CONTROL_CHAR || input[i] == HDLC_ESC_CHAR) {
             size++;
         }
         size++;
@@ -74,14 +73,14 @@ int hdlc_escape(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* out
     buffer = (uint8_t*)malloc(size);
     memset(buffer, '\0', size);
     for (i = 0; i < insize; i++) {
-        if (input[i] == DIAG_CONTROL_CHAR) {
-            buffer[o] = DIAG_ESC_CHAR;
-            buffer[o + 1] = DIAG_CONTROL_CHAR ^ DIAG_ESC_MASK;
+        if (input[i] == HDLC_CONTROL_CHAR) {
+            buffer[o] = HDLC_ESC_CHAR;
+            buffer[o + 1] = HDLC_CONTROL_CHAR ^ HDLC_ESC_MASK;
             o++;
         }
-        else if (input[i] == DIAG_ESC_CHAR) {
-            buffer[o] = DIAG_ESC_CHAR;
-            buffer[o + 1] = DIAG_ESC_CHAR ^ DIAG_ESC_MASK;
+        else if (input[i] == HDLC_ESC_CHAR) {
+            buffer[o] = HDLC_ESC_CHAR;
+            buffer[o + 1] = HDLC_ESC_CHAR ^ HDLC_ESC_MASK;
             o++;
         }
         else {
@@ -99,7 +98,7 @@ int hdlc_unescape(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* o
     int i = 0;
     uint32_t size = insize;
     for (i = insize; i >= 0; i--) {
-        if (input[i] == DIAG_ESC_CHAR) size--;
+        if (input[i] == HDLC_ESC_CHAR) size--;
     }
 
     int o = 0;
@@ -107,8 +106,8 @@ int hdlc_unescape(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* o
     buffer = (uint8_t*)malloc(size);
     memset(buffer, '\0', size);
     for (i = 0; i <= insize; i++) {
-        if (input[i] == DIAG_ESC_CHAR) {
-            buffer[o] = input[i + 1] ^ DIAG_ESC_MASK;
+        if (input[i] == HDLC_ESC_CHAR) {
+            buffer[o] = input[i + 1] ^ HDLC_ESC_MASK;
             i++;
         }
         else {

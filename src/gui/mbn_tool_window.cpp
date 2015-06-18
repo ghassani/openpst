@@ -13,7 +13,6 @@ MbnToolWindow::MbnToolWindow(QWidget *parent) :
     QObject::connect(ui->fileBrowseButton, SIGNAL(clicked()), this, SLOT(BrowseForFile()));
     QObject::connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(LoadFile()));
     QObject::connect(ui->readx509ChainButton, SIGNAL(clicked()), this, SLOT(readX509Chain()));
-
 }
 
 MbnToolWindow::~MbnToolWindow()

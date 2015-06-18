@@ -24,16 +24,6 @@
 #endif
 
 
-/* QCDM protocol frames are pseudo Async HDLC frames which end with a 3-byte
-*  trailer. This trailer consists of the 16-bit CRC of the frame plus an ending
-* "async control character" whose value is 0x7E.  The frame *and* the CRC are
-* escaped before adding the trailing control character so that the control
-* character (0x7E) and the escape marker (0x7D) are never seen in the frame.
-*/
-#define DIAG_ESC_CHAR     0x7D  /* Escape sequence 1st character value */
-#define DIAG_ESC_MASK     0x20  /* Escape sequence complement value */
-#define DIAG_CONTROL_CHAR 0x7E
-#define DIAG_TRAILER_LEN  3
 
 enum DIAG_COMMAND {
 	DIAG_BAD_CMD_F = 0x13,
