@@ -36,7 +36,7 @@ QcdmWindow::~QcdmWindow()
 void QcdmWindow::UpdatePortList()
 {
     if (port.isOpen()) {
-        log("Port is currently open.");
+        log(LOGTYPE_WARNING, "Port is currently open. Disconnect before Refresh...");
         return;
     }
 
@@ -46,24 +46,21 @@ void QcdmWindow::UpdatePortList()
     ui->portList->clear();
     ui->portList->addItem("- Select a Port -", 0);
 
-    log("Scanning for available devices...");
-
-    QString logMsg;
+    log(LOGTYPE_INFO, "Scanning for Available Devices");
 
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
         if (!strstr("n/a", device.hardware_id.c_str())) {
             ui->portList->addItem(device.description.c_str(), device.port.c_str());
 
-            logMsg = "Found ";
-			logMsg.append(device.hardware_id.c_str());
-            logMsg.append(" on port ").append(device.port.c_str());
+			QString logMsg = "Found ";
+			logMsg.append(device.hardware_id.c_str()).append(" on port ").append(device.port.c_str());
 
             if (device.description.length()) {
                 logMsg.append(" - ").append(device.description.c_str());
             }
 
-            log(logMsg);
+            log(LOGTYPE_DEBUG, logMsg);
 
         }
     }
@@ -77,7 +74,7 @@ void QcdmWindow::ConnectToPort()
     QString selected = ui->portList->currentData().toString();
 
     if (selected.compare("0") == 0) {
-        log("Select a Port First");
+        log(LOGTYPE_WARNING, "Select a Port First");
         return;
     }
 
@@ -92,34 +89,29 @@ void QcdmWindow::ConnectToPort()
     }
 
     if (!currentPort.port.length()) {
-        log("Invalid Port Type");
+        log(LOGTYPE_ERROR, "Invalid Port Type");
         return;
     }
 
-
     QString connectionText = "Connecting to ";
-
     connectionText.append(currentPort.port.c_str()).append("...");
-
-    log(connectionText);
+    log(LOGTYPE_INFO, connectionText);
 
     try {
         port.setPort(currentPort.port);
 
         if (!port.isOpen()){
             port.open();
+
+			QString connectedText = "Connected to ";
+			connectedText.append(currentPort.port.c_str());
+			log(LOGTYPE_INFO, connectedText);
         }
     } catch(serial::IOException e) {
-        log("Error Connecting To Serial Port");
-        log(e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
+        log(LOGTYPE_ERROR, "Error Connecting To Serial Port");
+		log(LOGTYPE_ERROR, e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
         return;
     }
-
-    QString connectedText = "Connected to ";
-
-	connectedText.append(currentPort.port.c_str());
-	log(connectedText);
-
 }
 
 /**
@@ -127,9 +119,11 @@ void QcdmWindow::ConnectToPort()
  */
 void QcdmWindow::DisconnectPort()
 {
-    log("Closing Port..");
-
     if (port.isOpen()) {
+		QString closeText = "Disconnected from ";
+		closeText.append(currentPort.port.c_str());
+		log(LOGTYPE_INFO, closeText);
+
         port.close();
     }
 
@@ -145,26 +139,26 @@ void QcdmWindow::SecuritySendSpc()
 {
 
     if (!port.isOpen()) {
-        log("Connect to a Port First");
+        log(LOGTYPE_WARNING, "Connect to a Port First");
         return;
     }
 
     if (ui->securitySpcValue->text().length() != 6) {
-        log("Enter a Valid 6 Digit SPC");
+        log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
         return;
     }
 
     int result = port.sendSpc(ui->securitySpcValue->text().toStdString().c_str());
 
     if (result < 0) {
-        log ("Error Sending SPC");
+        log(LOGTYPE_ERROR, "Error Sending SPC");
         return;
     } else if (result != 1) {
-        log("SPC Not Accepted");
+        log(LOGTYPE_ERROR, "SPC Not Accepted");
         return;
     }
 
-    log("SPC Accepted");
+    log(LOGTYPE_INFO, "SPC Accepted");
 }
 
 
@@ -173,25 +167,51 @@ void QcdmWindow::SecuritySendSpc()
  * @brief QcdmWindow::log
  * @param message
  */
-void QcdmWindow::log(const char* message)
+void QcdmWindow::log(int type, const char* message)
 {
-    ui->log->appendPlainText(message);
+	//ui->log->appendPlainText(message);
+	QString newMessage = message;
+	log(type, newMessage);
 }
 /**
  * @brief QcdmWindow::log
  * @param message
  */
-void QcdmWindow::log(std::string message)
+void QcdmWindow::log(int type, std::string message)
 {
-    ui->log->appendPlainText(message.c_str());
+    //ui->log->appendPlainText(message.c_str());
+	QString newMessage = message.c_str();
+	log(type, newMessage);
 }
 
 /**
  * @brief QcdmWindow::log
+ * @param type
  * @param message
  */
-void QcdmWindow::log(QString message)
+void QcdmWindow::log(int type, QString message)
 {
-	ui->log->appendPlainText(message);
+	QString logColorDebug = "<font color=\"gray\">";
+	QString logColorError = "<font color=\"red\">";
+	QString logColorInfo = "<font color=\"green\">";
+	QString logColorWarning = "<font color=\"orange\">";
+	QString logColorSuffix = "</font>";
+
+	switch (type) {
+	case 0:
+		message = logColorDebug.append(message).append(logColorSuffix);
+		break;
+	case -1:
+		message = logColorError.append(message).append(logColorSuffix);
+		break;
+	case 1:
+		message = logColorInfo.append(message).append(logColorSuffix);
+		break;
+	case 2:
+		message = logColorWarning.append(message).append(logColorSuffix);
+		break;
+	}
+
+	ui->log->appendHtml(message);
 }
 
