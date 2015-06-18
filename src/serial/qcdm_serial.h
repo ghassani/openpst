@@ -32,6 +32,8 @@ namespace openpst {
 			*/
 			int send16Password(const char* password);
 
+			QString getNvItemString(int itemId);
+
             uint8_t buffer[DIAG_MAX_RX_PKT_SIZ];
             size_t lastRxSize,
                    lastTxSize;

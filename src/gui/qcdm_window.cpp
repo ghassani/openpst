@@ -18,6 +18,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
     QObject::connect(ui->securitySendSpcButton,        SIGNAL(clicked()), this, SLOT(SecuritySendSpc()));
 	QObject::connect(ui->securitySend16PasswordButton, SIGNAL(clicked()), this, SLOT(SecuritySend16Password()));
+	QObject::connect(ui->readMeidButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetMeid()));
 
 }
 
@@ -190,6 +191,21 @@ void QcdmWindow::SecuritySend16Password()
 	log(LOGTYPE_INFO, "16 Digit Password Accepted");
 }
 
+/**
+* @brief QcdmWindow::nvReadGetMeid
+*/
+void QcdmWindow::nvReadGetMeid() {
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	if (ui->security16PasswordValue->text().length() != 0) {
+		ui->security16PasswordValue->text() = "";
+	}
+
+	QString result = port.getNvItemString(1943);
+}
 
 
 /**

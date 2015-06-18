@@ -116,6 +116,11 @@ typedef struct{
 } qcdm_16pw_rx_t;
 
 typedef struct {
+	uint8_t cmd;
+	uint16_t nvItem;
+} qcdm_nv_tx_t;
+
+typedef struct {
     uint8_t cmd;
     uint16_t nvItem;
     uint8_t data[DIAG_NV_ITEM_SIZE];
