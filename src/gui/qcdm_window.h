@@ -29,6 +29,8 @@ public slots:
     void ConnectToPort();
     void DisconnectPort();
     void SecuritySendSpc();
+	void SecuritySend16Password();
+	void nvReadGetMeid();
 
 private:
 	void log(int type, const char* message);

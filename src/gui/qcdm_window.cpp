@@ -17,6 +17,8 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
     QObject::connect(ui->securitySendSpcButton,        SIGNAL(clicked()), this, SLOT(SecuritySendSpc()));
+	QObject::connect(ui->securitySend16PasswordButton, SIGNAL(clicked()), this, SLOT(SecuritySend16Password()));
+	QObject::connect(ui->readMeidButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetMeid()));
 
 }
 
@@ -133,11 +135,10 @@ void QcdmWindow::DisconnectPort()
 
 
 /**
- * @brief QcdmWindow::UpdatePortList
+ * @brief QcdmWindow::SecuritySendSpc
  */
 void QcdmWindow::SecuritySendSpc()
 {
-
     if (!port.isOpen()) {
         log(LOGTYPE_WARNING, "Connect to a Port First");
         return;
@@ -161,6 +162,50 @@ void QcdmWindow::SecuritySendSpc()
     log(LOGTYPE_INFO, "SPC Accepted");
 }
 
+/**
+* @brief QcdmWindow::SecuritySend16Password
+*/
+void QcdmWindow::SecuritySend16Password()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	if (ui->security16PasswordValue->text().length() != 16) {
+		log(LOGTYPE_WARNING, "Enter a Valid 16 Digit Password");
+		return;
+	}
+
+	int result = port.send16Password(ui->security16PasswordValue->text().toStdString().c_str());
+
+	if (result < 0) {
+		log(LOGTYPE_ERROR, "Error Sending 16 Digit Password");
+		return;
+	}
+	else if (result != 1) {
+		log(LOGTYPE_ERROR, "16 Digit Password Not Accepted");
+		return;
+	}
+
+	log(LOGTYPE_INFO, "16 Digit Password Accepted");
+}
+
+/**
+* @brief QcdmWindow::nvReadGetMeid
+*/
+void QcdmWindow::nvReadGetMeid() {
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	if (ui->security16PasswordValue->text().length() != 0) {
+		ui->security16PasswordValue->text() = "";
+	}
+
+	QString result = port.getNvItemString(1943);
+}
 
 
 /**

@@ -20,10 +20,19 @@ namespace openpst {
 
             /**
              * @brief sendSpc
-             * @param spc - a 6 digit SPC code to unlock
+             * @param spc - a 6 digit SPC code to unlock service programming
              * @return
              */
             int sendSpc(const char* spc);
+
+			/**
+			* @brief send16Password
+			* @param password - a 16 digit password to unlock secure operations
+			* @return
+			*/
+			int send16Password(const char* password);
+
+			QString getNvItemString(int itemId);
 
             uint8_t buffer[DIAG_MAX_RX_PKT_SIZ];
             size_t lastRxSize,

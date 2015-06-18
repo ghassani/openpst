@@ -63,6 +63,7 @@ enum DIAG_COMMAND {
 	DIAG_SERIAL_MODE_CHANGE = 0x44,
 	DIAG_SET_DIPSW_F = 0x30,
 	DIAG_SPC_F = 0x41,
+	DIAG_PASSWORD_F = 0x46,
 	DIAG_STATUS_F = 14,
 	DIAG_STATUS_REQUEST_F = 12,
 	DIAG_SUBSYS_CMD_F = 0x4b,
@@ -93,6 +94,21 @@ typedef struct{
     uint8_t command;
     uint8_t status;
 } qcdm_spc_rx_t;
+
+typedef struct {
+	uint8_t command;
+	uint8_t password[16];
+} qcdm_16pw_tx_t;
+
+typedef struct{
+	uint8_t command;
+	uint8_t status;
+} qcdm_16pw_rx_t;
+
+typedef struct {
+	uint8_t cmd;
+	uint16_t nvItem;
+} qcdm_nv_tx_t;
 
 typedef struct {
     uint8_t cmd;
