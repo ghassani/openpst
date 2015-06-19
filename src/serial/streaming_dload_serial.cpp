@@ -104,6 +104,10 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 		return -1;
 	}
 
+	if (!isValidResponse(STREAMING_DLOAD_UNLOCKED, buffer, lastRxSize)) {
+		return 0;
+	}
+
 	return 1;
 }
 
@@ -127,7 +131,96 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 		return -1;
 	}
 
+	if (!isValidResponse(STREAMING_DLOAD_SECUIRTY_MODE_RECEIVED, buffer, lastRxSize)) {
+		return 0;
+	}
+
 	return 1;
+}
+
+int StreamingDloadSerial::sendReset()
+{
+	streaming_dload_reset_tx_t packet;
+	packet.command = STREAMING_DLOAD_RESET;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not response\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_RESET_ACK, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int StreamingDloadSerial::sendPowerOff()
+{
+	streaming_dload_reset_tx_t packet;
+	packet.command = STREAMING_DLOAD_POWER_OFF;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not response\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_POWERING_DOWN, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+
+int StreamingDloadSerial::sendNop()
+{
+	streaming_dload_nop_tx_t packet;
+	packet.command = STREAMING_DLOAD_NOP;
+	packet.identifier = std::rand();
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not response\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_NOP_RESPONSE, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)buffer;
+
+	if (resp->identifier  != packet.identifier) {
+		printf("Received NOP Respone but identifier did not match\n");
+		return 0;
+	}
 
 	return 1;
 }
@@ -139,6 +232,7 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 	if (response[idx] != expectedCommand) {
 		if (response[idx] == STREAMING_DLOAD_LOG) {
 			streaming_dload_log_rx_t* packet = (streaming_dload_log_rx_t*)&response[1];
+			printf("Received Log Response\n");
 			memcpy((uint8_t*)&lastLog, &buffer[idx], (responseSize - (HDLC_TRAILER_LENGTH + idx)));
 		} else if (response[idx] == STREAMING_DLOAD_ERROR) {
 			streaming_dload_error_rx_t* packet = (streaming_dload_error_rx_t*)&response[idx];
@@ -152,7 +246,6 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 
 	return true;
 }
-
 
 const char* StreamingDloadSerial::getNamedError(uint8_t code)
 {

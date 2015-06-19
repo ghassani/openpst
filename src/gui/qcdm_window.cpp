@@ -12,7 +12,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     ui->setupUi(this);
 
     UpdatePortList();
-
+	printf("%lu\n", sizeof(qcdm_nv_tx_t));
     QObject::connect(ui->portListRefreshButton,        SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));

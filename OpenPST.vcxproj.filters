@@ -162,17 +162,17 @@
     <ClCompile Include="src\serial\streaming_dload_serial.cpp">
       <Filter>Source Files\src\serial</Filter>
     </ClCompile>
-    <ClCompile Include="build\Win32\Debug\moc_streaming_dload_window.cpp">
-      <Filter>Generated Files\Debug_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="build\Win32\Release\moc_streaming_dload_window.cpp">
-      <Filter>Generated Files\Release_Win32</Filter>
-    </ClCompile>
     <ClCompile Include="src\qc\hdlc.cpp">
       <Filter>Source Files\src\qc</Filter>
     </ClCompile>
     <ClCompile Include="src\qc\crc.cpp">
       <Filter>Source Files\src\qc</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Debug\moc_streaming_dload_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_streaming_dload_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

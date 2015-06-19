@@ -55,12 +55,42 @@ public slots:
 	*/
 	void SetSecurityMode();
 
-    /**
-     * @brief ClearLog
-     */
-	void ClearLog();
+	/**
+	* @brief SendNop
+	*/
+	void SendNop();
 
-    /**
+	/**
+	* @brief SendReset
+	*/
+	void SendReset();
+
+	/**
+	* @brief SendPowerDown
+	*/
+	void SendPowerDown();
+
+	/**
+	* @brief CloseMode
+	*/
+	void CloseMode();
+
+	/**
+	* @brief ReadEccState
+	*/
+	void ReadEccState();
+
+	/**
+	* @brief SetEccState
+	*/
+	void SetEccState();
+
+	/**
+	* @brief ClearLog
+	*/
+	void ClearLog();
+	
+	/**
      * @brief SaveLog
      */
 	void SaveLog();

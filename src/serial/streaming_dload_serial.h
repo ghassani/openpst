@@ -27,6 +27,14 @@ namespace openpst {
 			int sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits);
 			int sendUnlock(std::string code);
 			int setSecurityMode(uint8_t mode);
+			int sendReset();
+			int sendPowerOff();
+			int readEcc(uint8_t& statusOut);
+			int setEcc(uint8_t status);
+			int sendNop();
+			int openMode(uint8_t mode);
+			int closeMode();
+
 			streaming_dload_hello_rx_t deviceState;
 			streaming_dload_error_rx_t lastError;
 			streaming_dload_log_rx_t lastLog;

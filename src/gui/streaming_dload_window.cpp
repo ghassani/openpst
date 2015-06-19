@@ -18,9 +18,14 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->securityModeValue->addItem("0x00 - Untrusted", STREAMING_DLOAD_SECURITY_MODE_UNTRUSTED);
 	ui->securityModeValue->setCurrentIndex(0);
 	
-	ui->commandValue->addItem("0x09 - NOP", STREAMING_DLOAD_NOP);
-	ui->commandValue->addItem("0x0B - Reset", STREAMING_DLOAD_RESET);
-	ui->commandValue->addItem("0x09 - NOP", STREAMING_DLOAD_NOP);
+	ui->openModeValue->addItem("0x01 - Bootloader Download", STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD);
+	ui->openModeValue->addItem("0x02 - Bootable Image Download", STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD);
+	ui->openModeValue->addItem("0x03 - CEFS Image Download", STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD);
+	ui->openModeValue->setCurrentIndex(0);
+
+	ui->eccSetValue->addItem("0x00 - Disable", 0x00);
+	ui->eccSetValue->addItem("0x01 - Enable", 0x01);
+	ui->eccSetValue->setCurrentIndex(0);
 
 	UpdatePortList();
 
@@ -30,9 +35,11 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->helloButton, SIGNAL(clicked()), this, SLOT(SendHello()));	
 	QObject::connect(ui->unlockButton, SIGNAL(clicked()), this, SLOT(SendUnlock()));
 	QObject::connect(ui->securityModeButton, SIGNAL(clicked()), this, SLOT(SetSecurityMode()));
+	QObject::connect(ui->nopButton, SIGNAL(clicked()), this, SLOT(SendNop()));
+	QObject::connect(ui->resetButton, SIGNAL(clicked()), this, SLOT(SendReset()));
+	QObject::connect(ui->powerDownButton, SIGNAL(clicked()), this, SLOT(SendPowerDown()));
 	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(ClearLog()));
 }
-
 
 StreamingDloadWindow::~StreamingDloadWindow()
 {
@@ -71,7 +78,6 @@ void StreamingDloadWindow::UpdatePortList()
 		ui->portList->addItem(tmp, device.port.c_str());
 	}
 }
-
 /**
 * @brief StreamingDloadWindow::ConnectToPort
 */
@@ -209,7 +215,6 @@ void StreamingDloadWindow::SetSecurityMode()
 */
 void StreamingDloadWindow::SendUnlock()
 {
-
 	if (!port.isOpen()) {
 		log("Port Not Open");
 		return;
@@ -223,7 +228,88 @@ void StreamingDloadWindow::SendUnlock()
 		log("Error Sending Unlock");
 		return;
 	}
+}
 
+
+/**
+* @brief SendNop
+*/
+void StreamingDloadWindow::SendNop()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+	if (!port.sendNop()) {
+		log("Error Sending NOP");
+	}
+}
+
+/**
+* @brief SendReset
+*/
+void StreamingDloadWindow::SendReset()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+	if (!port.sendReset()) {
+		log("Error Sending Reset");
+	}
+}
+
+/**
+* @brief SendPowerDown
+*/
+void StreamingDloadWindow::SendPowerDown()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+	if (!port.sendPowerOff()) {
+		log("Error Sending Power Down");
+	}
+}
+
+/**
+* @brief CloseMode
+*/
+void StreamingDloadWindow::CloseMode()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+
+}
+
+/**
+* @brief ReadEccState
+*/
+void StreamingDloadWindow::ReadEccState()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+}
+
+/**
+* @brief SetEccState
+*/
+void StreamingDloadWindow::SetEccState()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
 
 }
 

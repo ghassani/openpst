@@ -5,7 +5,6 @@
 /*
  * @see DCN 80-V5348-1 J
  */
-
 #ifndef _QC_STREAMING_DLOAD_H
 #define _QC_STREAMING_DLOAD_H
 
@@ -87,8 +86,6 @@ enum STREAMING_DLOAD_COMMAND {
 
     //36-FE Reserved
 };
-
-
 
 enum STREAMING_DLOAD_ERROR_CODE {
     STREAMING_DLOAD_ERROR_ERROR_INVALID_DESTINATION_ADDRESS     = 0x02,
@@ -186,12 +183,12 @@ PACKED(typedef struct streaming_dload_stream_write_rx_t { // 0x08
 
 PACKED(typedef struct streaming_dload_nop_tx_t {// 0x09
     uint8_t command;
-    uint8_t* data;
+    uint32_t identifier; // this can be any amount of data. its just sent back to us in the response to validate the NOP call
 } streaming_dload_nop_tx_t);
 
 PACKED(typedef struct streaming_dload_nop_rx_t { // 0x0A
     uint8_t command;
-    uint8_t* data;
+	uint32_t identifier; // response should have same as in transmitted packet
 } streaming_dload_nop_rx_t);
 
 PACKED(typedef struct streaming_dload_reset_tx_t {// 0x0B
@@ -205,12 +202,12 @@ PACKED(typedef struct streaming_dload_reset_rx_t { // 0x0C
 PACKED(typedef struct streaming_dload_error_rx_t { // 0x0D
     uint8_t command;
     uint32_t code;
-    uint8_t* text;
+	uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
 } streaming_dload_error_rx_t);
 
 PACKED(typedef struct streaming_dload_log_rx_t { // 0x0E
     uint8_t command;
-    uint8_t* text;
+	uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
 } streaming_dload_log_rx_t);
 
 PACKED(typedef struct streaming_dload_unlock_tx_t { // 0x0F
@@ -258,8 +255,8 @@ PACKED(typedef struct streaming_dload_security_mode_rx_t { // 0x18
 
 PACKED(typedef struct streaming_partition_table_tx_t { // 0x19
     uint8_t command;
-    uint8_t override; // 0x00 no override, 0x01 override existing table
-    uint8_t* partitionTable; // max 512 bytes
+	uint8_t overrideExisting; // 0x00 no override, 0x01 override existing table
+    uint8_t partitionTable[512]; // max 512 bytes
 } streaming_partition_table_tx_t);
 
 PACKED(typedef struct streaming_dload_partition_table_rx_t { // 0x1A
@@ -273,12 +270,61 @@ PACKED(typedef struct streaming_dload_partition_table_rx_t { // 0x1A
 PACKED(typedef struct streaming_dload_open_multi_image_tx_t { // 0x1B
     uint8_t command;
     uint8_t type;
-    uint8_t* data;
+    uint8_t data[512];
 } streaming_dload_open_multi_image_tx_t);
 
-PACKED(typedef struct streaming_dload_open_multi_image_rx_t { // 0x16
-    uint8_t command;
+PACKED(typedef struct streaming_dload_open_multi_image_rx_t { // 0x1C
+	uint8_t command;
+	uint8_t status; // 0x00 Open successful
+					// 0x01 Payload length exceeded, fail
+					// 0x02 No payload expected, fail
+					// 0x03 Payload required, fail
+					// 0x04 Block 0 write protected, fail
 } streaming_dload_open_multi_image_rx_t);
+
+/*
+* This packet will erase the whole flash. If the operation fails, you may
+* have to restore the device via jtag. Use with caution
+*/
+PACKED(typedef struct streaming_dload_erase_flash_tx_t { // 0x1D
+	uint8_t command;
+} streaming_dload_erase_flash_tx_t);
+
+PACKED(typedef struct streaming_dload_erase_flash_rx_t { // 0x1E
+	uint8_t command;
+} streaming_dload_erase_flash_rx_t);
+
+PACKED(typedef struct streaming_dload_get_ecc_state_tx_t { // 0x1F
+	uint8_t command;
+} streaming_dload_get_ecc_state_tx_t);
+
+PACKED(typedef struct streaming_dload_get_ecc_state_rx_t { // 0x20
+	uint8_t command;
+	uint8_t status; // 0x00 ECC generation/check disabled
+					// 0x01 ECC generation/check enabled
+} streaming_dload_get_ecc_state_rx_t);
+
+PACKED(typedef struct streaming_dload_set_ecc_state_tx_t { // 0x21
+	uint8_t command;
+	uint8_t status; // 0x00 disable, 0x01 enabled
+} streaming_dload_set_ecc_state_tx_t);
+
+PACKED(typedef struct streaming_dload_set_ecc_state_rx_t { // 0x22
+	uint8_t command;
+} streaming_dload_set_ecc_state_rx_t);
+
+PACKED(typedef struct streaming_dload_unframed_stream_write_tx_t { // 0x30
+	uint8_t command;
+	uint8_t padding[2]; // should be set to 0x000000
+	uint32_t address;
+	uint32_t length;
+	uint8_t* data;
+} streaming_dload_unframed_stream_write_tx_t);
+
+PACKED(typedef struct streaming_dload_unframed_stream_write_rx_t { // 0x31
+	uint8_t command;
+	uint32_t address;
+} streaming_dload_unframed_stream_write_rx_t);
 
 PACKED(typedef struct streaming_dload_qfprom_write_tx_t { // 0x32
     uint8_t command;
@@ -292,14 +338,14 @@ PACKED(typedef struct streaming_dload_qfprom_write_rx_t { // 0x33
     uint32_t rowAddress;
 } streaming_dload_qfprom_write_rx_t);
 
-/*
+
 PACKED(typedef struct streaming_dload_qfprom_read_tx_t { // 0x34
     uint8_t command;
-    uint3_qc_streaming_dload_h2_t rowAddress;
+    uint32_t rowAddress;
     uint32_t addressType; // 0x00 - Corrected Reads, 0x01 - Raw Reads
     uint32_t msb;
 } streaming_dload_qfprom_read_tx_t);
-*/
+
 
 PACKED(typedef struct streaming_dload_qfprom_read_rx_t { // 0x35
     uint8_t command;
