@@ -73,6 +73,11 @@ public slots:
 	/**
 	* @brief CloseMode
 	*/
+	void OpenMode();
+
+	/**
+	* @brief CloseMode
+	*/
 	void CloseMode();
 
 	/**

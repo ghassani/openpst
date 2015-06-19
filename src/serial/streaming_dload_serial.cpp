@@ -30,7 +30,9 @@ StreamingDloadSerial::~StreamingDloadSerial()
 }
 
 
-
+/**
+* @brief StreamingDloadSerial::~StreamingDloadSerial
+*/
 int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits)
 {
 	streaming_dload_hello_tx_t hello;
@@ -51,7 +53,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	lastRxSize = read(buffer, bufferSize);
 	
 	if (!lastRxSize) {
-		printf("Device did not response\n");
+		printf("Device did not respond\n");
 		return -1;
 	}
 
@@ -71,7 +73,8 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 
 	int dataStartIndex = (packetStartIndex + sizeof(streaming_dload_hello_rx_header_t));
 
-	// get the flashIdenfier, windowSize, numberOfSectors, sectorSizes, featureBits
+	// parse the packet and get the things that are not obvious without calculation
+	// flashIdenfier, windowSize, numberOfSectors, sectorSizes, featureBits
 	memcpy(&deviceState.flashIdenfier, &buffer[dataStartIndex], deviceState.flashIdLength);	
 	memcpy(&deviceState.windowSize, &buffer[dataStartIndex + deviceState.flashIdLength], sizeof(deviceState.windowSize));
 	memcpy(&deviceState.numberOfSectors, &buffer[dataStartIndex + deviceState.flashIdLength + sizeof(deviceState.windowSize)], sizeof(deviceState.numberOfSectors));
@@ -100,7 +103,7 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 	lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-		printf("Device did not response\n");
+		printf("Device did not respond\n");
 		return -1;
 	}
 
@@ -127,7 +130,7 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 	lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-		printf("Device did not response\n");
+		printf("Device did not respond\n");
 		return -1;
 	}
 
@@ -153,7 +156,7 @@ int StreamingDloadSerial::sendReset()
 	lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-		printf("Device did not response\n");
+		printf("Device did not respond\n");
 		return -1;
 	}
 
@@ -179,7 +182,7 @@ int StreamingDloadSerial::sendPowerOff()
 	lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-		printf("Device did not response\n");
+		printf("Device did not respond\n");
 		return -1;
 	}
 
@@ -207,7 +210,7 @@ int StreamingDloadSerial::sendNop()
 	lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-		printf("Device did not response\n");
+		printf("Device did not respond\n");
 		return -1;
 	}
 
@@ -215,10 +218,119 @@ int StreamingDloadSerial::sendNop()
 		return 0;
 	}
 
-	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)buffer;
+	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
 
 	if (resp->identifier  != packet.identifier) {
-		printf("Received NOP Respone but identifier did not match\n");
+		printf("Received NOP response but identifier did not match\n");
+	}
+
+	return 1;
+}
+
+int StreamingDloadSerial::readEcc(uint8_t& statusOut)
+{
+	streaming_dload_get_ecc_state_tx_t packet;
+	packet.command = STREAMING_DLOAD_GET_ECC_STATE;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_CURRENT_ECC_STATE, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	streaming_dload_get_ecc_state_rx_t* resp = (streaming_dload_get_ecc_state_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+	
+	statusOut = resp->status;
+
+	return 1;
+}
+
+int StreamingDloadSerial::setEcc(uint8_t status)
+{
+	streaming_dload_set_ecc_state_tx_t packet;
+	packet.command = STREAMING_DLOAD_SET_ECC;
+	packet.status = status;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_SET_ECC_RESPONSE, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int StreamingDloadSerial::openMode(uint8_t mode)
+{
+	streaming_dload_open_tx_t packet;
+	packet.command = STREAMING_DLOAD_OPEN;
+	packet.mode = mode;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_OPENED, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int StreamingDloadSerial::closeMode()
+{
+	streaming_dload_close_tx_t packet;
+	packet.command = STREAMING_DLOAD_CLOSE;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_CLOSED, buffer, lastRxSize)) {
 		return 0;
 	}
 
@@ -269,5 +381,16 @@ const char* StreamingDloadSerial::getNamedError(uint8_t code)
 		case STREAMING_DLOAD_ERROR_POWER_OFF_COMMAND_NOT_SUPPORTED:			return "Power Off Command Not Supported";
 		default: 
 			return "Unknown";
+	}
+}
+
+const char* StreamingDloadSerial::getNamedOpenMode(uint8_t mode)
+{
+	switch (mode) {
+	case STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD:		return "Bootloader Download";
+	case STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD:	return "Bootable Image Download";
+	case STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD:		return "CEFS Image Download";
+	default:
+		return "Unknown";
 	}
 }

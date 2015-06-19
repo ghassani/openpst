@@ -38,7 +38,12 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->nopButton, SIGNAL(clicked()), this, SLOT(SendNop()));
 	QObject::connect(ui->resetButton, SIGNAL(clicked()), this, SLOT(SendReset()));
 	QObject::connect(ui->powerDownButton, SIGNAL(clicked()), this, SLOT(SendPowerDown()));
+	QObject::connect(ui->eccReadButton, SIGNAL(clicked()), this, SLOT(ReadEccState()));
+	QObject::connect(ui->eccSetButton, SIGNAL(clicked()), this, SLOT(SetEccState()));
+	QObject::connect(ui->openModeButton, SIGNAL(clicked()), this, SLOT(OpenMode()));
+	QObject::connect(ui->closeModeButton, SIGNAL(clicked()), this, SLOT(CloseMode()));
 	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(ClearLog()));
+
 }
 
 StreamingDloadWindow::~StreamingDloadWindow()
@@ -187,11 +192,12 @@ void StreamingDloadWindow::SendHello()
 	log(tmp.sprintf("Window Size: %d", port.deviceState.windowSize));
 	log(tmp.sprintf("Number of Sectors: %d", port.deviceState.numberOfSectors));
 
+	/*
+	// dump all sector sizes
 	for (int i = 0; i < port.deviceState.numberOfSectors; i++) {
 		log(tmp.sprintf("Sector %d: %d", i, port.deviceState.sectorSizes[i*4]));
-	}
+	}*/
 
-	//log(tmp.sprintf("Sector Sizes: %d", port.deviceState.sectorSizes)); 
 	log(tmp.sprintf("Feature Bits: %04X", port.deviceState.featureBits));
 }
 
@@ -243,7 +249,10 @@ void StreamingDloadWindow::SendNop()
 
 	if (!port.sendNop()) {
 		log("Error Sending NOP");
+		return;
 	}
+
+	log("NOP Success");
 }
 
 /**
@@ -258,7 +267,11 @@ void StreamingDloadWindow::SendReset()
 
 	if (!port.sendReset()) {
 		log("Error Sending Reset");
+		return;
 	}
+
+	log("Device Resetting");
+	port.close();
 }
 
 /**
@@ -273,8 +286,39 @@ void StreamingDloadWindow::SendPowerDown()
 
 	if (!port.sendPowerOff()) {
 		log("Error Sending Power Down");
+		return;
 	}
+
+	log("Device Powering Down");
+	port.close();
 }
+
+/**
+* @brief CloseMode
+*/
+void StreamingDloadWindow::OpenMode()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
+
+	QString tmp;
+	uint8_t mode = ui->openModeValue->currentData().toUInt();
+
+	if (!port.openMode(mode)) {
+		log(tmp.sprintf("Error Opening Mode %s", port.getNamedOpenMode(mode)));
+		return;
+	}
+
+	log(tmp.sprintf("Opened Mode %s", port.getNamedOpenMode(mode)));
+}
+
 
 /**
 * @brief CloseMode
@@ -286,7 +330,12 @@ void StreamingDloadWindow::CloseMode()
 		return;
 	}
 
+	if (!port.closeMode()) {
+		log("Error Closing Mode");
+		return;
+	}
 
+	log("Mode Closed");
 }
 
 /**
@@ -299,6 +348,27 @@ void StreamingDloadWindow::ReadEccState()
 		return;
 	}
 
+	uint8_t status;
+
+	if (!port.readEcc(status)) {
+		log("Error Reading ECC");
+		return;
+	}
+
+	if (status == 0x01) {
+		log("ECC Enabled");
+	} else if (status == 0x00) {
+		log("ECC Disabled");
+	} else {
+		log("Unknown ECC State");
+	}
+
+	// set the ecc set choice box value to the matching
+	// state
+	int choiceIdx = ui->eccSetValue->findData(status);
+	if (choiceIdx) {
+		ui->eccSetValue->setCurrentIndex(1);
+	}
 }
 
 /**
@@ -311,6 +381,17 @@ void StreamingDloadWindow::SetEccState()
 		return;
 	}
 
+	uint8_t state = ui->eccSetValue->currentData().toUInt();
+	if (!port.setEcc(state)) {
+		log("Error Setting ECC State");
+		return;
+	}
+
+	if (state == 0x00) {
+		log("ECC Disabled");
+	} else if (state == 0x01) {
+		log("ECC Enabled");
+	}
 }
 
 /**
