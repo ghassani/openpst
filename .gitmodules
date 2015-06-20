@@ -1,0 +1,7 @@
+[submodule "serial"]
+	path = lib/serial
+	url = https://github.com/wjwwood/serial.git
+
+[submodule "xerces"]
+	path = lib/xerces
+	url = https://github.com/apache/xerces-c.git
