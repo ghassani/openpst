@@ -27,6 +27,10 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->eccSetValue->addItem("0x01 - Enable", 0x01);
 	ui->eccSetValue->setCurrentIndex(0);
 
+	ui->qfpromReadAddressTypeValue->addItem("0x00 - Corrected", 0x00);
+	ui->qfpromReadAddressTypeValue->addItem("0x01 - RAW", 0x01);
+	ui->qfpromReadAddressTypeValue->setCurrentIndex(0);
+
 	UpdatePortList();
 
 	QObject::connect(ui->portRefreshButton, SIGNAL(clicked()), this, SLOT(UpdatePortList()));

@@ -10,8 +10,26 @@
     <height>376</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>376</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>376</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Send RAW - OpenPST</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QComboBox" name="portList">
@@ -23,6 +41,11 @@
       <height>29</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
    </widget>
    <widget class="QPushButton" name="portListRefreshButton">
     <property name="geometry">
@@ -32,6 +55,11 @@
       <width>91</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Refresh</string>
@@ -45,6 +73,11 @@
       <width>91</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Connect</string>
@@ -62,6 +95,11 @@
       <height>27</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Disconnect</string>
     </property>
@@ -75,6 +113,11 @@
       <height>201</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButton_4">
     <property name="enabled">
@@ -82,11 +125,16 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>540</x>
       <y>260</y>
       <width>91</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Write</string>
@@ -98,11 +146,16 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>640</x>
       <y>260</y>
-      <width>121</width>
+      <width>141</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Write Then Read</string>
@@ -114,11 +167,16 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>640</x>
       <y>290</y>
-      <width>121</width>
+      <width>141</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Read Then Write</string>
@@ -130,11 +188,16 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>540</x>
       <y>290</y>
       <width>91</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Read</string>
@@ -148,6 +211,11 @@
       <width>231</width>
       <height>29</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <item>
      <property name="text">
@@ -172,7 +240,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
