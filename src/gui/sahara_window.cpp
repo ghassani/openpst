@@ -11,46 +11,43 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->saharaWriteHelloSwitchCommandSelect->addItem("", -1);
-    ui->saharaWriteHelloSwitchCommandSelect->addItem("Image Transfer Pending",   SAHARA_MODE_IMAGE_TX_PENDING);
-    ui->saharaWriteHelloSwitchCommandSelect->addItem("Image Transfer Complete",  SAHARA_MODE_IMAGE_TX_COMPLETE);
-    ui->saharaWriteHelloSwitchCommandSelect->addItem("Memory Debug",             SAHARA_MODE_MEMORY_DEBUG);
-    ui->saharaWriteHelloSwitchCommandSelect->addItem("Client Command Mode",      SAHARA_MODE_COMMAND);
+	ui->writeHelloSwitchModeValue->addItem("", -1);
+	ui->writeHelloSwitchModeValue->addItem("Image Transfer Pending", SAHARA_MODE_IMAGE_TX_PENDING);
+	ui->writeHelloSwitchModeValue->addItem("Image Transfer Complete", SAHARA_MODE_IMAGE_TX_COMPLETE);
+	ui->writeHelloSwitchModeValue->addItem("Memory Debug", SAHARA_MODE_MEMORY_DEBUG);
+	ui->writeHelloSwitchModeValue->addItem("Client Command Mode", SAHARA_MODE_COMMAND);
 
-    ui->saharaSendClientCommandSelect->addItem("", -1);
-    ui->saharaSendClientCommandSelect->addItem("NOP",                       SAHARA_EXEC_CMD_NOP);
-    ui->saharaSendClientCommandSelect->addItem("Read Serial Number",        SAHARA_EXEC_CMD_SERIAL_NUM_READ);
-    ui->saharaSendClientCommandSelect->addItem("Read MSM HW ID",            SAHARA_EXEC_CMD_MSM_HW_ID_READ);
-    ui->saharaSendClientCommandSelect->addItem("Read OEM PK Hash",          SAHARA_EXEC_CMD_OEM_PK_HASH_READ);
-    ui->saharaSendClientCommandSelect->addItem("Switch To DMSS DLOAD",      SAHARA_EXEC_CMD_SWITCH_TO_DMSS_DLOAD);
-    ui->saharaSendClientCommandSelect->addItem("Switch To Streaming DLOAD", SAHARA_EXEC_CMD_SWITCH_TO_STREAM_DLOAD);
-    ui->saharaSendClientCommandSelect->addItem("Read Debug Data",           SAHARA_EXEC_CMD_READ_DEBUG_DATA);
-    ui->saharaSendClientCommandSelect->addItem("Get SBL SW Version",        SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL);
+	ui->clientCommandValue->addItem("", -1);
+	ui->clientCommandValue->addItem("NOP", SAHARA_EXEC_CMD_NOP);
+	ui->clientCommandValue->addItem("Read Serial Number", SAHARA_EXEC_CMD_SERIAL_NUM_READ);
+	ui->clientCommandValue->addItem("Read MSM HW ID", SAHARA_EXEC_CMD_MSM_HW_ID_READ);
+	ui->clientCommandValue->addItem("Read OEM PK Hash", SAHARA_EXEC_CMD_OEM_PK_HASH_READ);
+	ui->clientCommandValue->addItem("Switch To DMSS DLOAD", SAHARA_EXEC_CMD_SWITCH_TO_DMSS_DLOAD);
+	ui->clientCommandValue->addItem("Switch To Streaming DLOAD", SAHARA_EXEC_CMD_SWITCH_TO_STREAM_DLOAD);
+	ui->clientCommandValue->addItem("Read Debug Data", SAHARA_EXEC_CMD_READ_DEBUG_DATA);
+	ui->clientCommandValue->addItem("Get SBL SW Version", SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL);
 
-    ui->saharaSwitchModeSelect->addItem("", -1);
-    ui->saharaSwitchModeSelect->addItem("Image Transfer Pending",   SAHARA_MODE_IMAGE_TX_PENDING);
-    ui->saharaSwitchModeSelect->addItem("Image Transfer Complete",  SAHARA_MODE_IMAGE_TX_COMPLETE);
-    ui->saharaSwitchModeSelect->addItem("Memory Debug",             SAHARA_MODE_MEMORY_DEBUG);
-    ui->saharaSwitchModeSelect->addItem("Client Command Mode",      SAHARA_MODE_COMMAND);
-
-    ui->saharaSendCommandSelect->addItem("", -1);
-    ui->saharaSendCommandSelect->addItem("Done",        SAHARA_DONE);
-    ui->saharaSendCommandSelect->addItem("Reset",       SAHARA_RESET);
+	ui->switchModeValue->addItem("", -1);
+	ui->switchModeValue->addItem("Image Transfer Pending", SAHARA_MODE_IMAGE_TX_PENDING);
+	ui->switchModeValue->addItem("Image Transfer Complete", SAHARA_MODE_IMAGE_TX_COMPLETE);
+	ui->switchModeValue->addItem("Memory Debug", SAHARA_MODE_MEMORY_DEBUG);
+    ui->switchModeValue->addItem("Client Command Mode",      SAHARA_MODE_COMMAND);
 
     UpdatePortList();
 
     QObject::connect(ui->portRefreshButton,             SIGNAL(clicked()), this, SLOT(UpdatePortList()));
-    QObject::connect(ui->saharaReadHelloButton,         SIGNAL(clicked()), this, SLOT(ReadHello()));
-    QObject::connect(ui->saharaWriteHelloButton,        SIGNAL(clicked()), this, SLOT(WriteHello()));
+    QObject::connect(ui->readHelloButton,				SIGNAL(clicked()), this, SLOT(ReadHello()));
+    QObject::connect(ui->writeHelloButton,				SIGNAL(clicked()), this, SLOT(WriteHello()));
     QObject::connect(ui->portDisconnectButton,          SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton,             SIGNAL(clicked()), this, SLOT(ConnectToPort()));
-    QObject::connect(ui->saharaSwitchModeButton,        SIGNAL(clicked()), this, SLOT(SwitchMode()));
-    QObject::connect(ui->saharaSendClientCommandButton, SIGNAL(clicked()), this, SLOT(SendClientCommand()));
-    QObject::connect(ui->saharaReadPortButton,          SIGNAL(clicked()), this, SLOT(ReadSome()));
-    QObject::connect(ui->saharaSendImageBrowse,         SIGNAL(clicked()), this, SLOT(BrowseForImage()));
-    QObject::connect(ui->saharaSendImageButton,         SIGNAL(clicked()), this, SLOT(SendImage()));
-    QObject::connect(ui->saharaSendCommandButton,       SIGNAL(clicked()), this, SLOT(SendCommandButtonAction()));
-    QObject::connect(ui->streamingDloadHelloButton,     SIGNAL(clicked()), this, SLOT(SendStreamingDloadHello()));
+    QObject::connect(ui->switchModeButton,				SIGNAL(clicked()), this, SLOT(SwitchMode()));
+    QObject::connect(ui->clientCommandButton,			SIGNAL(clicked()), this, SLOT(SendClientCommand()));
+	QObject::connect(ui->resetButton,					SIGNAL(clicked()), this, SLOT(SendReset()));
+	QObject::connect(ui->doneButton,					SIGNAL(clicked()), this, SLOT(SendDone()));
+	QObject::connect(ui->readPortButton,				SIGNAL(clicked()), this, SLOT(ReadSome()));
+	QObject::connect(ui->sendImageFileBrowseButton,		SIGNAL(clicked()), this, SLOT(BrowseForImage()));
+	QObject::connect(ui->sendImageButton,				SIGNAL(clicked()), this, SLOT(SendImage()));
+	QObject::connect(ui->streamingDloadHelloButton,		SIGNAL(clicked()), this, SLOT(SendStreamingDloadHello()));
     QObject::connect(ui->clearLogButton,                SIGNAL(clicked()), this, SLOT(ClearLog()));
 }
 
@@ -137,6 +134,7 @@ void SaharaWindow::ConnectToPort()
     }
 
 	log(tmp.sprintf("Connected to %s", currentPort.port.c_str()));
+	ui->portDisconnectButton->setEnabled(true);
 }
 
 /**
@@ -144,10 +142,16 @@ void SaharaWindow::ConnectToPort()
  */
 void SaharaWindow::ReadHello()
 {
-    log("Reading Hello");
+	if (!port.isOpen()) {
+		log("Select a port first");
+		return;
+	}
+	
+	log("Reading Hello");
 
     if (!port.receiveHello()) {
         log("Did not receive hello. Not in sahara mode or requires restart.");
+		ui->deviceStateLastErrorValue->setText("Hello Not Received");
         return DisconnectPort();
     }
 
@@ -159,11 +163,14 @@ void SaharaWindow::ReadHello()
     ui->deviceStateMinVersionValue->setText(tmp.sprintf("%i", port.deviceState.minVersion));
     ui->deviceStatePreferredMaxSizeValue->setText(tmp.sprintf("%i", port.deviceState.maxCommandPacketSize));
 
-    int index = ui->saharaWriteHelloSwitchCommandSelect->findData(port.deviceState.mode);
+    int index = ui->writeHelloSwitchModeValue->findData(port.deviceState.mode);
 
     if ( index != -1 ) {
-       ui->saharaWriteHelloSwitchCommandSelect->setCurrentIndex(index);
+		ui->writeHelloSwitchModeValue->setCurrentIndex(index);
     }
+
+
+	ui->deviceStateLastOperationValue->setText("Read Hello");
 }
 
 /**
@@ -178,7 +185,7 @@ void SaharaWindow::WriteHello()
 
     QString tmp;
 
-    if (!port.sendHello(ui->saharaWriteHelloSwitchCommandSelect->currentData().toUInt(), 0x00)) {
+	if (!port.sendHello(ui->writeHelloSwitchModeValue->currentData().toUInt(), 0x00)) {
         log("Error Saying Hello");
         return DisconnectPort();
     }
@@ -187,8 +194,12 @@ void SaharaWindow::WriteHello()
 
     if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
 
+		ui->deviceStateRequestedImageValue->setText(port.getNamedRequestedImage(port.readState.imageId));
         log(tmp.sprintf("Device Requesting %zd Bytes of Image 0x%02x - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
     }
+
+	ui->deviceStateLastOperationValue->setText("Write Hello");
+
 }
 
 /**
@@ -199,7 +210,7 @@ void SaharaWindow::BrowseForImage()
     QString fileName = QFileDialog::getOpenFileName(this, "Select Image To Send", "", "Image Files (*.mbn *.bin *.img)");
 
     if (fileName.length()) {
-        ui->saharaSendImagePath->setText(fileName);
+        ui->sendImageFileValue->setText(fileName);
     }
 }
 
@@ -213,7 +224,7 @@ void SaharaWindow::SendImage()
         return;
     }
 
-    QString fileName = ui->saharaSendImagePath->text();
+	QString fileName = ui->sendImageFileValue->text();
 
     if (!fileName.length()) {
         log("Please Enter or Browse For a Image File");
@@ -231,7 +242,7 @@ void SaharaWindow::SendImage()
         //return DisconnectPort();
     }
 
-
+	ui->deviceStateLastOperationValue->setText("Image Transfer");
     log("Image Transfer Complete");
 }
 
@@ -246,7 +257,7 @@ void SaharaWindow::SwitchMode()
     }
 
     QString tmp;
-    uint16_t requestMode =  ui->saharaSwitchModeSelect->currentData().toUInt();
+    uint16_t requestMode =  ui->switchModeValue->currentData().toUInt();
 
     log(tmp.sprintf("Requesting Mode Switch From 0x%02x - %s  to 0x%02x - %s",
         port.deviceState.mode,
@@ -262,6 +273,7 @@ void SaharaWindow::SwitchMode()
 
     log(tmp.sprintf("Device In Mode: %s", port.getNamedMode(port.deviceState.mode)));
     ui->deviceStateModeValue->setText(port.getNamedMode(port.deviceState.mode));
+	ui->deviceStateLastOperationValue->setText(tmp.sprintf("Switch Mode %s", port.getNamedMode(port.deviceState.mode)));
 }
 
 /**
@@ -275,7 +287,7 @@ void SaharaWindow::SendClientCommand()
         return;
     }
 
-    uint16_t requestedCommand =  ui->saharaSendClientCommandSelect->currentData().toUInt();
+    uint16_t requestedCommand =  ui->clientCommandValue->currentData().toUInt();
 
     uint8_t* readData;
     size_t readDataSize;
@@ -291,6 +303,8 @@ void SaharaWindow::SendClientCommand()
     ));
 
     logHex(readData, readDataSize);
+
+	ui->deviceStateLastOperationValue->setText(tmp.sprintf("Client Command %s", port.getNamedClientCommand(requestedCommand)));
 }
 
 /**
@@ -310,6 +324,7 @@ void SaharaWindow::SendReset()
         return DisconnectPort();
     }
 
+	ui->deviceStateLastOperationValue->setText("Reset");
 }
 
 
@@ -322,7 +337,7 @@ void SaharaWindow::SendDone()
         log("Select a port and receive hello first.");
         return;
     }
-
+	
     log("Sending Done Command");
 
 	try {
@@ -334,32 +349,10 @@ void SaharaWindow::SendDone()
 		log(e.what());
 	}
 
+	log("Done Command Successfully Sent");
+	ui->deviceStateLastOperationValue->setText("Done");
 }
 
-/**
- * @brief SaharaWindow::SendCommandButtonAction
- */
-void SaharaWindow::SendCommandButtonAction()
-{
-    if (!port.isOpen()) {
-        log("Select a port and receive hello first.");
-        return;
-    }
-
-    uint16_t requestedCommand =  ui->saharaSendCommandSelect->currentData().toUInt();
-
-    switch(requestedCommand){
-        case SAHARA_DONE:
-            return SendDone();
-            break;
-        case SAHARA_RESET:
-            return SendReset();
-            break;
-        default:
-            log("Unknown Command");
-            break;
-    }
-}
 
 /**
  * @brief SaharaWindow::ReadSome
@@ -390,7 +383,14 @@ void SaharaWindow::DisconnectPort()
     if (port.isOpen()) {
 		port.close();
 		log("Port Closed");
-    }
+		ui->deviceStateVersionValue->setText("Waiting Hello");
+		ui->deviceStateMinVersionValue->setText("Waiting Hello");
+		ui->deviceStatePreferredMaxSizeValue->setText("Waiting Hello");
+		ui->deviceStateRequestedImageValue->setText("None");
+		ui->deviceStateLastOperationValue->setText("None");
+		ui->portDisconnectButton->setEnabled(false);
+	}
+	
 }
 
 
@@ -405,7 +405,7 @@ void SaharaWindow::SendStreamingDloadHello()
         return;
     }
 
-    if (!ui->streamingDloadHelloMagiInput->text().length()) {
+	if (!ui->streamingDloadHelloMagicValue->text().length()) {
         log("No Magic Set");
         return;
     }
@@ -413,7 +413,7 @@ void SaharaWindow::SendStreamingDloadHello()
     streaming_dload_hello_tx_t dloadHello;
     uint32_t outsize = 0;
     uint8_t* outbuf = NULL;
-    std::string magic = ui->streamingDloadHelloMagiInput->text().toStdString();
+	std::string magic = ui->streamingDloadHelloMagicValue->text().toStdString();
 
     dloadHello.command = STREAMING_DLOAD_HELLO;
     memcpy(dloadHello.magic, magic.c_str(), magic.size());
@@ -434,8 +434,6 @@ void SaharaWindow::SendStreamingDloadHello()
     if (outbuf != NULL) {
         free(outbuf);
     }
-
-    //ui->portDisconnectButton->setEnabled(false);
 }
 
 /**

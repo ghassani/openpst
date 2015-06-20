@@ -6,21 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1166</width>
-    <height>866</height>
+    <width>1078</width>
+    <height>849</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>1166</width>
-    <height>866</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>1166</width>
-    <height>866</height>
-   </size>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Sahara - OpenPST</string>
@@ -67,7 +61,7 @@
      <rect>
       <x>10</x>
       <y>540</y>
-      <width>1141</width>
+      <width>1061</width>
       <height>210</height>
      </rect>
     </property>
@@ -98,7 +92,7 @@
    <widget class="QPushButton" name="saveLogButton">
     <property name="geometry">
      <rect>
-      <x>1060</x>
+      <x>980</x>
       <y>760</y>
       <width>91</width>
       <height>27</height>
@@ -116,8 +110,8 @@
    <widget class="QPushButton" name="portRefreshButton">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>10</y>
+      <x>840</x>
+      <y>40</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -133,11 +127,11 @@
    </widget>
    <widget class="QPushButton" name="portDisconnectButton">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>1050</x>
+      <x>930</x>
       <y>10</y>
       <width>101</width>
       <height>25</height>
@@ -217,7 +211,7 @@
         <string>Send</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="helloFeatureBitsValue">
+      <widget class="QLineEdit" name="streamingDloadHelloFeatureBitsValue">
        <property name="geometry">
         <rect>
          <x>630</x>
@@ -236,7 +230,7 @@
         <string>0x00000011</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="helloVersionValue">
+      <widget class="QLineEdit" name="streamingDloadHelloVersionValue">
        <property name="geometry">
         <rect>
          <x>320</x>
@@ -255,7 +249,7 @@
         <string>0x05</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="helloMagicValue">
+      <widget class="QLineEdit" name="streamingDloadHelloMagicValue">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -277,7 +271,7 @@
         <number>32</number>
        </property>
       </widget>
-      <widget class="QLabel" name="helloVersionLabel">
+      <widget class="QLabel" name="streamingDloadHelloVersionLabel">
        <property name="geometry">
         <rect>
          <x>320</x>
@@ -296,7 +290,7 @@
         <string>Version</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="helloCompatibleVersionValue">
+      <widget class="QLineEdit" name="streamingDloadHelloCompatibleVersionValue">
        <property name="geometry">
         <rect>
          <x>470</x>
@@ -315,7 +309,7 @@
         <string>0x02</string>
        </property>
       </widget>
-      <widget class="QLabel" name="helloFeatureBitsLabel">
+      <widget class="QLabel" name="streamingDloadHelloFeatureBitsLabel">
        <property name="geometry">
         <rect>
          <x>630</x>
@@ -334,7 +328,7 @@
         <string>Feature Bits</string>
        </property>
       </widget>
-      <widget class="QLabel" name="helloCompatibleVersionLabel">
+      <widget class="QLabel" name="streamingDloadHelloCompatibleVersionLabel">
        <property name="geometry">
         <rect>
          <x>470</x>
@@ -353,7 +347,7 @@
         <string>Compatible Version</string>
        </property>
       </widget>
-      <widget class="QLabel" name="helloMagicLabel">
+      <widget class="QLabel" name="streamingDloadHelloMagicLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -391,7 +385,7 @@
       <property name="title">
        <string>Client Command</string>
       </property>
-      <widget class="QComboBox" name="saharaSendClientCommandSelect">
+      <widget class="QComboBox" name="clientCommandValue">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -414,7 +408,7 @@
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="saharaSendClientCommandButton">
+      <widget class="QPushButton" name="clientCommandButton">
        <property name="geometry">
         <rect>
          <x>230</x>
@@ -434,7 +428,7 @@
         <string>Send</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="saharaSendClientCommandButton_3">
+      <widget class="QPushButton" name="clientCommandSaveButton">
        <property name="geometry">
         <rect>
          <x>320</x>
@@ -473,7 +467,7 @@
       <property name="title">
        <string>Send Image</string>
       </property>
-      <widget class="QPushButton" name="saharaSendImageButton">
+      <widget class="QPushButton" name="sendImageButton">
        <property name="geometry">
         <rect>
          <x>420</x>
@@ -493,7 +487,7 @@
         <string>Send</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="saharaSendImagePath">
+      <widget class="QLineEdit" name="sendImageFileValue">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -510,7 +504,7 @@
         </font>
        </property>
       </widget>
-      <widget class="QToolButton" name="saharaSendImageBrowse">
+      <widget class="QToolButton" name="sendImageFileBrowseButton">
        <property name="geometry">
         <rect>
          <x>456</x>
@@ -549,7 +543,7 @@
       <property name="title">
        <string>Mode</string>
       </property>
-      <widget class="QPushButton" name="saharaSwitchModeButton">
+      <widget class="QPushButton" name="switchModeButton">
        <property name="geometry">
         <rect>
          <x>230</x>
@@ -569,7 +563,7 @@
         <string>Switch</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="saharaSwitchModeSelect">
+      <widget class="QComboBox" name="switchModeValue">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -611,7 +605,7 @@
       <property name="title">
        <string>Greeting</string>
       </property>
-      <widget class="QPushButton" name="saharaReadHelloButton">
+      <widget class="QPushButton" name="readHelloButton">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -631,7 +625,7 @@
         <string>Read Hello</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="saharaWriteHelloButton">
+      <widget class="QPushButton" name="writeHelloButton">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -651,7 +645,7 @@
         <string>Write Hello</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="saharaWriteHelloSwitchCommandSelect">
+      <widget class="QComboBox" name="writeHelloSwitchModeValue">
        <property name="geometry">
         <rect>
          <x>120</x>
@@ -733,10 +727,10 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QPushButton" name="saharaReadPortButton">
+   <widget class="QPushButton" name="readPortButton">
     <property name="geometry">
      <rect>
-      <x>1030</x>
+      <x>950</x>
       <y>500</y>
       <width>121</width>
       <height>31</height>
@@ -754,7 +748,7 @@
    <widget class="QPushButton" name="clearLogButton">
     <property name="geometry">
      <rect>
-      <x>960</x>
+      <x>880</x>
       <y>760</y>
       <width>91</width>
       <height>27</height>
@@ -772,7 +766,7 @@
    <widget class="QPushButton" name="portConnectButton">
     <property name="geometry">
      <rect>
-      <x>950</x>
+      <x>840</x>
       <y>10</y>
       <width>91</width>
       <height>25</height>
@@ -795,7 +789,7 @@
      <rect>
       <x>890</x>
       <y>160</y>
-      <width>261</width>
+      <width>181</width>
       <height>27</height>
      </rect>
     </property>
@@ -852,7 +846,7 @@
      <rect>
       <x>890</x>
       <y>100</y>
-      <width>261</width>
+      <width>181</width>
       <height>27</height>
      </rect>
     </property>
@@ -873,7 +867,7 @@
      <rect>
       <x>890</x>
       <y>280</y>
-      <width>261</width>
+      <width>181</width>
       <height>27</height>
      </rect>
     </property>
@@ -930,7 +924,7 @@
      <rect>
       <x>890</x>
       <y>220</y>
-      <width>261</width>
+      <width>181</width>
       <height>27</height>
      </rect>
     </property>
@@ -969,7 +963,7 @@
      <rect>
       <x>890</x>
       <y>340</y>
-      <width>261</width>
+      <width>181</width>
       <height>27</height>
      </rect>
     </property>
@@ -982,28 +976,7 @@
      <string>None</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="deviceStateCurrentOperationValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>400</y>
-      <width>261</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>None</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="deviceStateCurrentOperationLabel">
+   <widget class="QLabel" name="deviceStateLastOperationLabel">
     <property name="geometry">
      <rect>
       <x>890</x>
@@ -1018,10 +991,31 @@
      </font>
     </property>
     <property name="text">
-     <string>Current Operation</string>
+     <string>Last Operation</string>
     </property>
    </widget>
-   <widget class="QLabel" name="deviceStateLastOperationLabel">
+   <widget class="QLineEdit" name="deviceStateLastOperationValue">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>400</y>
+      <width>181</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>None</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="deviceStateLastErrorLabel">
     <property name="geometry">
      <rect>
       <x>890</x>
@@ -1036,10 +1030,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Last Operation</string>
+     <string>Last Error</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="deviceStateLastOperationLabel_2">
+   <widget class="QLineEdit" name="deviceStateLastErrorValue">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -1047,7 +1041,7 @@
      <rect>
       <x>890</x>
       <y>460</y>
-      <width>261</width>
+      <width>181</width>
       <height>27</height>
      </rect>
     </property>
@@ -1066,8 +1060,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1166</width>
-     <height>26</height>
+     <width>1078</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQC_Tools">

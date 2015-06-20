@@ -41,8 +41,7 @@ public slots:
     void ReadSome();
     void BrowseForImage();
     void SendImage();
-    void SendCommandButtonAction();
-    void SendDone();
+	void SendDone();
     void SendStreamingDloadHello();
     void ClearLog();
     void SaveLog();
