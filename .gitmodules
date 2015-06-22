@@ -6,6 +6,6 @@
 	path = lib/xerces
 	url = https://github.com/apache/xerces-c.git
 
-[submodule "xerces"]
+[submodule "openpst-assets"]
 	path = resources/assets
 	url = https://github.com/ghassanu/openpst-assets.git
