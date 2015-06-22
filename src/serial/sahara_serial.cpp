@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file sahara_serial.cpp
+* @class SaharaSerial
+* @package OpenPST
+* @brief Sahara protocol serial port implementation
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #include "sahara_serial.h"
@@ -12,7 +19,9 @@ SaharaSerial::SaharaSerial(std::string port, int baudrate ) :
     bufferSize = 1024;
     buffer = new uint8_t[1024];
     memset(&deviceState, 0x00, sizeof(deviceState));
-    memset(&readState, 0x00, sizeof(readState));
+	memset(&readState, 0x00, sizeof(readState));
+	memset(&memoryState, 0x00, sizeof(memoryState));
+	
 }
 
 SaharaSerial::~SaharaSerial()
@@ -20,11 +29,12 @@ SaharaSerial::~SaharaSerial()
     delete buffer;
 }
 
+
 /**
- * @brief SaharaSerial::sendPacket
- * @param packet
- * @return
- */
+* @brief SaharaSerial::sendPacket Sends a generic packet
+* @param sahara_packet_t packet
+* @return size_t - The amount of bytes written
+*/
 size_t SaharaSerial::sendPacket(sahara_packet_t* packet)
 {
     if (!isOpen()) {
@@ -84,12 +94,14 @@ int SaharaSerial::receiveHello()
 }
 
 /**
- * @brief SaharaSerial::sendHello
- * @param mode
- * @param status
- * @return
- */
-int SaharaSerial::sendHello(uint32_t mode, uint32_t status)
+* @brief sendHello
+* @param uint32_t mode - @see enum SAHARA_MODE - if null defaults to current mode
+* @param uint32_t version -The version of sahara protocol to request, defaults to 2
+* @param uint32_t minVersion - The minimum version we can support, defaults to 1
+* @param uint32_t status - indicate to device our status, if set to anything other than 0x00, sahara protocol will abort
+* @return
+*/
+int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion, uint32_t status)
 {
     if (!isOpen()) {
         open();
@@ -105,6 +117,8 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t status)
     packet.header.command = SAHARA_HELLO_RESPONSE;
     packet.status = status;
     packet.mode = mode == NULL ? deviceState.mode : mode;
+	packet.version = version;
+	packet.minVersion = minVersion;
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
@@ -152,7 +166,22 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t status)
         memcpy(&readState, buffer, sizeof(readState));
 
         deviceState.mode = packet.mode;
-    } else {
+	} else if (packet.mode == SAHARA_MODE_MEMORY_DEBUG) {
+		if (buffer[0] != SAHARA_MEMORY_DEBUG) {
+			printf("Unexpected Response. Expected 0x%02x But Received 0x%02x\n", SAHARA_MEMORY_DEBUG, buffer[0]);
+			if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
+				sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*)buffer;
+				printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
+				memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
+				return 0;
+			}
+			return 0;
+		}
+
+		memcpy(&memoryState, buffer, sizeof(memoryState));
+
+		deviceState.mode = packet.mode;
+	} else {
         printf("Unexpected/Unahandled Response\n");
         return 0;
     }
@@ -229,13 +258,16 @@ int SaharaSerial::switchMode(uint32_t mode)
     return 1;
 }
 /**
- * @brief SaharaSerial::sendClientCommand
- * @param command
- * @param responseData
- * @param responseDataSize
- * @return
- */
-int SaharaSerial::sendClientCommand(uint32_t command, uint8_t* responseData, size_t &responseDataSize)
+* @brief SaharaSerial::sendClientCommand
+* @param uint32_t command - @see enum SAHARA_CLIENT_COMMAND
+* @param responseData - A pointer to the memory allocated block with the command 
+						response data if the client command returns some sort of 
+						data like debug data, sn, chip info. 
+						You will need to free this.
+* @param responseDataSize - The size of the response data
+* @return int
+*/
+int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, size_t &responseDataSize)
 {
     if (!isOpen()) {
         return 0;
@@ -249,7 +281,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t* responseData, siz
         }
     }
 
-    printf("Sending Client Command: 0x%02x - %s",
+    printf("Sending Client Command: 0x%02x - %s\n",
         command, getNamedClientCommand(command)
     );
 
@@ -294,114 +326,76 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t* responseData, siz
     execData.header.size = sizeof(sahara_command_execute_data_tx_t);
     execData.command = command;
 
-    if (execResponse->size < bufferSize) { // data is no larger than our max packet size
+	uint8_t* cmdResponseData = new uint8_t[execResponse->size];
 
-        lastTxSize = write((uint8_t*)&execData, sizeof(execData));
+	size_t totalReadSize = 0,
+		cmdResponseDataLength = execResponse->size;
 
-        if (!lastTxSize) {
-            printf("Attempted to write to port but 0 bytes were written\n");
-            return 0;
-        }
+	do {
+		if (totalReadSize + execResponse->size > cmdResponseDataLength) {
+			size_t newSize = totalReadSize + execResponse->size;
+			cmdResponseData = (uint8_t*)realloc(cmdResponseData, newSize);
 
-        hexdump((uint8_t*)&execData, lastTxSize);
+			if (cmdResponseData == NULL) {
+				printf("Could Not Allocate %u More Bytes For Data\n", execResponse->size);
+				free(cmdResponseData);
+				return 0;
+			}
 
-        lastRxSize = read(buffer, execResponse->size);
-
-        if (!lastRxSize) {
-            printf("Expected response but 0 bytes received from device\n");
-            return 0;
-        }
-
-        hexdump(buffer, lastRxSize);
-
-        printf("========\nDumping Data For Command: 0x%02x - %s\n========\n\n",
-            command, getNamedClientCommand(command)
-        );
-
-        hexdump(buffer, lastRxSize);
-
-        responseData = buffer;
-        responseDataSize = lastRxSize;
-
-    } else {
-        // we are probably going to have more than max packet size, so we need to read for more data
-        // using a seperate buffer
-        // read until last read bytes its less than max packet size
-        // or if error encountered, send reset
-
-        uint8_t* cmdResponseData = new uint8_t[execResponse->size];
-
-        size_t totalReadSize = 0,
-               cmdResponseDataLength = execResponse->size;
-
-        do {
-            if (totalReadSize+execResponse->size > cmdResponseDataLength) {
-                size_t newSize = totalReadSize+execResponse->size;
-                cmdResponseData = (uint8_t*) realloc(cmdResponseData, newSize);
-
-                if (cmdResponseData == NULL) {
-                    printf("Could Not Allocate %u More Bytes For Data\n", execResponse->size);
-                    free(cmdResponseData);
-                    return 0;
-                }
-
-                cmdResponseDataLength = newSize;
-            }
+			cmdResponseDataLength = newSize;
+		}
 
 
-            lastTxSize = write((uint8_t*)&execData, sizeof(execData));
+		lastTxSize = write((uint8_t*)&execData, sizeof(execData));
 
-            if (!lastTxSize) {
-                printf("Attempted to write to port but 0 bytes were written\n");
-                free(cmdResponseData);
-                return 0;
-            }
+		if (!lastTxSize) {
+			printf("Attempted to write to port but 0 bytes were written\n");
+			free(cmdResponseData);
+			return 0;
+		}
 
-            hexdump((uint8_t*)&execData, lastTxSize);
+		hexdump((uint8_t*)&execData, lastTxSize);
 
-            lastRxSize = read(&cmdResponseData[totalReadSize], bufferSize);
+		lastRxSize = read(&cmdResponseData[totalReadSize], bufferSize);
 
-            if (!lastRxSize) {
-                printf("Expected response but 0 bytes received from device\n");
-                free(cmdResponseData);
-                return 0;
-            }
+		if (!lastRxSize) {
+			printf("Expected response but 0 bytes received from device\n");
+			free(cmdResponseData);
+			return 0;
+		}
 
-            //TODO check for error
+		if (cmdResponseData[totalReadSize] == SAHARA_END_OF_IMAGE_TRANSFER) {
+			printf("Error Encountered\n");
+			free(cmdResponseData);
+			return 0;
+		}
 
-            hexdump(&cmdResponseData[totalReadSize], lastRxSize);
+		//TODO check for error
+		totalReadSize += lastRxSize;
 
-            totalReadSize += lastRxSize;
+		if (lastRxSize < bufferSize) {
+			// read the end of it
+			break;
+		}
 
-            if (lastRxSize < bufferSize) {
-                // read the end of it
-                break;
-            }
+		lastTxSize = write((uint8_t*)&execData, sizeof(execData));
 
-            lastTxSize = write((uint8_t*)&execData, sizeof(execData));
+		if (!lastTxSize) {
+			printf("Attempted to write to port but 0 bytes were written\n");
+			free(cmdResponseData);
+			return 0;
+		}
 
-            if (!lastTxSize) {
-                printf("Attempted to write to port but 0 bytes were written\n");
-                free(cmdResponseData);
-                return 0;
-            }
+	} while (1);
 
-            hexdump((uint8_t*)&execData, lastTxSize);
+	printf("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
+		command, getNamedClientCommand(command), totalReadSize
+	);
 
-        } while(1);
+	hexdump(cmdResponseData, totalReadSize);
 
-        printf("========\nDumping Data For Command: 0x%02x - %s - %zd Bytes\n========\n\n",
-            command, getNamedClientCommand(command), totalReadSize
-        );
-
-        hexdump(cmdResponseData, totalReadSize);
-
-        responseData = cmdResponseData;
-        responseDataSize = totalReadSize;
-
-        free(cmdResponseData);
-
-    }
+	*responseData = cmdResponseData;
+	responseDataSize = totalReadSize;
 
     return 1;
 }
@@ -441,7 +435,7 @@ int SaharaSerial::sendImage(std::string file)
     fileSize = ftell(fp);
     rewind(fp);
 
-    printf("Loaded File %s With Size %zd\n", file.c_str(), fileSize);
+    printf("Loaded File %s With Size %lu\n", file.c_str(), fileSize);
 
     uint8_t* fileBuffer = new uint8_t[readState.length];
     size_t fileBufferSize = readState.length;
@@ -450,7 +444,7 @@ int SaharaSerial::sendImage(std::string file)
         if (readState.length > fileBufferSize) {
             fileBuffer = (uint8_t*) realloc(fileBuffer, readState.length);
             if (fileBuffer == NULL) {
-                printf("Could Not Allocate %zd Bytes For File Buffer\n", readState.length);
+                printf("Could Not Allocate %lu Bytes For File Buffer\n", readState.length);
                 free(fileBuffer);
                 return 0;
             }
@@ -505,6 +499,56 @@ int SaharaSerial::sendImage(std::string file)
     fclose(fp);
 
     return 1;
+}
+
+
+/**
+* @brief readMemory
+* @param uint32_t address
+* @param uint32_t address
+* @param uint32_t responseData
+* @param size_t responseSize
+* @return int
+*/
+int SaharaSerial::readMemory(uint32_t address, uint32_t size, uint8_t** responseData, size_t& responseSize)
+{
+	if (!isOpen()) {
+		return 0;
+	}
+
+	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {		
+		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
+		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
+			return 0;
+		}
+	}
+
+	sahara_memory_read_tx_t packet;
+	packet.header.command = SAHARA_MEMORY_READ;
+	packet.header.size = sizeof(packet);
+	packet.address = address;
+	packet.length = size;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Attempted to write to port but 0 bytes were written\n");
+		return 0;
+	}
+
+	hexdump((uint8_t*)&packet, lastTxSize);
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Expected response but 0 bytes received from device\n");
+		return 0;
+	}
+
+
+	hexdump(buffer, lastRxSize);
+
+	return 1;
 }
 
 /**

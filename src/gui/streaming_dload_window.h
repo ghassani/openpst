@@ -1,14 +1,23 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file streaming_dload_window.h
+* @class StreamingDloadWindow
+* @package OpenPST
+* @brief Streaming DLOAD GUI interface class definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
-
 #ifndef _GUI_STREAMING_DLOAD_WINDOW_H
 #define _GUI_STREAMING_DLOAD_WINDOW_H
 
 #include <QMainWindow>
+#include "QFileDialog.h"
 #include "ui_streaming_dload_window.h"
 #include "qc/streaming_dload.h"
 #include "serial/streaming_dload_serial.h"
+#include <iostream>
+#include <fstream>
 
 namespace Ui {
 class StreamingDloadWindow;
@@ -26,82 +35,123 @@ public:
 
 public slots:
     /**
-     * @brief UpdatePortList
+     * @brief updatePortList
      */
-    void UpdatePortList();
+    void updatePortList();
 
     /**
-     * @brief ConnectToPort
+     * @brief connectToPort
      */
-	void ConnectToPort();
+	void connectToPort();
 
     /**
-     * @brief DisconnectPort
+     * @brief disconnectPort
      */
-	void DisconnectPort();
+	void disconnectPort();
 
     /**
-     * @brief SendHello
+     * @brief sendHello
      */
-	void SendHello();
+	void sendHello();
 
 	/**
-	* @brief SendUnlock
+	* @brief sendUnlock
 	*/
-	void SendUnlock();
+	void sendUnlock();
 
 	/**
-	* @brief SetSecurityMode
+	* @brief setSecurityMode
 	*/
-	void SetSecurityMode();
+	void setSecurityMode();
 
 	/**
-	* @brief SendNop
+	* @brief sendNop
 	*/
-	void SendNop();
+	void sendNop();
 
 	/**
-	* @brief SendReset
+	* @brief sendReset
 	*/
-	void SendReset();
+	void sendReset();
 
 	/**
-	* @brief SendPowerDown
+	* @brief sendPowerDown
 	*/
-	void SendPowerDown();
+	void sendPowerDown();
 
 	/**
-	* @brief CloseMode
+	* @brief openMode
 	*/
-	void OpenMode();
+	void openMode();
 
 	/**
-	* @brief CloseMode
+	* @brief closeMode
 	*/
-	void CloseMode();
+	void closeMode();
 
 	/**
-	* @brief ReadEccState
+	* @brief openMultiMode
 	*/
-	void ReadEccState();
+	void openMultiMode();
 
 	/**
-	* @brief SetEccState
+	* @brief readEccState
 	*/
-	void SetEccState();
+	void readEccState();
 
 	/**
-	* @brief ClearLog
+	* @brief setEccState
 	*/
-	void ClearLog();
+	void setEccState();
+
+	/**
+	* @brief read - Read address and size
+	*/
+	void read();
+
+	/**
+	* @brief readQfprom
+	*/
+	void readQfprom();
+
+	/**
+	* @brief eraseFlash
+	*/
+	void eraseFlash();
+
+	/**
+	* @brief clearLog
+	*/
+	void clearLog();
 	
 	/**
      * @brief SaveLog
      */
-	void SaveLog();
+	void saveLog();
 
+	/**
+	* @brief browseForPartitionTable
+	*/
+	void browseForParitionTable();
 
+	/**
+	* @brief writePartitionTable
+	*/
+	void writePartitionTable();
+
+	/**
+	* @brief browseForWriteFile
+	*/
+	void browseForWriteFile();
+
+	/**
+	* @brief log
+	*/
 	void log(const char* message);
+
+	/**
+	* @brief SaveLog
+	*/
 	void log(QString message);
 
 private:

@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file sahara_window.h
+* @class SaharaWindow
+* @package OpenPST
+* @brief Sahara GUI interface class definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _GUI_SAHARA_WINDOW_H
@@ -30,21 +37,21 @@ public:
     ~SaharaWindow();
 
 public slots:
-    void UpdatePortList();
-    void ConnectToPort();
-    void DisconnectPort();
-    void ReadHello();
-    void WriteHello();
-    void SwitchMode();
-    void SendClientCommand();
-    void SendReset();
-    void ReadSome();
-    void BrowseForImage();
-    void SendImage();
-	void SendDone();
-    void SendStreamingDloadHello();
-    void ClearLog();
-    void SaveLog();
+    void updatePortList();
+    void connectToPort();
+    void disconnectPort();
+    void readHello();
+    void writeHello();
+    void switchMode();
+    void sendClientCommand();
+    void sendReset();
+    void browseForImage();
+    void sendImage();
+	void sendDone();
+	void memoryDebugRead();
+    void sendStreamingDloadHello();
+    void clearLog();
+    void saveLog();
 
 private:
     Ui::SaharaWindow *ui;

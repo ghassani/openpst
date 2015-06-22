@@ -1,5 +1,13 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file qcdm_window.h
+* @class QcdmWindow
+* @package OpenPST
+* @brief QCDM GUI interface class definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author Matteson Raab <mraabhimself@gmail.com>
 */
 
 #ifndef _GUI_QCDM_WINDOW_H

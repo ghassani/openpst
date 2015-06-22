@@ -123,6 +123,21 @@
     <ClCompile Include="src\util\sleep.cpp">
       <Filter>Source Files\src\util</Filter>
     </ClCompile>
+    <ClCompile Include="src\serial\hdlc_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\streaming_dload_window.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial\streaming_dload_serial.cpp">
+      <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qc\hdlc.cpp">
+      <Filter>Source Files\src\qc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qc\crc.cpp">
+      <Filter>Source Files\src\qc</Filter>
+    </ClCompile>
     <ClCompile Include="build\Win32\Debug\moc_main_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
@@ -138,7 +153,10 @@
     <ClCompile Include="build\Win32\Debug\moc_qcdm_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
-    <ClCompile Include="build\Win32\Release\moc_qcdm_window.cpp">
+    <ClCompile Include="build\Win32\Debug\moc_send_raw_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="build\Win32\Release\moc_send_raw_window.cpp">
       <Filter>Generated Files\Release_Win32</Filter>
     </ClCompile>
     <ClCompile Include="build\Win32\Debug\moc_sahara_window.cpp">
@@ -146,27 +164,6 @@
     </ClCompile>
     <ClCompile Include="build\Win32\Release\moc_sahara_window.cpp">
       <Filter>Generated Files\Release_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="build\Win32\Debug\moc_send_raw_window.cpp">
-      <Filter>Generated Files\Debug_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="build\Win32\Release\moc_send_raw_window.cpp">
-      <Filter>Generated Files\Release_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="src\serial\hdlc_serial.cpp">
-      <Filter>Source Files\src\serial</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gui\streaming_dload_window.cpp">
-      <Filter>Source Files\src\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\serial\streaming_dload_serial.cpp">
-      <Filter>Source Files\src\serial</Filter>
-    </ClCompile>
-    <ClCompile Include="src\qc\hdlc.cpp">
-      <Filter>Source Files\src\qc</Filter>
-    </ClCompile>
-    <ClCompile Include="src\qc\crc.cpp">
-      <Filter>Source Files\src\qc</Filter>
     </ClCompile>
     <ClCompile Include="build\Win32\Debug\moc_streaming_dload_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
@@ -197,26 +194,11 @@
     <CustomBuild Include="src\serial\sahara_serial.h">
       <Filter>Header Files\src\serial</Filter>
     </CustomBuild>
-    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_send_raw_window.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="src\util\sleep.h">
       <Filter>Header Files\src\util</Filter>
     </CustomBuild>
     <CustomBuild Include="src\qc\streaming_dload.h">
       <Filter>Header Files\src\qc</Filter>
-    </CustomBuild>
-    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_sahara_window.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_qcdm_window.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_mbn_tool_window.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_main_window.h">
-      <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="src\gui\streaming_dload_window.h">
       <Filter>Header Files\src\gui</Filter>
@@ -278,9 +260,6 @@
     </ClInclude>
     <ClInclude Include="src\include\win_inttypes.h">
       <Filter>Header Files\src\include</Filter>
-    </ClInclude>
-    <ClInclude Include="build\$(PlatformName)\$(ConfigurationName)\GeneratedFiles\ui_streaming_dload_window.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="src\serial\streaming_dload_serial.h">
       <Filter>Header Files\src\serial</Filter>

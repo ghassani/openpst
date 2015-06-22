@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file sahara_serial.h
+* @class SaharaSerial
+* @package OpenPST
+* @brief Sahara protocol serial port implementation
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _SERIAL_SAHARA_SERIAL_H_
@@ -20,7 +27,7 @@ class SaharaSerial : public serial::Serial {
         ~SaharaSerial();
 
         /**
-         * @brief sendPacket
+         * @brief sendPacket Sends a generic packet
          * @param sahara_packet_t packet
          * @return size_t - The amount of bytes written
          */
@@ -28,85 +35,103 @@ class SaharaSerial : public serial::Serial {
 
         /**
          * @brief receiveHello
-         * @return
+         * @return int
          */
         int receiveHello();
 
         /**
          * @brief sendHello
-         * @param uint32_t mode - @see enum SAHARA_MODE - if null defaults to current mode
-         * @param uint32_t status - our status, other than 0 results in error - defaults to 0
-         * @return
+		 * @param uint32_t mode - @see enum SAHARA_MODE - if null defaults to current mode
+		 * @param uint32_t version -The version of sahara protocol to request, defaults to 2
+		 * @param uint32_t minVersion - The minimum version we can support, defaults to 1
+		 * @param uint32_t status - indicate to device our status, if set to anything other than 0x00, sahara protocol will abort
+         * @return int
          */
-        int sendHello(uint32_t mode = NULL, uint32_t status = 0x00);
+        int sendHello(uint32_t mode = NULL, uint32_t version = 0x02, uint32_t minVersion = 0x01, uint32_t status = 0x00);
 
         /**
          * @brief sendHello
          * @param uint32_t mode - @see enum SAHARA_MODE
-         * @return
-         */
+         * @return int
+         */ 
         int switchMode(uint32_t mode);
 
         /**
          * @brief sendClientCommand
-         * @param uint32_t command - @see enum SAHARA_CLIENT_COMMAND
-         * @param responseData - A pointer to the command response data, if available
-         * @param responseDataSize - The size of the response data
-         * @return
+		 * @param uint32_t command - @see enum SAHARA_CLIENT_COMMAND
+		 * @param responseData - A pointer to the memory allocated block with the command
+								 response data if the client command returns some sort of
+								 data like debug data, sn, chip info.
+								 You will need to free this.
+		 * @param responseDataSize - The size of the response data
+		 * @return int
          */
-        int sendClientCommand(uint32_t command, uint8_t* responseData, size_t &responseDataSize);
+        int sendClientCommand(uint32_t command, uint8_t** responseData, size_t &responseDataSize);
+
         /**
          * @brief sendImage
-         * @param file
-         * @return
+         * @param std::string file
+         * @return int
          */
         int sendImage(std::string file);
+
+		/**
+		* @brief readMemory
+		* @param uint32_t address
+		* @param uint32_t address
+		* @param uint32_t responseData
+		* @param size_t responseSize
+		* @return int
+		*/
+		int readMemory(uint32_t address, uint32_t size, uint8_t** responseData, size_t& responseSize);
+
         /**
          * @brief sendReset
-         * @return
+         * @return int
          */
         int sendReset();
 
         /**
          * @brief sendDone
-         * @return
+         * @return int
          */
         int sendDone();
 
         /**
          * @brief sendDone
-         * @return
+         * @return void
          */
         void close();
 
         /**
          * @brief getNamedMode
          * @param mode
-         * @return
+         * @return const char*
          */
         const char* getNamedMode(uint32_t mode);
         /**
          * @brief getNamedClientCommand
          * @param command
-         * @return
+         * @return const char*
          */
         const char* getNamedClientCommand(uint32_t command);
         /**
          * @brief getNamedErrorStatus
          * @param status
-         * @return
+         * @return const char*
          */
         const char* getNamedErrorStatus(uint32_t status);
         /**
          * @brief getNamedRequestedImage
          * @param imageId
-         * @return
+         * @return const char*
          */
         const char* getNamedRequestedImage(uint32_t imageId);
 
         sahara_hello_rx_t deviceState;
-        sahara_read_data_rx_t readState;
-        sahara_transfer_response_rx_t lastError;
+		sahara_read_data_rx_t readState;
+		sahara_memory_debug_rx_t memoryState;
+		sahara_transfer_response_rx_t lastError;
 
         uint8_t* buffer;
         size_t bufferSize;

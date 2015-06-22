@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file hexdump.h
+* @package OpenPST
+* @brief hexdump helper functions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author https://github.com/posixninja/DLOADTool
 */
 
 #ifndef _UTIL_HEXDUMP_H

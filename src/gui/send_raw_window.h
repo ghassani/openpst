@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file send_raw_window.h
+* @class SendRawWindow
+* @package OpenPST
+* @brief Send raw read/write GUI interface class definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _GUI_SEND_RAW_WINDOW_H

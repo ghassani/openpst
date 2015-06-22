@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file main_window.h
+* @class MainWindow
+* @package OpenPST
+* @brief Main Window GUI interface class definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #include "main_window.h"

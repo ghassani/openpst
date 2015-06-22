@@ -1,9 +1,16 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file streaming_dload.h
+* @package OpenPST
+* @brief Streaming DLOAD definitions and structures
+* @see DCN 80-V5348-1 J
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 /*
- * @see DCN 80-V5348-1 J
+ * 
  */
 #ifndef _QC_STREAMING_DLOAD_H
 #define _QC_STREAMING_DLOAD_H
@@ -72,8 +79,8 @@ enum STREAMING_DLOAD_COMMAND {
     STREAMING_DLOAD_CURRENT_ECC_STATE            = 0x20,
     STREAMING_DLOAD_SET_ECC                      = 0x21,
     STREAMING_DLOAD_SET_ECC_RESPONSE             = 0x22,
-    STREAMING_DLOAD_CALCULATE_SHA1_HASH          = 0x23,
-    STREAMING_DLOAD_CALCULATE_SHA1_HASH_RESPONSE = 0x24,
+    STREAMING_DLOAD_CALCULATE_SHA1_HASH          = 0x23, // depreciated
+    STREAMING_DLOAD_CALCULATE_SHA1_HASH_RESPONSE = 0x24, // depreciated
 
     //25-2F commands described in [Q2]
 
@@ -112,6 +119,41 @@ enum STREAMING_DLOAD_OPEN_MODE {
 	STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD		= 0x01,
 	STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD	= 0x02,
 	STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD		= 0x03
+};
+
+enum STREAMING_DLOAD_OPEN_MULTI_MODE {
+	STREAMING_DLOAD_OPEN_MULTI_MODE_NONE		= 0x00,  
+	STREAMING_DLOAD_OPEN_MULTI_MODE_PBL			= 0x01,  // Primary boot loader
+	STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBLHDCFG	= 0x02,  // Qualcomm secondary boot loader header and config data 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBL		= 0x03,	 // Qualcomm secondary boot loader
+	STREAMING_DLOAD_OPEN_MULTI_MODE_OEMSBL		= 0x04,	 // OEM secondary boot loader (max payload: 512 octets)
+	STREAMING_DLOAD_OPEN_MULTI_MODE_AMSS		= 0x05,	 // AMSS modem executable (max payload: 512 octets)
+	STREAMING_DLOAD_OPEN_MULTI_MODE_APPS		= 0x06,	 // AMSS applications executable (max payload: 512 octets)
+	STREAMING_DLOAD_OPEN_MULTI_MODE_OBL			= 0x07,	 // MSM6250 OTP boot loader 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_FOTAUI		= 0x08,	 // FOTA UI binary 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_CEFS		= 0x09,	 // Compact EFS2 image
+	STREAMING_DLOAD_OPEN_MULTI_MODE_APPSBL		= 0x0A,	 // AMSS applications boot loader (max payload: 512 octets)
+	STREAMING_DLOAD_OPEN_MULTI_MODE_APPS_CEFS	= 0x0B,  // Apps CEFS image
+	STREAMING_DLOAD_OPEN_MULTI_MODE_FLASH_BIN	= 0x0C,  // Flash.bin for Windows Mobile
+	STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1		= 0x0D,	 // DSP1 runtime image
+	STREAMING_DLOAD_OPEN_MULTI_MODE_CUSTOM		= 0x0E,	 // Image for user-defined partition User (max payload: 512 octets)
+	STREAMING_DLOAD_OPEN_MULTI_MODE_DBL			= 0x0F,	 // DBL image for Secure  Boot 2.0 architecture 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL		= 0x10,	 // OSBL image for Secure  Boot 2.0 architecture 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_FSBL		= 0x11,	 // FSBL image for Secure  Boot 2.0 architecture 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_DSP2		= 0x12,	 // DSP2 executable 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_RAW			= 0x13,	 // Apps EFS2 raw image 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS1		= 0x14,  // Symbian
+	STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS2		= 0x15,  // Symbian
+	STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS3		= 0x16,  // Symbian
+														 // 0x17-0x1F - RESERVED
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_USER	= 0x21,  // EMMC card USER partition image 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT0	= 0x22,  // EMMC card BOOT0 partition image 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT1	= 0x23,  // EMMC card BOOT1 partition image 
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_RPMB	= 0x24,  // partition1
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP1	= 0x25,  // partition1-4
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP2	= 0x26,   
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP3	= 0x27,   
+	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP4	= 0x28    
 };
 
 PACKED(typedef struct streaming_dload_hello_tx_t { // 0x01
@@ -156,7 +198,7 @@ PACKED(typedef struct streaming_dload_read_tx_t { // 0x03
 PACKED(typedef struct streaming_dload_read_rx_t { // 0x04
     uint8_t command;
     uint32_t address;
-    uint8_t* data;
+    uint8_t data[0];
 } streaming_dload_read_rx_t);
 
 PACKED(typedef struct streaming_dload_simple_write_tx_t {// 0x05
@@ -256,7 +298,7 @@ PACKED(typedef struct streaming_dload_security_mode_rx_t { // 0x18
 PACKED(typedef struct streaming_partition_table_tx_t { // 0x19
     uint8_t command;
 	uint8_t overrideExisting; // 0x00 no override, 0x01 override existing table
-    uint8_t partitionTable[512]; // max 512 bytes
+    uint8_t data[512]; // max 512 bytes
 } streaming_partition_table_tx_t);
 
 PACKED(typedef struct streaming_dload_partition_table_rx_t { // 0x1A
@@ -270,8 +312,12 @@ PACKED(typedef struct streaming_dload_partition_table_rx_t { // 0x1A
 PACKED(typedef struct streaming_dload_open_multi_image_tx_t { // 0x1B
     uint8_t command;
     uint8_t type;
-    uint8_t data[512];
 } streaming_dload_open_multi_image_tx_t);
+
+PACKED(typedef struct streaming_dload_open_multi_image_payload_tx_t { // 0x1B
+	uint8_t command;
+	uint8_t type;
+} streaming_dload_open_multi_image_payload_tx_t);
 
 PACKED(typedef struct streaming_dload_open_multi_image_rx_t { // 0x1C
 	uint8_t command;
@@ -313,6 +359,7 @@ PACKED(typedef struct streaming_dload_set_ecc_state_rx_t { // 0x22
 	uint8_t command;
 } streaming_dload_set_ecc_state_rx_t);
 
+
 PACKED(typedef struct streaming_dload_unframed_stream_write_tx_t { // 0x30
 	uint8_t command;
 	uint8_t padding[2]; // should be set to 0x000000
@@ -353,6 +400,7 @@ PACKED(typedef struct streaming_dload_qfprom_read_rx_t { // 0x35
     uint32_t lsb;
     uint32_t msb;
 } streaming_dload_qfprom_read_rx_t);
+
 
 
 #endif // _QC_STREAMING_DLOAD_H

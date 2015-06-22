@@ -1,5 +1,13 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file qcdm_serial.h
+* @class QcdmSerial
+* @package OpenPST
+* @brief QCDM serial port implementation
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author Matteson Raab <mraabhimself@gmail.com>
 */
 
 #include "qcdm_serial.h"

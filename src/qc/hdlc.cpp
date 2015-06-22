@@ -1,7 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file hdlc.cpp
+* @package OpenPST
+* @brief HDLC helper functions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
-
 #include "hdlc.h"
 
 

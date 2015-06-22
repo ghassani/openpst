@@ -1,11 +1,13 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file sahara.h
+* @package OpenPST
+* @brief Sahara protocol definitions and structures
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
-/**
-* @see https://github.com/posixninja/DBLTool/blob/master/dbltool/dbl.h
-* @see http://forum.xda-developers.com/showpost.php?p=54829011&postcount=73
-*/
 #ifndef _QC_SAHARA_H
 #define _QC_SAHARA_H
 

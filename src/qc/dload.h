@@ -1,5 +1,11 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file dload.h
+* @package OpenPST
+* @brief DLOAD definitions and structures
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _QC_DLOAD_H

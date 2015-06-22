@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file mbn_tool_window.cpp
+* @class MbnToolWindow
+* @package OpenPST
+* @brief MBN Tool GUI interface class
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #include "mbn_tool_window.h"
@@ -54,7 +61,7 @@ void MbnToolWindow::LoadFile()
 
     ui->savePathInput->setText(fileName.replace("\.[A-Za-z]{1,}$", "_edited$1"));
 
-    log(tmp.sprintf("SBL Header Size: %zd", sizeof(eighty_byte_mbn_header_t)));
+    log(tmp.sprintf("SBL Header Size: %lu", sizeof(eighty_byte_mbn_header_t)));
 
     eighty_byte_mbn_header_t sblHeader;
 
@@ -64,16 +71,16 @@ void MbnToolWindow::LoadFile()
 
     fclose(fp);
 
-    log(tmp.sprintf("File Size: %zd bytes", fileSize));
+    log(tmp.sprintf("File Size: %lu bytes", fileSize));
 
     // code_size = fileSize - sizeof(eighty_byte_mbn_header_t) - sblHeader.image_size - sblHeader.image_size
     // image_size = fileSize - sizeof(eighty_byte_mbn_header_t)
 
     if (ui->flipEndianCheckbox->isChecked()) {
-        log(tmp.sprintf("Image Size: %zd bytes", flip_endian32(sblHeader.image_size)));
-        log(tmp.sprintf("Code Size: %zd bytes", flip_endian32(sblHeader.code_size)));
-        log(tmp.sprintf("Signature Size: %zd bytes", flip_endian32(sblHeader.signature_size)));
-        log(tmp.sprintf("Cert Chain Size: %zd bytes", flip_endian32(sblHeader.cert_chain_size)));
+        log(tmp.sprintf("Image Size: %lu bytes", flip_endian32(sblHeader.image_size)));
+        log(tmp.sprintf("Code Size: %lu bytes", flip_endian32(sblHeader.code_size)));
+        log(tmp.sprintf("Signature Size: %lu bytes", flip_endian32(sblHeader.signature_size)));
+        log(tmp.sprintf("Cert Chain Size: %lu bytes", flip_endian32(sblHeader.cert_chain_size)));
 
         ui->mbnHeaderCodewordValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.codeword)));
         ui->mbnHeaderMagicValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.magic)));
@@ -96,10 +103,10 @@ void MbnToolWindow::LoadFile()
         ui->mbnHeaderReserved6Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved6)));
         ui->mbnHeaderReserved7Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved7)));
     } else {
-        log(tmp.sprintf("Image Size: %zd bytes", sblHeader.image_size));
-        log(tmp.sprintf("Code Size: %zd bytes", sblHeader.code_size));
-        log(tmp.sprintf("Signature Size: %zd bytes", sblHeader.signature_size));
-        log(tmp.sprintf("Cert Chain Size: %zd bytes", sblHeader.cert_chain_size));
+        log(tmp.sprintf("Image Size: %lu bytes", sblHeader.image_size));
+        log(tmp.sprintf("Code Size: %lu bytes", sblHeader.code_size));
+        log(tmp.sprintf("Signature Size: %lu bytes", sblHeader.signature_size));
+        log(tmp.sprintf("Cert Chain Size: %lu bytes", sblHeader.cert_chain_size));
 
         ui->mbnHeaderCodewordValue->setText(tmp.sprintf("%04X", sblHeader.codeword));
         ui->mbnHeaderMagicValue->setText(tmp.sprintf("%04X", sblHeader.magic));

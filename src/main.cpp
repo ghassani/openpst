@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file main.cpp
+* @package OpenPST
+* @brief program entry point
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author Matteson Raab <mraabhimself@gmail.com>
 */
 
 #include <QApplication>

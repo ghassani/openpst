@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file streaming_dload_serial.cpp
+* @class StreamingDloadSerial
+* @package OpenPST
+* @brief Streaming DLOAD protocol serial port implementation
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #include "streaming_dload_serial.h"
@@ -35,6 +42,11 @@ StreamingDloadSerial::~StreamingDloadSerial()
 */
 int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits)
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_hello_tx_t hello;
 
 	hello.command = STREAMING_DLOAD_HELLO;
@@ -88,6 +100,10 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 
 int StreamingDloadSerial::sendUnlock(std::string code)
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
 
 	streaming_dload_unlock_tx_t packet;
 	packet.command = STREAMING_DLOAD_UNLOCK;
@@ -116,6 +132,11 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 
 int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_security_mode_tx_t packet;
 	packet.command = STREAMING_DLOAD_SECURITY_MODE;
 	packet.mode = mode;
@@ -143,6 +164,11 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 
 int StreamingDloadSerial::sendReset()
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_reset_tx_t packet;
 	packet.command = STREAMING_DLOAD_RESET;
 
@@ -169,6 +195,11 @@ int StreamingDloadSerial::sendReset()
 
 int StreamingDloadSerial::sendPowerOff()
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_reset_tx_t packet;
 	packet.command = STREAMING_DLOAD_POWER_OFF;
 
@@ -196,6 +227,11 @@ int StreamingDloadSerial::sendPowerOff()
 
 int StreamingDloadSerial::sendNop()
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_nop_tx_t packet;
 	packet.command = STREAMING_DLOAD_NOP;
 	packet.identifier = std::rand();
@@ -229,6 +265,11 @@ int StreamingDloadSerial::sendNop()
 
 int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_get_ecc_state_tx_t packet;
 	packet.command = STREAMING_DLOAD_GET_ECC_STATE;
 
@@ -259,6 +300,11 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 
 int StreamingDloadSerial::setEcc(uint8_t status)
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_set_ecc_state_tx_t packet;
 	packet.command = STREAMING_DLOAD_SET_ECC;
 	packet.status = status;
@@ -286,6 +332,11 @@ int StreamingDloadSerial::setEcc(uint8_t status)
 
 int StreamingDloadSerial::openMode(uint8_t mode)
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
 	streaming_dload_open_tx_t packet;
 	packet.command = STREAMING_DLOAD_OPEN;
 	packet.mode = mode;
@@ -313,6 +364,11 @@ int StreamingDloadSerial::openMode(uint8_t mode)
 
 int StreamingDloadSerial::closeMode()
 {
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+
 	streaming_dload_close_tx_t packet;
 	packet.command = STREAMING_DLOAD_CLOSE;
 
@@ -335,6 +391,213 @@ int StreamingDloadSerial::closeMode()
 	}
 
 	return 1;
+}
+
+
+
+int StreamingDloadSerial::openMultiImage(uint8_t imageType)
+{
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+
+	streaming_dload_open_multi_image_tx_t packet;
+	packet.command = STREAMING_DLOAD_OPEN_MULTI_IMAGE;
+	packet.type = imageType;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_OPENED_MULTI_IMAGE, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize)
+{
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+
+	bool isComplete = false;
+	
+	uint32_t lastAddress = 0;
+
+	uint8_t* out = new uint8_t[length];
+	size_t outSize = length;
+	dataSize = 0;
+
+	streaming_dload_read_tx_t packet;
+	packet.command = STREAMING_DLOAD_READ;
+
+	streaming_dload_read_rx_t* readRx;
+	int overhead;
+	bool isFirstRead = true;
+
+	do {
+		packet.address = isFirstRead == true ? address : lastAddress + chunkSize;
+		packet.length = length <= chunkSize ? length : chunkSize;
+		isFirstRead = false;
+
+		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+		if (!lastTxSize) {
+			printf("Wrote 0 bytes\n");
+			free(out); 
+			return -1;
+		}
+
+		lastRxSize = read(buffer, bufferSize);
+
+		if (!lastRxSize) {
+			printf("Device did not respond\n");
+			free(out);
+			return -1;
+		}
+
+		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, buffer, lastRxSize)) {
+			printf("Invalid Response\n");
+			free(out);
+			return 0;
+		}
+		
+		lastAddress = packet.address;
+
+		size_t newSize = dataSize + lastRxSize;
+		if (newSize > outSize) {			 
+			out = (uint8_t*)realloc(out, newSize);
+			outSize = newSize;
+		}
+
+		readRx = (streaming_dload_read_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+
+		overhead = (sizeof(readRx->address) + sizeof(readRx->command) + HDLC_OVERHEAD_LENGTH);
+
+		memcpy(&out[dataSize], readRx->data, lastRxSize - overhead);
+		dataSize += (lastRxSize - overhead);
+
+		if (length <= dataSize) {
+			isComplete = true;
+			break; //done
+		}
+			
+	} while (!isComplete);
+
+	*data = out;
+	
+	printf("\n\n\nFinal Data Size: %lu bytes\n", dataSize);
+	hexdump(out, dataSize);
+
+	return 1;
+}
+
+int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& outStatus, bool overwrite)
+{
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+	
+	FILE* fp = fopen(fileName.c_str(), "rb");
+
+	if (!fp) {
+		printf("Could Not Open File %s\n", fileName.c_str());
+		return -1;
+	}
+
+	fseek(fp, 0, SEEK_END);
+	size_t fileSize = ftell(fp);
+	rewind(fp);
+
+	if (fileSize > 512) {
+		printf("File can\'t exceed 512 bytes");
+		fclose(fp);
+		return -1;
+	}
+
+	streaming_partition_table_tx_t packet;
+	packet.command = STREAMING_DLOAD_PARTITION_TABLE;
+	packet.overrideExisting = overwrite;
+	fread(&packet.data, sizeof(uint8_t), fileSize, fp);
+	fclose(fp);
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_PARTITION_TABLE_RECEIVED, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	streaming_dload_partition_table_rx_t* resp = (streaming_dload_partition_table_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+
+	outStatus = resp->status;
+
+	if (resp->status > 1) {
+		printf("Received Error Response %02X\n", resp->status);
+		return 0;
+	}
+
+
+	return 1;
+	
+}
+
+
+int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
+{
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return -1;
+	}
+
+	streaming_dload_qfprom_read_tx_t packet;
+	packet.command = STREAMING_DLOAD_QFPROM_READ;
+	packet.addressType = addressType;
+	packet.rowAddress = rowAddress;
+
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!lastTxSize) {
+		printf("Wrote 0 bytes\n");
+		return -1;
+	}
+
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return -1;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_QFPROM_READ_RESPONSE, buffer, lastRxSize)) {
+		return 0;
+	}
 }
 
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t& responseSize)
@@ -387,10 +650,50 @@ const char* StreamingDloadSerial::getNamedError(uint8_t code)
 const char* StreamingDloadSerial::getNamedOpenMode(uint8_t mode)
 {
 	switch (mode) {
-	case STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD:		return "Bootloader Download";
-	case STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD:	return "Bootable Image Download";
-	case STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD:		return "CEFS Image Download";
-	default:
-		return "Unknown";
+		case STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD:		return "Bootloader Download";
+		case STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD:	return "Bootable Image Download";
+		case STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD:		return "CEFS Image Download";
+		default:
+			return "Unknown";
+	}
+}
+
+
+const char* StreamingDloadSerial::getNamedMultiImage(uint8_t imageType)
+{
+	switch (imageType) {
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_NONE:			return "None";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_PBL:			return "Primary boot loader";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBLHDCFG:	return "Qualcomm secondary boot loader header and config data";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBL:			return "Qualcomm secondary boot loader";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_OEMSBL:		return "OEM secondary boot loader";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_AMSS:			return "AMSS modem executable";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_APPS:			return "AMSS applications executable";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_OBL:			return "MSM6250 OTP boot loader";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_FOTAUI:		return "FOTA UI binary";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_CEFS:			return "Compact EFS2 image";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_APPSBL:		return "AMSS applications boot loader";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_APPS_CEFS:		return "Apps CEFS image";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_FLASH_BIN:		return "Flash.bin for Windows Mobile";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1:			return "DSP1 runtime image";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_CUSTOM:		return "User-defined partition";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_DBL:			return "DBL image for Secure  Boot 2.0";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL:			return "OSBL image for Secure  Boot 2.0";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_FSBL:			return "FSBL image for Secure  Boot 2.0";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_DSP2:			return "DSP2 executable";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_RAW:			return "Apps EFS2 raw image ";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS1:			return "ROFS1 - Symbian";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS2:			return "ROFS2 - Symbian";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS3:			return "ROFS3 - Symbian";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_USER:		return "EMMC USER partition";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT0:	return "EMMC BOOT0 partition";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT1:	return "EMMC BOOT1 partition";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_RPMB:		return "EMMC RPMB";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP1:		return "EMMC GPP1";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP2:		return "EMMC GPP2";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP3:		return "EMMC GPP3";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP4:		return "EMMC GPP4";
+		default:
+			return "Unknown";
 	}
 }

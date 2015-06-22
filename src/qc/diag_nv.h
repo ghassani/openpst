@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file diag_nv.h
+* @package OpenPST
+* @brief QCDM NV item definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author Matteson Raab <mraabhimself@gmail.com>
 */
 
 #ifndef _QC_DIAG_NV_H

@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file hdlc_serial.h
+* @class HdlcSerial
+* @package OpenPST
+* @brief HDLC serial port implementation
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _SERIAL_HDLC_SERIAL_H

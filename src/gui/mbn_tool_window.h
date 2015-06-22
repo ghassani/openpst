@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file mbn_tool_window.h
+* @class MbnToolWindow
+* @package OpenPST
+* @brief MBN Tool GUI interface class definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _GUI_MBNTOOLWINDOW_H

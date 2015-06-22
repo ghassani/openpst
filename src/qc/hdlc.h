@@ -1,5 +1,11 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file hdlc.h
+* @package OpenPST
+* @brief HDLC helper functions definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _UTIL_HDLC_H
@@ -21,6 +27,7 @@
 #define HDLC_ESC_MASK			0x20  /* Escape sequence complement value */
 #define HDLC_CONTROL_CHAR		0x7E
 #define HDLC_TRAILER_LENGTH		0x03
+#define HDLC_OVERHEAD_LENGTH	HDLC_TRAILER_LENGTH + 1
 
 int hdlc_request(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize);
 int hdlc_response(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize);

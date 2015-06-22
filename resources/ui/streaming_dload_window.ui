@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>879</width>
-    <height>615</height>
+    <height>657</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,18 +15,6 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>879</width>
-    <height>615</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>879</width>
-    <height>615</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Streaming DLOAD - OpenPST</string>
@@ -72,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>390</y>
+      <y>450</y>
       <width>861</width>
       <height>111</height>
      </rect>
@@ -87,7 +75,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>360</y>
+      <y>420</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -105,7 +93,7 @@
     <property name="geometry">
      <rect>
       <x>780</x>
-      <y>510</y>
+      <y>570</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -167,7 +155,7 @@
       <x>10</x>
       <y>70</y>
       <width>861</width>
-      <height>291</height>
+      <height>351</height>
      </rect>
     </property>
     <property name="font">
@@ -439,7 +427,7 @@
      <widget class="QGroupBox" name="unlockGroupBox">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>240</x>
         <y>100</y>
         <width>191</width>
         <height>71</height>
@@ -496,7 +484,7 @@
      <widget class="QGroupBox" name="eccGroupBox">
       <property name="geometry">
        <rect>
-        <x>410</x>
+        <x>470</x>
         <y>100</y>
         <width>251</width>
         <height>71</height>
@@ -572,10 +560,10 @@
      <widget class="QGroupBox" name="miscGroupBox">
       <property name="geometry">
        <rect>
-        <x>670</x>
-        <y>100</y>
-        <width>171</width>
-        <height>111</height>
+        <x>10</x>
+        <y>180</y>
+        <width>421</width>
+        <height>71</height>
        </rect>
       </property>
       <property name="font">
@@ -587,31 +575,12 @@
       <property name="title">
        <string>Misc Operations</string>
       </property>
-      <widget class="QPushButton" name="eccSetButton_3">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>30</y>
-         <width>51</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Set</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="nopButton">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>30</y>
-         <width>71</width>
+         <width>81</width>
          <height>27</height>
         </rect>
        </property>
@@ -629,9 +598,9 @@
       <widget class="QPushButton" name="resetButton">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>130</x>
          <y>30</y>
-         <width>71</width>
+         <width>101</width>
          <height>27</height>
         </rect>
        </property>
@@ -648,8 +617,8 @@
       <widget class="QPushButton" name="powerDownButton">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>70</y>
+         <x>260</x>
+         <y>30</y>
          <width>151</width>
          <height>27</height>
         </rect>
@@ -664,111 +633,24 @@
         <string>Power Down</string>
        </property>
       </widget>
-     </widget>
-     <widget class="QGroupBox" name="modeGroupBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>180</y>
-        <width>401</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="title">
-       <string>Mode</string>
-      </property>
-      <widget class="QPushButton" name="closeModeButton">
-       <property name="geometry">
-        <rect>
-         <x>330</x>
-         <y>30</y>
-         <width>61</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Close</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="openModeValue">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>241</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="openModeButton">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>30</y>
-         <width>61</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Open</string>
-       </property>
-      </widget>
+      <zorder>nopButton</zorder>
+      <zorder>resetButton</zorder>
+      <zorder>powerDownButton</zorder>
+      <zorder>modeGroupBox_2</zorder>
+      <zorder>openMultiGroupBox</zorder>
      </widget>
     </widget>
     <widget class="QWidget" name="readWriteTab">
      <attribute name="title">
       <string>Read/Write</string>
      </attribute>
-     <widget class="QPushButton" name="eraseFlashButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>190</y>
-        <width>201</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Erase Flash !DANGER!</string>
-      </property>
-     </widget>
      <widget class="QGroupBox" name="readGroupBox">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
+        <y>100</y>
         <width>211</width>
-        <height>141</height>
+        <height>171</height>
        </rect>
       </property>
       <property name="font">
@@ -786,7 +668,7 @@
        <property name="geometry">
         <rect>
          <x>110</x>
-         <y>100</y>
+         <y>130</y>
          <width>91</width>
          <height>27</height>
         </rect>
@@ -804,9 +686,9 @@
       <widget class="QLineEdit" name="readSizeValue">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>102</x>
          <y>60</y>
-         <width>113</width>
+         <width>100</width>
          <height>27</height>
         </rect>
        </property>
@@ -823,9 +705,9 @@
       <widget class="QLineEdit" name="readAddressValue">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>102</x>
          <y>30</y>
-         <width>113</width>
+         <width>100</width>
          <height>27</height>
         </rect>
        </property>
@@ -863,6 +745,25 @@
         <rect>
          <x>10</x>
          <y>30</y>
+         <width>91</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Start Address</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="readChunkSizeLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
          <width>71</width>
          <height>27</height>
         </rect>
@@ -874,15 +775,44 @@
         </font>
        </property>
        <property name="text">
-        <string>Address</string>
+        <string>Chunk Size</string>
        </property>
+      </widget>
+      <widget class="QComboBox" name="readChunkSizeValue">
+       <property name="geometry">
+        <rect>
+         <x>102</x>
+         <y>90</y>
+         <width>100</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>1024</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>512</string>
+        </property>
+       </item>
       </widget>
      </widget>
      <widget class="QGroupBox" name="writePartitionGroupBox">
       <property name="geometry">
        <rect>
         <x>230</x>
-        <y>10</y>
+        <y>100</y>
         <width>621</width>
         <height>80</height>
        </rect>
@@ -1001,7 +931,7 @@
       <property name="geometry">
        <rect>
         <x>230</x>
-        <y>110</y>
+        <y>200</y>
         <width>621</width>
         <height>111</height>
        </rect>
@@ -1035,7 +965,7 @@
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="readSizeLabel_2">
+      <widget class="QLabel" name="writeFileLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1150,10 +1080,180 @@
        </property>
       </widget>
      </widget>
+     <widget class="QGroupBox" name="openModeGroupBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>401</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>Open Image</string>
+      </property>
+      <widget class="QPushButton" name="closeModeButton">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>30</y>
+         <width>61</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Close</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="openModeValue">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>241</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="openModeButton">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>30</y>
+         <width>61</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Open</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="openMultiGroupBox">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>10</y>
+        <width>401</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>Open Multi Image</string>
+      </property>
+      <widget class="QPushButton" name="openMultiCloseButton">
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>30</y>
+         <width>61</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Close</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="openMultiValue">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>241</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="openMultiButton">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>30</y>
+         <width>61</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Open</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="eraseFlashButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>201</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Erase Flash !DANGER!</string>
+      </property>
+     </widget>
      <zorder>writeGroupBox</zorder>
      <zorder>readGroupBox</zorder>
-     <zorder>eraseFlashButton</zorder>
      <zorder>writePartitionGroupBox</zorder>
+     <zorder>openModeGroupBox</zorder>
+     <zorder>openMultiGroupBox</zorder>
+     <zorder>eraseFlashButton</zorder>
     </widget>
     <widget class="QWidget" name="qfpromTab">
      <attribute name="title">
@@ -1442,7 +1542,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>510</y>
+      <y>570</y>
       <width>91</width>
       <height>27</height>
      </rect>

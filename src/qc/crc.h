@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file crc.h
+* @package OpenPST
+* @brief crc helper functions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author https://github.com/posixninja/DLOADTool
 */
 
 #ifndef _QC_CRC_H

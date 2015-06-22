@@ -1,5 +1,11 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file mbn.h
+* @package OpenPST
+* @brief MBN file format definitions and structures
+*
+* @author Gassan Idriss <ghassani@gmail.com>
 */
 
 #ifndef _QC_MBN_H

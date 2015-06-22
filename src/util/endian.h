@@ -1,5 +1,12 @@
 /**
 * LICENSE PLACEHOLDER
+*
+* @file endian.h
+* @package OpenPST
+* @brief endian helper functions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author https://github.com/posixninja/DLOADTool
 */
 
 #ifndef _UTIL_ENDIAN_H

@@ -1,3 +1,12 @@
+/**
+* LICENSE PLACEHOLDER
+*
+* @file definitions.h
+* @package OpenPST
+* @brief standard definitions
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+*/
 
 #ifndef _INCLUDE_DEFINITIONS_H
 #define _INCLUDE_DEFINITIONS_H

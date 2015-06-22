@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1078</width>
-    <height>849</height>
+    <height>748</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,9 +60,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>540</y>
+      <y>519</y>
       <width>1061</width>
-      <height>210</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="font">
@@ -75,7 +75,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>500</y>
+      <y>490</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -93,7 +93,7 @@
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>760</y>
+      <y>660</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -155,7 +155,7 @@
       <x>10</x>
       <y>60</y>
       <width>861</width>
-      <height>421</height>
+      <height>427</height>
      </rect>
     </property>
     <property name="font">
@@ -174,6 +174,9 @@
       <string>Manual Processing</string>
      </attribute>
      <widget class="QGroupBox" name="streamingDloadGroupBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -372,7 +375,7 @@
        <rect>
         <x>10</x>
         <y>200</y>
-        <width>441</width>
+        <width>321</width>
         <height>80</height>
        </rect>
       </property>
@@ -428,26 +431,6 @@
         <string>Send</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="clientCommandSaveButton">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>40</y>
-         <width>111</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Send &amp; Save</string>
-       </property>
-      </widget>
      </widget>
      <widget class="QGroupBox" name="sendImageGroupBox">
       <property name="geometry">
@@ -455,7 +438,7 @@
         <x>350</x>
         <y>100</y>
         <width>491</width>
-        <height>91</height>
+        <height>121</height>
        </rect>
       </property>
       <property name="font">
@@ -471,7 +454,7 @@
        <property name="geometry">
         <rect>
          <x>420</x>
-         <y>60</y>
+         <y>80</y>
          <width>61</width>
          <height>27</height>
         </rect>
@@ -491,7 +474,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>30</y>
+         <y>50</y>
          <width>440</width>
          <height>27</height>
         </rect>
@@ -508,7 +491,7 @@
        <property name="geometry">
         <rect>
          <x>456</x>
-         <y>30</y>
+         <y>50</y>
          <width>25</width>
          <height>27</height>
         </rect>
@@ -522,6 +505,45 @@
        </property>
        <property name="text">
         <string>...</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="sendImageCheckButton">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>80</y>
+         <width>61</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Check</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sendImageFileLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>101</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Image File Path</string>
        </property>
       </widget>
      </widget>
@@ -587,12 +609,12 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="greetingGroupBox">
+     <widget class="QGroupBox" name="helloGroupBox">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>451</width>
+        <width>621</width>
         <height>80</height>
        </rect>
       </property>
@@ -603,14 +625,14 @@
        </font>
       </property>
       <property name="title">
-       <string>Greeting</string>
+       <string>Hello</string>
       </property>
       <widget class="QPushButton" name="readHelloButton">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>30</y>
-         <width>101</width>
+         <y>45</y>
+         <width>81</width>
          <height>27</height>
         </rect>
        </property>
@@ -628,9 +650,9 @@
       <widget class="QPushButton" name="writeHelloButton">
        <property name="geometry">
         <rect>
-         <x>340</x>
-         <y>30</y>
-         <width>101</width>
+         <x>540</x>
+         <y>45</y>
+         <width>75</width>
          <height>27</height>
         </rect>
        </property>
@@ -648,8 +670,8 @@
       <widget class="QComboBox" name="writeHelloSwitchModeValue">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>30</y>
+         <x>100</x>
+         <y>45</y>
          <width>211</width>
          <height>27</height>
         </rect>
@@ -665,13 +687,108 @@
         <bool>false</bool>
        </property>
       </widget>
+      <widget class="QLineEdit" name="writeHelloVersionValue">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>45</y>
+         <width>101</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>0x02</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="writeHelloMinimumVersionValue">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>45</y>
+         <width>101</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>0x01</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="writeHelloModeLabel">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>23</y>
+         <width>47</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Mode</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="writeHelloVersionLabel">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>20</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Version</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="writeHelloMinimumVersionLabel">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>20</y>
+         <width>101</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Minimum Version</string>
+       </property>
+      </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_5">
+     <widget class="QGroupBox" name="miscGroupBox">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>640</x>
         <y>10</y>
-        <width>361</width>
+        <width>201</width>
         <height>80</height>
        </rect>
       </property>
@@ -684,30 +801,10 @@
       <property name="title">
        <string>Misc</string>
       </property>
-      <widget class="QPushButton" name="doneButton">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>71</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Done</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="resetButton">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>100</x>
          <y>30</y>
          <width>81</width>
          <height>27</height>
@@ -724,32 +821,148 @@
         <string>Reset</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="doneButton">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>71</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Done</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="memoryDebugGroupBox">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>230</y>
+        <width>491</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>Memory Debug</string>
+      </property>
+      <widget class="QLineEdit" name="memoryDebugAddressValue">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>20</y>
+         <width>101</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>0x00000000</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="memoryDebugAddressLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>71</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Address</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="memoryDebugSizeLabel">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>20</y>
+         <width>41</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Size</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="memoryDebugSizeValue">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>20</y>
+         <width>101</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="memoryDebugReadButton">
+       <property name="geometry">
+        <rect>
+         <x>410</x>
+         <y>20</y>
+         <width>71</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Read</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="readPortButton">
-    <property name="geometry">
-     <rect>
-      <x>950</x>
-      <y>500</y>
-      <width>121</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Attempt Read</string>
-    </property>
    </widget>
    <widget class="QPushButton" name="clearLogButton">
     <property name="geometry">
      <rect>
       <x>880</x>
-      <y>760</y>
+      <y>660</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -976,7 +1189,7 @@
      <string>None</string>
     </property>
    </widget>
-   <widget class="QLabel" name="deviceStateLastOperationLabel">
+   <widget class="QLabel" name="devicateStateMemoryDebugAddressLabel">
     <property name="geometry">
      <rect>
       <x>890</x>
@@ -991,10 +1204,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Last Operation</string>
+     <string>Memory Debug Read Address</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="deviceStateLastOperationValue">
+   <widget class="QLineEdit" name="devicateStateMemoryDebugAddressValue">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -1015,7 +1228,7 @@
      <string>None</string>
     </property>
    </widget>
-   <widget class="QLabel" name="deviceStateLastErrorLabel">
+   <widget class="QLabel" name="devicateStateMemoryDebugLengthLabel">
     <property name="geometry">
      <rect>
       <x>890</x>
@@ -1030,10 +1243,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Last Error</string>
+     <string>Memory Debug Read Length</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="deviceStateLastErrorValue">
+   <widget class="QLineEdit" name="devicateStateMemoryDebugLengthValue">
     <property name="enabled">
      <bool>false</bool>
     </property>
