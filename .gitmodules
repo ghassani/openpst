@@ -7,5 +7,5 @@
 	url = https://github.com/apache/xerces-c.git
 
 [submodule "openpst-assets"]
-	path = resources/assets
+	path = assets
 	url = https://github.com/openpst/openpst-assets.git
