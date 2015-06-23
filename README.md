@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/openpst/openpst.svg?branch=master)](https://travis-ci.org/openpst/openpst)
+
 # OpenPST
 
 OpenPST is currently in early development.
