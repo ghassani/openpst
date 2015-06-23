@@ -200,6 +200,14 @@ int SaharaSerial::switchMode(uint32_t mode)
         return 0;
     }
 
+	if (deviceState.mode == mode) {
+		printf("Device already in mode 0x%02X - %s\n",
+			mode,
+			getNamedMode(mode)
+		);
+		return 1;
+	}
+
     printf("Requesting Mode Switch From 0x%02x - %s  to 0x%02x - %s\n",
         deviceState.mode,
         getNamedMode(deviceState.mode),
@@ -227,6 +235,23 @@ int SaharaSerial::switchMode(uint32_t mode)
         return 0;
     }
 
+	uint32_t expectedResponse;
+	switch (packet.mode) {
+	case SAHARA_MODE_COMMAND:
+		expectedResponse = SAHARA_COMMAND_READY;
+		break;
+	case SAHARA_MODE_MEMORY_DEBUG:
+		expectedResponse = SAHARA_MEMORY_DEBUG;
+		break;
+	case SAHARA_MODE_IMAGE_TX_PENDING:
+		expectedResponse = SAHARA_READ_DATA;
+		break;
+	}
+
+	if (!isValidResponse(expectedResponse, buffer, lastRxSize)) {
+		return 0;
+	}
+
     if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
         sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) buffer;
         printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
@@ -234,13 +259,7 @@ int SaharaSerial::switchMode(uint32_t mode)
         return 0;
     }
 
-    if (packet.mode == SAHARA_MODE_COMMAND) {
-
-    } else if (packet.mode == SAHARA_MODE_MEMORY_DEBUG) {
-        // TODO
-        printf("Memory Debug Not Implemented\n");
-    } else if (buffer[0] == SAHARA_READ_DATA && packet.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
-
+    if (packet.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
         if (!receiveHello()) {
             return 0;
         }
@@ -248,9 +267,6 @@ int SaharaSerial::switchMode(uint32_t mode)
         if (!sendHello()) {
             return 0;
         }
-
-    } else if (packet.mode == SAHARA_MODE_IMAGE_TX_COMPLETE) {
-        printf("Image Transfer Complete Not Implemented\n");
     }
 
     deviceState.mode = packet.mode;
@@ -583,23 +599,11 @@ int SaharaSerial::sendDone()
 
     hexdump(buffer, lastRxSize);
 
-    if (buffer[0] != SAHARA_DONE_RESPONSE) {
-        if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-            sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) buffer;
-            memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-            printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-        } else {
-            printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", SAHARA_DONE_RESPONSE, buffer[0]);
-        }
-    }
+	if (!isValidResponse(SAHARA_DONE_RESPONSE, buffer, lastRxSize)) {
+		return 0;
+	}
 
-    sahara_done_rx_t* doneResponse = (sahara_done_rx_t*) buffer;
-
-    /*if (doneResponse->imageTxStatus != SAHARA_MODE_IMAGE_TX_COMPLETE) {
-        printf("Device Expecting Another Image. Device In Hello State\n");
-        return 2;
-    }*/
-
+    //sahara_done_rx_t* doneResponse = (sahara_done_rx_t*) buffer;
 
     return 1;
 }
@@ -636,15 +640,9 @@ int SaharaSerial::sendReset()
 
     hexdump(buffer, lastRxSize);
 
-    if (buffer[0] != SAHARA_RESET_RESPONSE) {
-        if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-            sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) buffer;
-            memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-            printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-        } else {
-            printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", SAHARA_RESET_RESPONSE, buffer[0]);
-        }
-    }
+	if (!isValidResponse(SAHARA_RESET_RESPONSE, buffer, lastRxSize)) {
+		return 0;
+	}
 
     return 1;
 }
@@ -674,6 +672,29 @@ void SaharaSerial::close()
    serial::Serial::close();
    memset(&deviceState, 0x00, sizeof(deviceState));
    memset(&readState,   0x00, sizeof(readState));
+}
+
+bool SaharaSerial::isValidResponse(uint32_t command, uint8_t* data, size_t dataSize)
+{
+	if (command == data[0]) {
+		return true;
+	}
+
+	if (data[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
+		sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*)data;
+		if (error->status > 0) {
+			memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
+			printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
+			// we need to reset after an error and disconnect to prepare for another transfer if needed
+			//sendReset();
+			return false;
+		}
+	} else {
+		printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", command, data[0]);
+		return false;
+	}
+
+	return true;
 }
 
 /**
