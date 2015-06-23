@@ -13,13 +13,6 @@ TEMPLATE = app
 
 INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
 
-#serial_lib = build/serial.lib
-#LIBS += serial_lib
-#serial_lib.target = serial_lib
-#serial_lib.commands = cd lib/serial && make 
-
-QMAKE_EXTRA_TARGETS += serial_lib
-
 SOURCES += \
     lib/serial/src/serial.cc \
     src/util/hexdump.cpp \

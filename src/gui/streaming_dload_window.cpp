@@ -29,7 +29,7 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->openModeValue->addItem("0x03 - CEFS Image Download", STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD);
 	ui->openModeValue->setCurrentIndex(0);
 
-	ui->eccSetValue->addItem("", NULL);
+	//ui->eccSetValue->addItem("", NULL);
 	ui->eccSetValue->addItem("0x00 - Disable", 0x00);
 	ui->eccSetValue->addItem("0x01 - Enable", 0x01);
 	ui->eccSetValue->setCurrentIndex(0);
@@ -38,7 +38,7 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->qfpromReadAddressTypeValue->addItem("0x01 - RAW", 0x01);
 	ui->qfpromReadAddressTypeValue->setCurrentIndex(0);
 
-	ui->openMultiValue->addItem("", NULL);
+	//ui->openMultiValue->addItem("", NULL);
 	ui->openMultiValue->addItem("0x01 - PBL", STREAMING_DLOAD_OPEN_MULTI_MODE_PBL);
 	ui->openMultiValue->addItem("0x02 - QC SBL Header & Config", STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBLHDCFG);
 	ui->openMultiValue->addItem("0x03 - QC SBL", STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBL);
@@ -93,7 +93,7 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->writePartitionTableButton, SIGNAL(clicked()), this, SLOT(writePartitionTable()));
 
 	
-		QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
+	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
 	QObject::connect(ui->writePartitionTableFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForParitionTable()));
 	QObject::connect(ui->writeFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForWriteFile()));
 }
