@@ -46,6 +46,11 @@ OpenPST aims to be a multi-platform phone servicing tool for Qualcomm based chip
 	- Open image / read & write
 	- Open multi / read & write
 
+- QCDM
+	- General NAM programming
+	- NV Read/Write
+	- Memory Read
+	
 - MBN Inspection
 	- Quickly view header for 80 byte and 40 byte variants
 	- Identify image type
