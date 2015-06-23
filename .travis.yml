@@ -1,0 +1,10 @@
+os:
+  - linux
+  - windows
+language: cpp
+compiler:
+  - gcc
+install:
+  - make
+script:
+  - make
