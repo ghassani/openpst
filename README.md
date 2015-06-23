@@ -14,10 +14,7 @@ OpenPST aims to be a multi-platform phone servicing tool for Qualcomm based chip
 
 ### Building
 
-    git clone https://github.com/openpst/openpst --depth=1
-    cd openpst
-    git submodule init
-    git submodule update --depth=1
+    git clone git://github.com/openpst/openpst.git --depth=1 --recursive
 
 ####Windows
 
