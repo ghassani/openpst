@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>884</width>
+    <width>235</width>
     <height>516</height>
    </rect>
   </property>
@@ -17,9 +17,9 @@
    <widget class="QLabel" name="programNameText">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>10</y>
-      <width>111</width>
+      <x>50</x>
+      <y>30</y>
+      <width>141</width>
       <height>31</height>
      </rect>
     </property>
@@ -35,8 +35,8 @@
    <widget class="QPushButton" name="startSaharaButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>20</y>
+      <x>40</x>
+      <y>90</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -48,9 +48,9 @@
    <widget class="QPushButton" name="startStreamingDloadButton">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>20</y>
-      <width>141</width>
+      <x>40</x>
+      <y>120</y>
+      <width>161</width>
       <height>27</height>
      </rect>
     </property>
@@ -61,8 +61,8 @@
    <widget class="QPushButton" name="startPortRawWriteReadButton">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>60</y>
+      <x>40</x>
+      <y>210</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -74,8 +74,8 @@
    <widget class="QPushButton" name="startMbnToolButton">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>20</y>
+      <x>40</x>
+      <y>180</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -87,9 +87,9 @@
    <widget class="QPushButton" name="startQcdmButton">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>20</y>
-      <width>141</width>
+      <x>40</x>
+      <y>150</y>
+      <width>161</width>
       <height>27</height>
      </rect>
     </property>
@@ -103,8 +103,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>884</width>
-     <height>21</height>
+     <width>235</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQC_Tools">
