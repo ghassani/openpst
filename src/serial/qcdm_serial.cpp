@@ -101,10 +101,10 @@ int QcdmSerial::send16Password(const char* password)
 	return rxPacket->status == 1 ? 1 : 0;
 }
 
-QString QcdmSerial::getNvItemString(int itemId)
+int QcdmSerial::getNvItemString(int itemId)
 {
 	if (!isOpen()) {
-		return "";
+        return 0;
 	}
 
 	qcdm_nv_tx_t packet;
@@ -127,5 +127,5 @@ QString QcdmSerial::getNvItemString(int itemId)
 
 	qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)buffer;
 
-	return "TESTING123456789";
+    return 1;
 }

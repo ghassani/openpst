@@ -2,13 +2,13 @@
 # PLACEHOLDER
 #-------------------------------------------------
 
-QT       += core gui
-
+QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += C++11
 
 TARGET = OpenPST
+
 TEMPLATE = app
 
 INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
@@ -87,11 +87,9 @@ macx {
         lib/serial/include/serial/impl/unix.h
 }
 
-FORMS    += resources/ui/main_window.ui \
+FORMS  += resources/ui/main_window.ui \
     resources/ui/mbn_tool_window.ui \
     resources/ui/sahara_window.ui \
     resources/ui/send_raw_window.ui \
     resources/ui/streaming_dload_window.ui \
     resources/ui/qcdm_window.ui
-
-
