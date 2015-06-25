@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>376</height>
+    <width>876</width>
+    <height>545</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,15 +18,20 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
-    <height>376</height>
+    <width>876</width>
+    <height>545</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
-    <height>376</height>
+    <width>876</width>
+    <height>545</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Send RAW - OpenPST</string>
@@ -104,13 +109,13 @@
      <string>Disconnect</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="log">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>771</width>
-      <height>201</height>
+      <width>851</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
@@ -125,8 +130,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>260</y>
+      <x>620</x>
+      <y>170</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -146,8 +151,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>260</y>
+      <x>720</x>
+      <y>170</y>
       <width>141</width>
       <height>27</height>
      </rect>
@@ -167,8 +172,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>290</y>
+      <x>720</x>
+      <y>200</y>
       <width>141</width>
       <height>27</height>
      </rect>
@@ -188,8 +193,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>290</y>
+      <x>620</x>
+      <y>200</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -203,11 +208,11 @@
      <string>Read</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox_2">
+   <widget class="QComboBox" name="da">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>260</y>
+      <y>170</y>
       <width>231</width>
       <height>29</height>
      </rect>
@@ -233,13 +238,70 @@
      </property>
     </item>
    </widget>
+   <widget class="QTextEdit" name="log_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>250</y>
+      <width>851</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_9">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>460</y>
+      <width>91</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Clear</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_10">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>460</y>
+      <width>91</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>876</width>
      <height>26</height>
     </rect>
    </property>

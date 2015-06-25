@@ -12,7 +12,7 @@
 #define _GUI_STREAMING_DLOAD_WINDOW_H
 
 #include <QMainWindow>
-#include "QFileDialog.h"
+#include <QFileDialog>
 #include "ui_streaming_dload_window.h"
 #include "qc/streaming_dload.h"
 #include "serial/streaming_dload_serial.h"

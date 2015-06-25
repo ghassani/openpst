@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>879</width>
-    <height>657</height>
+    <width>880</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,18 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>880</width>
+    <height>665</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>880</width>
+    <height>665</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Streaming DLOAD - OpenPST</string>
@@ -633,11 +645,6 @@
         <string>Power Down</string>
        </property>
       </widget>
-      <zorder>nopButton</zorder>
-      <zorder>resetButton</zorder>
-      <zorder>powerDownButton</zorder>
-      <zorder>modeGroupBox_2</zorder>
-      <zorder>openMultiGroupBox</zorder>
      </widget>
     </widget>
     <widget class="QWidget" name="readWriteTab">
@@ -756,7 +763,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Start Address</string>
+        <string>Address</string>
        </property>
       </widget>
       <widget class="QLabel" name="readChunkSizeLabel">
@@ -1580,7 +1587,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>879</width>
+     <width>880</width>
      <height>21</height>
     </rect>
    </property>

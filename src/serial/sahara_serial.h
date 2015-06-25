@@ -137,6 +137,8 @@ class SaharaSerial : public serial::Serial {
         size_t bufferSize;
         size_t lastRxSize,
                lastTxSize;
+	private:
+		bool isValidResponse(uint32_t command, uint8_t* data, size_t dataSize);
 };
 }
 

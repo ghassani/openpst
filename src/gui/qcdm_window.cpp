@@ -212,7 +212,7 @@ void QcdmWindow::nvReadGetMeid() {
 		ui->security16PasswordValue->text() = "";
 	}
 
-	QString result = port.getNvItemString(1943);
+    int result = port.getNvItemString(1943);
 }
 
 
