@@ -27,6 +27,10 @@
 #define SAHARA_RAM_ZI_SIZE 0x20000
 #endif
 
+#ifndef SAHARA_MAX_MEMORY_REQUEST_SIZE
+#define SAHARA_MAX_MEMORY_REQUEST_SIZE 0x50000
+#endif
+
 /**
  * These are all known commands, both rx and tx.
  */
