@@ -41,7 +41,45 @@ namespace openpst {
 			*/
 			int send16Password(const char* password);
 
-            int getNvItemString(int itemId);
+			/**
+			* @brief getNvItem
+			* @param itemId - NV Item ID
+			* @param response -
+			* @return
+			*/
+			int getNvItem(int itemId, uint8_t** response);
+
+			/**
+			* @brief setNvItem
+			* @param itemId - NV Item ID
+			* @param data - NV Item Data
+			* @param response -
+			* @return
+			*/
+			int setNvItem(int itemId, const char *data, int length, uint8_t** response);
+
+			/**
+			* @brief sendHtcNvUnlock
+			* @param response -
+			* @return
+			*/
+			int sendHtcNvUnlock(uint8_t** response);
+
+			/**
+			* @brief sendLgNvUnlock
+			* @param response -
+			* @return
+			*/
+			int sendLgNvUnlock(uint8_t** response);  //FIXME
+
+			/**
+			* @brief getLgSpc
+			* @param response -
+			* @return
+			*/
+			int getLgSpc(uint8_t** response);
+
+			std::string transformHexToString(const char *input, int length);
 
             uint8_t buffer[DIAG_MAX_RX_PKT_SIZ];
             size_t lastRxSize,

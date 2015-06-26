@@ -21,13 +21,21 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 
     UpdatePortList();
 
+	ui->readSpcMethod->addItem("Default", 0);
+	ui->readSpcMethod->addItem("EFS", 1);
+	ui->readSpcMethod->addItem("HTC", 2);
+	ui->readSpcMethod->addItem("LG", 3);
+	ui->readSpcMethod->addItem("Samsung", 4);
+
     QObject::connect(ui->portListRefreshButton,        SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
     QObject::connect(ui->securitySendSpcButton,        SIGNAL(clicked()), this, SLOT(SecuritySendSpc()));
 	QObject::connect(ui->securitySend16PasswordButton, SIGNAL(clicked()), this, SLOT(SecuritySend16Password()));
 	QObject::connect(ui->readMeidButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetMeid()));
-
+	QObject::connect(ui->readImeiButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetImei()));
+	QObject::connect(ui->readSpcButton,				   SIGNAL(clicked()), this, SLOT(nvReadGetSpc()));
+	QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
 }
 
 /**
@@ -159,10 +167,12 @@ void QcdmWindow::SecuritySendSpc()
 
     int result = port.sendSpc(ui->securitySpcValue->text().toStdString().c_str());
 
-    if (result < 0) {
+	if (result == DIAG_CMD_NO_RESPONSE || result == DIAG_CMD_WRITE_FAIL) {
         log(LOGTYPE_ERROR, "Error Sending SPC");
         return;
-    } else if (result != 1) {
+    }
+	
+	if (result == DIAG_SPC_REJECT) {
         log(LOGTYPE_ERROR, "SPC Not Accepted");
         return;
     }
@@ -187,11 +197,12 @@ void QcdmWindow::SecuritySend16Password()
 
 	int result = port.send16Password(ui->security16PasswordValue->text().toStdString().c_str());
 
-	if (result < 0) {
+	if (result == DIAG_CMD_NO_RESPONSE || result == DIAG_CMD_WRITE_FAIL) {
 		log(LOGTYPE_ERROR, "Error Sending 16 Digit Password");
 		return;
 	}
-	else if (result != 1) {
+
+	if (result == DIAG_PASSWORD_REJECT) {
 		log(LOGTYPE_ERROR, "16 Digit Password Not Accepted");
 		return;
 	}
@@ -202,17 +213,175 @@ void QcdmWindow::SecuritySend16Password()
 /**
 * @brief QcdmWindow::nvReadGetMeid
 */
-void QcdmWindow::nvReadGetMeid() {
+void QcdmWindow::nvReadGetMeid() 
+{
 	if (!port.isOpen()) {
 		log(LOGTYPE_WARNING, "Connect to a Port First");
 		return;
 	}
 
-	if (ui->security16PasswordValue->text().length() != 0) {
-		ui->security16PasswordValue->text() = "";
+	if (ui->hexMeidValue->text().length() != 0) {
+		ui->hexMeidValue->setText("");
 	}
 
-    int result = port.getNvItemString(1943);
+	uint8_t* response = NULL;
+
+	int result = port.getNvItem(1943, &response);
+
+	if (result == DIAG_NV_READ_F){
+		int p;
+		QString meidValue, tmp;
+
+		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+
+		for (p = 6; p >= 0; p--) {
+			tmp.sprintf("%02x", rxPacket->data[p]);
+			meidValue.append(tmp);
+		}
+
+		meidValue = meidValue.toUpper();
+
+		ui->hexMeidValue->setText(meidValue);
+
+		log(LOGTYPE_INFO, "Read Success - MEID: " + meidValue);
+	} else {
+		log(LOGTYPE_ERROR, "Read Failure - MEID");
+	}
+}
+
+/**
+* @brief QcdmWindow::nvReadGetImei
+*/
+void QcdmWindow::nvReadGetImei() 
+
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	if (ui->imeiValue->text().length() != 0) {
+		ui->imeiValue->setText("");
+	}
+
+	uint8_t* response = NULL;
+
+	int result = port.getNvItem(550, &response);
+
+	if (result == DIAG_NV_READ_F) {
+		int p;
+		QString imeiValue, tmp;
+
+		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+
+		for (p = 1; p <= 8; p++) {
+			tmp.sprintf("%02x", rxPacket->data[p]);
+			imeiValue.append(tmp);
+		}
+
+		imeiValue = imeiValue.remove("a");
+
+		if (imeiValue != "0000000000000000") {
+			ui->imeiValue->setText(imeiValue);
+
+			log(LOGTYPE_INFO, "Read Success - IMEI: " + imeiValue);
+		} else {
+			log(LOGTYPE_ERROR, "Read Failure - IMEI");
+		}
+	} else {
+		log(LOGTYPE_ERROR, "Read Failure - IMEI");
+	}
+}
+
+/**
+* @brief QcdmWindow::nvReadGetSpc
+*/
+void QcdmWindow::nvReadGetSpc()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	if (ui->hexSpcValue->text().length() != 0 || ui->readSpcValue->text().length() != 0) {
+		ui->hexSpcValue->setText("");
+		ui->readSpcValue->setText("");
+	}
+
+	uint8_t* response = NULL;
+
+	int result = 0;
+
+	switch (ui->readSpcMethod->currentData().toInt()) {
+	case 0:
+		result = port.getNvItem(85, &response);
+		break;
+	case 1:
+		// EFS Method
+
+		break;
+	case 2:
+		port.sendHtcNvUnlock(&response); // HTC Method
+		result = port.getNvItem(85, &response);
+		break;
+	case 3:
+		port.sendLgNvUnlock(&response); // LG Method
+		result = port.getLgSpc(&response);
+		break;
+	case 4:
+		// Samsung Method
+
+		break;
+	}
+
+	if (result == DIAG_NV_READ_F){
+		int p;
+		QString hexSpcValue, tmp;
+
+		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+
+		for (p = 0; p <= 5; p++) {
+			tmp.sprintf("%02x", rxPacket->data[p]);
+			hexSpcValue.append(tmp);
+		}
+
+		QString readSpcValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 5));
+
+		ui->hexSpcValue->setText(hexSpcValue);
+		ui->readSpcValue->setText(readSpcValue);
+
+		log(LOGTYPE_INFO, "Read Success - SPC: " + readSpcValue);
+	} else {
+		log(LOGTYPE_ERROR, "Read Failure - SPC");
+	}
+}
+
+/**
+* @brief QcdmWindow::nvWriteSetSpc
+*/
+void QcdmWindow::nvWriteSetSpc()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	if (ui->readSpcValue->text().length() != 6) {
+		log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
+		return;
+	}
+
+	uint8_t* response = NULL;
+
+	int result = port.setNvItem(85, ui->readSpcValue->text().toStdString().c_str(), 6, &response);
+
+	if (result == DIAG_NV_WRITE_F) {
+		log(LOGTYPE_INFO, "Write Success - SPC: " + ui->readSpcValue->text());
+
+		nvReadGetSpc();
+	} else {
+		log(LOGTYPE_ERROR, "Write Failure - SPC");
+	}
 }
 
 

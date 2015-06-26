@@ -30,7 +30,22 @@
 #define DIAG_RX_TIMEOUT (15*1000)
 #endif
 
+enum DIAG_PASSWORD_STATUS {
+	DIAG_PASSWORD_REJECT = 0x0,
+	DIAG_PASSWORD_ACCEPT = 0x1
+};
 
+enum DIAG_SPC_STATUS {
+	DIAG_SPC_REJECT = 0x0,
+	DIAG_SPC_ACCEPT = 0x1
+};
+
+enum DIAG_CMD_STATUS {
+	DIAG_CMD_GENERAL_FAIL = -1,
+	DIAG_CMD_PORT_CLOSED = -2,
+	DIAG_CMD_NO_RESPONSE = -3,
+	DIAG_CMD_WRITE_FAIL = -4
+};
 
 enum DIAG_COMMAND {
 	DIAG_BAD_CMD_F = 0x13,
@@ -112,16 +127,16 @@ typedef struct qcdm_16pw_rx_t{
 	uint8_t status;
 } qcdm_16pw_rx_t;
 
-typedef struct qcdm_nv_tx_t{
+PACKED(typedef struct {
 	uint8_t cmd;
 	uint16_t nvItem;
 	uint8_t data[DIAG_NV_ITEM_SIZE];
-} qcdm_nv_tx_t;
+} qcdm_nv_tx_t);
 
-typedef struct {
+PACKED(typedef struct {
     uint8_t cmd;
     uint16_t nvItem;
     uint8_t data[DIAG_NV_ITEM_SIZE];
-} qcdm_nv_rx_t;
+} qcdm_nv_rx_t);
 
 #endif // _QC_DIAG_H

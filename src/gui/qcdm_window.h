@@ -39,6 +39,9 @@ public slots:
     void SecuritySendSpc();
 	void SecuritySend16Password();
 	void nvReadGetMeid();
+	void nvReadGetImei();
+	void nvReadGetSpc();
+	void nvWriteSetSpc();
 
 private:
 	void log(int type, const char* message);
@@ -49,10 +52,10 @@ private:
     openpst::QcdmSerial port;
     serial::PortInfo currentPort;
 
-	static const int LOGTYPE_DEBUG = 0;
-	static const int LOGTYPE_ERROR = -1;
-	static const int LOGTYPE_INFO = 1;
-	static const int LOGTYPE_WARNING = 2;
+	int LOGTYPE_DEBUG = 0;
+	int LOGTYPE_ERROR = -1;
+	int LOGTYPE_INFO = 1;
+	int LOGTYPE_WARNING = 2;
 
 };
 
