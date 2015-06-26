@@ -255,6 +255,15 @@ void SaharaWindow::writeHello()
 				size_t fileDataSize = 0;
 				for (int i = 0; i < totalRegions; i++) {
 					entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
+
+					if (entry->size > SAHARA_MAX_MEMORY_REQUEST_SIZE) { // confirm larger files
+						QMessageBox::StandardButton largeFileUserResponse = QMessageBox::question(this, "Confirm Large File", tmp.sprintf("Pull large file %s (%lu bytes) or skip it?", entry->filename, entry->size));
+
+						if (largeFileUserResponse != QMessageBox::Yes) {
+							continue;
+						}
+					}
+
 					outFile.sprintf("%s/%s", dumpPath.toStdString().c_str(), entry->filename);
 					log(tmp.sprintf("Dumping %s (%s) - Address: %08X Size: %lu to file %s", entry->name, entry->filename, entry->address, entry->size, outFile.toStdString().c_str()));
 					

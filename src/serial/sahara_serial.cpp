@@ -571,39 +571,54 @@ int SaharaSerial::readMemory(uint32_t address, uint32_t size, const char* outFil
 		printf("Error opening file %s for writing\n", outFile);
 		return 0;
 	}
-	
+
+	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
+
 	sahara_memory_read_tx_t packet;
 	packet.header.command = SAHARA_MEMORY_READ;
 	packet.header.size = sizeof(packet);
-	packet.address = address;
-	packet.length = size;
-
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
-
-	if (!lastTxSize) {
-		printf("Attempted to write to port but 0 bytes were written\n");
-		return 0;
-	}
-
-	hexdump_tx((uint8_t*)&packet, lastTxSize);
 
 	uint8_t memBuffer[SAHARA_MAX_MEMORY_DATA_SIZE];
-
 	outFileSize = 0;
 
 	do {
-		lastRxSize = read(memBuffer, SAHARA_MAX_MEMORY_DATA_SIZE);
+		packet.address = address + outFileSize;
 
-		if (lastRxSize == 0) {
-			break;
+		if (isOverMax) {
+			if ((size - outFileSize) < SAHARA_MAX_MEMORY_REQUEST_SIZE) {
+				packet.length = size - outFileSize;
+			} else {
+				packet.length = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+			}
+		} else {
+			packet.length = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
 		}
 
-		hexdump_rx(memBuffer, lastRxSize);
+		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
-		fwrite(memBuffer, sizeof(uint8_t), lastRxSize, fp);
+		if (!lastTxSize) {
+			printf("Attempted to write to port but 0 bytes were written\n");
+			return 0;
+		}
 
-		outFileSize += lastRxSize;
-	} while (true);
+		hexdump_tx((uint8_t*)&packet, lastTxSize);
+
+		do {
+
+			lastRxSize = read(memBuffer, SAHARA_MAX_MEMORY_DATA_SIZE);
+
+			if (lastRxSize == 0) {
+				break;
+			}
+
+			hexdump_rx(memBuffer, lastRxSize);
+
+			fwrite(memBuffer, sizeof(uint8_t), lastRxSize, fp);
+
+			outFileSize += lastRxSize;
+		} while (true);
+	
+	} while (outFileSize < size);
 
 	fclose(fp);
 
