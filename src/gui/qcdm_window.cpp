@@ -27,6 +27,11 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 	ui->readSpcMethod->addItem("LG", 3);
 	ui->readSpcMethod->addItem("Samsung", 4);
 
+	ui->SubscriptionValue->addItem("RUIM_ONLY", RTRE_MODE_RUIM_ONLY);
+	ui->SubscriptionValue->addItem("NV_ONLY", RTRE_MODE_NV_ONLY);
+	ui->SubscriptionValue->addItem("RUIM_PREF", RTRE_MODE_RUIM_PREF);
+	ui->SubscriptionValue->addItem("GSM_1X", RTRE_MODE_GSM_1X);
+
     QObject::connect(ui->portListRefreshButton,        SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
@@ -36,6 +41,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 	QObject::connect(ui->readImeiButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetImei()));
 	QObject::connect(ui->readSpcButton,				   SIGNAL(clicked()), this, SLOT(nvReadGetSpc()));
 	QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
+	QObject::connect(ui->readSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvReadGetSubscription()));
 }
 
 /**
@@ -381,6 +387,45 @@ void QcdmWindow::nvWriteSetSpc()
 		nvReadGetSpc();
 	} else {
 		log(LOGTYPE_ERROR, "Write Failure - SPC");
+	}
+}
+
+void QcdmWindow::nvReadGetSubscription()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	uint8_t* response = NULL;
+
+	int result = port.getNvItem(855, &response);
+
+	if (result == DIAG_NV_READ_F) {
+		QString result;
+
+		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+
+		ui->SubscriptionValue->setCurrentIndex(rxPacket->data[0]);
+
+		switch (rxPacket->data[0]) {
+		case RTRE_MODE_RUIM_ONLY:
+			result = "RUIM_ONLY";
+			break;
+		case RTRE_MODE_NV_ONLY:
+			result = "NV_ONLY";
+			break;
+		case RTRE_MODE_RUIM_PREF:
+			result = "RUIM_PREF";
+			break;
+		case RTRE_MODE_GSM_1X:
+			result = "GSM_1X";
+			break;
+		}
+
+		log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + result);
+	} else {
+		log(LOGTYPE_ERROR, "Read Failure - Subscription Mode");
 	}
 }
 

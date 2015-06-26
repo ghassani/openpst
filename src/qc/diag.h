@@ -106,6 +106,13 @@ enum DIAG_PHONE_MODE {
 	MODE_MAX_F
 };
 
+enum DIAG_RTRE_MODE {
+	RTRE_MODE_RUIM_ONLY = 0x0,
+	RTRE_MODE_NV_ONLY = 0x1,
+	RTRE_MODE_RUIM_PREF = 0x2,
+	RTRE_MODE_GSM_1X = 0x3
+};
+
 
 typedef struct qcdm_spc_tx_t{
     uint8_t command;

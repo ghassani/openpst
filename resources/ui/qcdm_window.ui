@@ -177,8 +177,10 @@
        </property>
        <property name="font">
         <font>
-         <weight>50</weight>
-         <bold>false</bold>
+         <pointsize>9</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
@@ -331,8 +333,10 @@
        </property>
        <property name="font">
         <font>
-         <weight>50</weight>
-         <bold>false</bold>
+         <pointsize>9</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
@@ -403,9 +407,9 @@
      <widget class="QGroupBox" name="groupBox_5">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>140</y>
-        <width>211</width>
+        <x>450</x>
+        <y>10</y>
+        <width>261</width>
         <height>61</height>
        </rect>
       </property>
@@ -476,6 +480,121 @@
        </property>
        <property name="indent">
         <number>-1</number>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="writeImeiButton">
+       <property name="geometry">
+        <rect>
+         <x>201</x>
+         <y>20</y>
+         <width>51</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Write</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>70</y>
+        <width>261</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Subscription</string>
+      </property>
+      <widget class="QPushButton" name="readSubscriptionButton">
+       <property name="geometry">
+        <rect>
+         <x>151</x>
+         <y>20</y>
+         <width>51</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Read</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>25</y>
+         <width>31</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Type</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="indent">
+        <number>-1</number>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="writeSubscriptionButton">
+       <property name="geometry">
+        <rect>
+         <x>201</x>
+         <y>20</y>
+         <width>51</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Write</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="SubscriptionValue">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>21</y>
+         <width>101</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
        </property>
       </widget>
      </widget>

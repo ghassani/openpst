@@ -42,6 +42,7 @@ public slots:
 	void nvReadGetImei();
 	void nvReadGetSpc();
 	void nvWriteSetSpc();
+	void nvReadGetSubscription();
 
 private:
 	void log(int type, const char* message);
