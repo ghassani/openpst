@@ -17,6 +17,14 @@
 #include <stdio.h>
 #include <QVariant>
 
+#define hexdump_tx(data, amount) \
+   printf("Dumping %lu bytes written\n", amount); \
+   hexdump(data, amount);
+
+#define hexdump_rx(data, amount) \
+   printf("Dumping %lu bytes read\n", amount); \
+   hexdump(data, amount);
+
 const char hex_trans[] =
     "................................ !\"#$%&'()*+,-./0123456789"
     ":;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklm"

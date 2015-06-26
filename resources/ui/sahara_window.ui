@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1083</width>
-    <height>761</height>
+    <height>724</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>1083</width>
-    <height>761</height>
+    <height>724</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>1083</width>
-    <height>761</height>
+    <height>724</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -72,7 +72,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>519</y>
+      <y>490</y>
       <width>1061</width>
       <height>131</height>
      </rect>
@@ -87,7 +87,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>490</y>
+      <y>460</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -105,7 +105,7 @@
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>660</y>
+      <y>630</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -167,7 +167,7 @@
       <x>10</x>
       <y>60</y>
       <width>861</width>
-      <height>427</height>
+      <height>371</height>
      </rect>
     </property>
     <property name="font">
@@ -185,203 +185,6 @@
      <attribute name="title">
       <string>Manual Processing</string>
      </attribute>
-     <widget class="QGroupBox" name="streamingDloadGroupBox">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>290</y>
-        <width>831</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="title">
-       <string>Transition To Streaming DLOAD</string>
-      </property>
-      <widget class="QPushButton" name="streamingDloadHelloButton">
-       <property name="geometry">
-        <rect>
-         <x>750</x>
-         <y>55</y>
-         <width>71</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Send</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="streamingDloadHelloFeatureBitsValue">
-       <property name="geometry">
-        <rect>
-         <x>630</x>
-         <y>55</y>
-         <width>111</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>0x00000011</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="streamingDloadHelloVersionValue">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>55</y>
-         <width>141</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>0x05</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="streamingDloadHelloMagicValue">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>55</y>
-         <width>301</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>QCOM fast download protocol host</string>
-       </property>
-       <property name="maxLength">
-        <number>32</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="streamingDloadHelloVersionLabel">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>30</y>
-         <width>67</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Version</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="streamingDloadHelloCompatibleVersionValue">
-       <property name="geometry">
-        <rect>
-         <x>470</x>
-         <y>55</y>
-         <width>141</width>
-         <height>27</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>0x02</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="streamingDloadHelloFeatureBitsLabel">
-       <property name="geometry">
-        <rect>
-         <x>630</x>
-         <y>30</y>
-         <width>91</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Feature Bits</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="streamingDloadHelloCompatibleVersionLabel">
-       <property name="geometry">
-        <rect>
-         <x>470</x>
-         <y>30</y>
-         <width>151</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Compatible Version</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="streamingDloadHelloMagicLabel">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>67</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Magic</string>
-       </property>
-      </widget>
-     </widget>
      <widget class="QGroupBox" name="clientCommandGroupBox">
       <property name="geometry">
        <rect>
@@ -556,6 +359,35 @@
        </property>
        <property name="text">
         <string>Image File Path</string>
+       </property>
+      </widget>
+      <widget class="QProgressBar" name="sendImageProgressBar">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
+         <width>171</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="format">
+        <string>%p% </string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sendImageProgressTextLabel">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>91</y>
+         <width>161</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0/0 bytes</string>
        </property>
       </widget>
      </widget>
@@ -854,13 +686,13 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="memoryDebugGroupBox">
+     <widget class="QGroupBox" name="memoryReadGroupBox">
       <property name="geometry">
        <rect>
         <x>350</x>
         <y>230</y>
         <width>491</width>
-        <height>61</height>
+        <height>91</height>
        </rect>
       </property>
       <property name="font">
@@ -870,12 +702,12 @@
        </font>
       </property>
       <property name="title">
-       <string>Memory Debug</string>
+       <string>Memory Read</string>
       </property>
-      <widget class="QLineEdit" name="memoryDebugAddressValue">
+      <widget class="QLineEdit" name="memoryReadAddressValue">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>80</x>
          <y>25</y>
          <width>111</width>
          <height>27</height>
@@ -891,10 +723,10 @@
         <string>0x00000000</string>
        </property>
       </widget>
-      <widget class="QLabel" name="memoryDebugAddressLabel">
+      <widget class="QLabel" name="memoryReadAddressLabel">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>10</x>
          <y>25</y>
          <width>71</width>
          <height>27</height>
@@ -910,10 +742,10 @@
         <string>Address</string>
        </property>
       </widget>
-      <widget class="QLabel" name="memoryDebugSizeLabel">
+      <widget class="QLabel" name="memoryReadSizeLabel">
        <property name="geometry">
         <rect>
-         <x>250</x>
+         <x>200</x>
          <y>25</y>
          <width>41</width>
          <height>27</height>
@@ -929,12 +761,12 @@
         <string>Size</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="memoryDebugSizeValue">
+      <widget class="QLineEdit" name="memoryReadSizeValue">
        <property name="geometry">
         <rect>
-         <x>290</x>
+         <x>240</x>
          <y>25</y>
-         <width>101</width>
+         <width>51</width>
          <height>27</height>
         </rect>
        </property>
@@ -948,10 +780,10 @@
         <string>0</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="memoryDebugReadButton">
+      <widget class="QPushButton" name="memoryReadButton">
        <property name="geometry">
         <rect>
-         <x>410</x>
+         <x>300</x>
          <y>25</y>
          <width>71</width>
          <height>27</height>
@@ -967,6 +799,35 @@
         <string>Read</string>
        </property>
       </widget>
+      <widget class="QProgressBar" name="memoryReadProgressBar">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>171</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="format">
+        <string>%p% </string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="memoryReadProgressTextLabel">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>62</y>
+         <width>191</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0/0 bytes</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>
@@ -974,7 +835,7 @@
     <property name="geometry">
      <rect>
       <x>880</x>
-      <y>660</y>
+      <y>630</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -1279,6 +1140,19 @@
      <string>None</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="readSomeButton">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>630</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Read Some</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1286,7 +1160,7 @@
      <x>0</x>
      <y>0</y>
      <width>1083</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQC_Tools">

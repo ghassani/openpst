@@ -11,6 +11,22 @@
 #ifndef _QC_SAHARA_H
 #define _QC_SAHARA_H
 
+#ifndef SAHARA_MAX_PACKET_SIZE
+#define SAHARA_MAX_PACKET_SIZE 0x400
+#endif
+
+#ifndef SAHARA_LOG_LENGTH
+#define SAHARA_LOG_LENGTH 0x64
+#endif
+
+#ifndef SAHARA_MAX_MEMORY_DATA_SIZE
+#define SAHARA_MAX_MEMORY_DATA_SIZE 0x1000
+#endif
+
+#ifndef SAHARA_RAM_ZI_SIZE
+#define SAHARA_RAM_ZI_SIZE 0x20000
+#endif
+
 /**
  * These are all known commands, both rx and tx.
  */
@@ -220,8 +236,8 @@ typedef struct { // 0x08
 
 typedef struct { // 0x09
     sahara_header_t header;
-    uint32_t address;
-    uint32_t length;
+    uint32_t memoryTableAddress;
+	uint32_t memoryTableLength;
 } sahara_memory_debug_rx_t;
 
 
@@ -314,5 +330,15 @@ typedef struct { // 0x11
     uint64_t address;
     uint64_t length;
 } sahara_memory_read_64_tx_t;
+
+
+PACKED(typedef struct {
+	uint32_t unknown1;
+	uint32_t address;
+	uint32_t size;
+	uint8_t name[20];
+	uint8_t filename[20];
+} sahara_memory_table_entry_t);
+
 
 #endif // _QC_SAHARA_H

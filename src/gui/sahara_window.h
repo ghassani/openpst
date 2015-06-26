@@ -15,6 +15,7 @@
 #include <QMainWindow>
 #include <QVariant>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <iostream>
 #include <stdio.h>
 #include "ui_sahara_window.h"
@@ -23,6 +24,8 @@
 #include "qc/streaming_dload.h"
 #include "qc/hdlc.h"
 #include "util/hexdump.h"
+#include "util/sleep.h"
+#include "util/endian.h"
 
 namespace Ui {
 class SaharaWindow;
@@ -48,8 +51,8 @@ public slots:
     void browseForImage();
     void sendImage();
 	void sendDone();
-	void memoryDebugRead();
-    void sendStreamingDloadHello();
+	void memoryRead();
+	void readSome();
     void clearLog();
     void saveLog();
 

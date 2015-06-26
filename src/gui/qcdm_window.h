@@ -49,10 +49,10 @@ private:
     openpst::QcdmSerial port;
     serial::PortInfo currentPort;
 
-	int LOGTYPE_DEBUG = 0;
-	int LOGTYPE_ERROR = -1;
-	int LOGTYPE_INFO = 1;
-	int LOGTYPE_WARNING = 2;
+	static const int LOGTYPE_DEBUG = 0;
+	static const int LOGTYPE_ERROR = -1;
+	static const int LOGTYPE_INFO = 1;
+	static const int LOGTYPE_WARNING = 2;
 
 };
 

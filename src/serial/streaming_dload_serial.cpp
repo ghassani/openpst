@@ -21,8 +21,8 @@ using namespace openpst;
 StreamingDloadSerial::StreamingDloadSerial(std::string port, int baudrate) :
     HdlcSerial (port, baudrate)
 {
-	buffer = new uint8_t[2048]; // this will get resized after hello if needed
-	bufferSize = 2048;
+	buffer = new uint8_t[1024]; // this will get resized after hello if needed
+	bufferSize = 1024;
 	memset(&deviceState, 0x00, sizeof(deviceState));
 	memset(&lastError,	 0x00, sizeof(lastError));
 	memset(&lastLog,	 0x00, sizeof(lastLog));

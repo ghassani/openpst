@@ -86,9 +86,6 @@
     <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_window.cpp">
-      <Filter>Generated Files\Debug_Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\build\Win32-Debug\generated\moc_send_raw_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
@@ -102,9 +99,6 @@
       <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\build\Win32-Release\generated\moc_qcdm_window.cpp">
-      <Filter>Generated Files\Debug_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\build\Win32-Release\generated\moc_send_raw_window.cpp">
@@ -160,6 +154,12 @@
     </ClCompile>
     <ClCompile Include="..\src\serial\hdlc_serial.cpp">
       <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -16,8 +16,8 @@ using namespace openpst;
 SaharaSerial::SaharaSerial(std::string port, int baudrate ) :
     serial::Serial (port, baudrate, serial::Timeout::simpleTimeout(1000))
 {
-    bufferSize = 1024;
-    buffer = new uint8_t[1024];
+	bufferSize = SAHARA_MAX_PACKET_SIZE;
+	buffer = new uint8_t[SAHARA_MAX_PACKET_SIZE];
     memset(&deviceState, 0x00, sizeof(deviceState));
 	memset(&readState, 0x00, sizeof(readState));
 	memset(&memoryState, 0x00, sizeof(memoryState));
@@ -48,36 +48,36 @@ size_t SaharaSerial::sendPacket(sahara_packet_t* packet)
         return 0;
     }
 
-    hexdump((uint8_t*)packet, lastTxSize);
+    hexdump_tx((uint8_t*)packet, lastTxSize);
 
     return lastTxSize;
 }
 
 /**
- * @brief SaharaSerial::receiveHello
+ * @brief SaharaSerial::readHello
  * @return
  */
-int SaharaSerial::receiveHello()
+int SaharaSerial::readHello()
 {
     if (!isOpen()) {
         return 0;
     }
 
-    lastTxSize = read(buffer, bufferSize);
+    lastRxSize = read(buffer, bufferSize);
 
-    if (!lastTxSize) {
+	if (!lastRxSize) {
         printf("Did not receive hello. Not in sahara mode or requires restart\n");
         return 0;
     }
 
-    hexdump(buffer, lastTxSize);
+	hexdump_rx(buffer, lastRxSize);
+
+	if (!isValidResponse(SAHARA_HELLO, buffer, lastRxSize)) {
+		printf("Did Not Receive Hello Request From Device\n");
+		return 0;
+	}
 
     memcpy(&deviceState, buffer, sizeof(deviceState));
-
-    if (deviceState.header.command != SAHARA_HELLO) {
-        printf("Did Not Receive Hello Request From Device\n");
-        return 0;
-    }
 
     // resize the read buffer if it is not already the same size
     // the device provides us with the maximum sized packet that it
@@ -104,16 +104,11 @@ int SaharaSerial::receiveHello()
 int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion, uint32_t status)
 {
     if (!isOpen()) {
-        open();
-        if (!isOpen()) {
-            return 0;
-        }
+		return SAHARA_OPERATION_ERROR;
     }
 
     sahara_hello_tx_t packet;
-
     memcpy(&packet, (uint8_t*)&deviceState, sizeof(packet));
-
     packet.header.command = SAHARA_HELLO_RESPONSE;
     packet.status = status;
     packet.mode = mode == NULL ? deviceState.mode : mode;
@@ -124,69 +119,60 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 
     if (!lastTxSize) {
         printf("Attempted to write to port but 0 bytes were written\n");
-        return 0;
+		return SAHARA_OPERATION_ERROR;
     }
-
-    lastRxSize = read(buffer, bufferSize);
-
-    if (!lastRxSize) {
-        printf("Expected response but 0 bytes received from device\n");
-        return 0;
-    }
-
-    hexdump(buffer, lastRxSize);
-
-    if (packet.mode == SAHARA_MODE_COMMAND) {
-        sahara_command_ready_rx_t* commandReady = (sahara_command_ready_rx_t*)buffer;
-
-        if (commandReady->header.command != SAHARA_COMMAND_READY) {
-            printf("Unexpected Response. Expected 0x%02x But Received 0x%02x\n", SAHARA_COMMAND_READY, commandReady->header.command);
-            if (commandReady->header.command == SAHARA_END_OF_IMAGE_TRANSFER) {
-                sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) commandReady;
-                printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-                return 0;
-            }
-            return 0;
-        }
-
-        deviceState.mode = packet.mode;
-
-    } else if (packet.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
-        if (buffer[0] != SAHARA_READ_DATA) {
-            printf("Unexpected Response. Expected 0x%02x But Received 0x%02x\n", SAHARA_READ_DATA, buffer[0]);
-            if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-                sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) buffer;
-                printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-                memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-                return 0;
-            }
-            return 0;
-        }
-
-        memcpy(&readState, buffer, sizeof(readState));
-
-        deviceState.mode = packet.mode;
-	} else if (packet.mode == SAHARA_MODE_MEMORY_DEBUG) {
-		if (buffer[0] != SAHARA_MEMORY_DEBUG) {
-			printf("Unexpected Response. Expected 0x%02x But Received 0x%02x\n", SAHARA_MEMORY_DEBUG, buffer[0]);
-			if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-				sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*)buffer;
-				printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-				memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-				return 0;
-			}
-			return 0;
+	
+	hexdump_tx((uint8_t*)&packet, lastTxSize);
+	
+	try {
+		lastRxSize = read(buffer, bufferSize);
+	} catch (serial::IOException e) {
+		// sometimes (at least in memory debug mode) the device
+		// will reset itself and the hello needs to be re-read and
+		// sent
+		close();
+		
+		sleep(5000); // give it some time to come back
+		
+		open();
+		
+		if (!readHello()) {
+			printf("Error on re-handshake\n");
+			return SAHARA_OPERATION_ERROR;
 		}
 
-		memcpy(&memoryState, buffer, sizeof(memoryState));
+		lastTxSize = write((uint8_t*)&packet, sizeof(packet)); // resend the hello response
 
-		deviceState.mode = packet.mode;
-	} else {
-        printf("Unexpected/Unahandled Response\n");
-        return 0;
+		if (!lastTxSize) {
+			printf("Attempted to write to port but 0 bytes were written\n");
+			return SAHARA_OPERATION_ERROR;
+		}
+
+		hexdump_tx((uint8_t*)&packet, lastTxSize);
+
+		lastRxSize = read(buffer, bufferSize);
+	}
+	
+    if (!lastRxSize) {
+        printf("Expected response but 0 bytes received from device\n");
+		return SAHARA_OPERATION_ERROR;
     }
 
-    return 1;
+	hexdump_rx(buffer, lastRxSize);
+
+	if (packet.mode == SAHARA_MODE_COMMAND && isValidResponse(SAHARA_COMMAND_READY, buffer, lastRxSize)) {        
+        deviceState.mode = packet.mode;
+	} else if (packet.mode == SAHARA_MODE_IMAGE_TX_PENDING && isValidResponse(SAHARA_READ_DATA, buffer, lastRxSize)) {        
+        memcpy(&readState, buffer, sizeof(readState));
+        deviceState.mode = packet.mode;
+	} else if (packet.mode == SAHARA_MODE_MEMORY_DEBUG && isValidResponse(SAHARA_MEMORY_DEBUG, buffer, lastRxSize)) {    
+		memcpy(&memoryState, buffer, sizeof(memoryState));
+		deviceState.mode = packet.mode;
+	} else {
+		return SAHARA_OPERATION_ERROR;
+    }
+
+	return SAHARA_OPERATION_SUCCESS;
 }
 
 /**
@@ -220,13 +206,13 @@ int SaharaSerial::switchMode(uint32_t mode)
     packet.header.size = sizeof(packet);
     packet.mode = mode;
 
-    lastRxSize = write((uint8_t*)&packet, packet.header.size);
+    lastTxSize = write((uint8_t*)&packet, packet.header.size);
 
-    if (!lastRxSize) {
+	if (!lastTxSize) {
         printf("Attempted to write to port but 0 bytes were written\n");
     }
 
-    hexdump((uint8_t*)&packet, lastRxSize);
+	hexdump_tx((uint8_t*)&packet, lastTxSize);
 
     lastRxSize = read(buffer, bufferSize);
 
@@ -235,40 +221,20 @@ int SaharaSerial::switchMode(uint32_t mode)
         return 0;
     }
 
-	uint32_t expectedResponse;
-	switch (packet.mode) {
-	case SAHARA_MODE_COMMAND:
-		expectedResponse = SAHARA_COMMAND_READY;
-		break;
-	case SAHARA_MODE_MEMORY_DEBUG:
-		expectedResponse = SAHARA_MEMORY_DEBUG;
-		break;
-	case SAHARA_MODE_IMAGE_TX_PENDING:
-		expectedResponse = SAHARA_READ_DATA;
-		break;
-	}
+	hexdump_rx(buffer, lastRxSize);
 
-	if (!isValidResponse(expectedResponse, buffer, lastRxSize)) {
+	if (packet.mode == SAHARA_MODE_COMMAND && isValidResponse(SAHARA_COMMAND_READY, buffer, lastRxSize)) {
+
+	} else if (packet.mode == SAHARA_MODE_MEMORY_DEBUG && isValidResponse(SAHARA_MEMORY_DEBUG, buffer, lastRxSize)) {
+
+	} else if (packet.mode == SAHARA_MODE_IMAGE_TX_PENDING && isValidResponse(SAHARA_READ_DATA, buffer, lastRxSize)) {
+		if (!readHello() || !sendHello()) {
+			return 0;
+		}
+	} else {
 		return 0;
 	}
-
-    if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-        sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) buffer;
-        printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-        memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-        return 0;
-    }
-
-    if (packet.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
-        if (!receiveHello()) {
-            return 0;
-        }
-
-        if (!sendHello()) {
-            return 0;
-        }
-    }
-
+	
     deviceState.mode = packet.mode;
 
     return 1;
@@ -313,28 +279,21 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
         return 0;
     }
 
-    hexdump((uint8_t*)&packet, lastTxSize);
+    hexdump_tx((uint8_t*)&packet, lastTxSize);
 
-    lastTxSize = read(buffer, bufferSize);
+    lastRxSize = read(buffer, bufferSize);
 
-    if (!lastTxSize) {
+	if (!lastRxSize) {
         printf("Expected response but 0 bytes received from device\n");
         return 0;
     }
 
-    hexdump(buffer, lastTxSize);
+	hexdump_rx(buffer, lastRxSize);
 
-    if (buffer[0] != SAHARA_COMMAND_EXECUTE_RESPONSE) {
-        if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-            sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*) buffer;
-            memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-            printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
-        } else {
-            printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", SAHARA_COMMAND_EXECUTE_RESPONSE, buffer[0]);
-        }
-        return 0;
-    }
-
+	if (!isValidResponse(SAHARA_COMMAND_EXECUTE_RESPONSE, buffer, lastRxSize)) {
+		return 0;
+	}
+	
     sahara_command_execute_response_rx_t* execResponse = (sahara_command_execute_response_rx_t*) buffer;
 
     sahara_command_execute_data_tx_t execData;
@@ -370,9 +329,9 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 			return 0;
 		}
 
-		hexdump((uint8_t*)&execData, lastTxSize);
+		hexdump_tx((uint8_t*)&execData, lastTxSize);
 
-		lastRxSize = read(&cmdResponseData[totalReadSize], bufferSize);
+		lastRxSize = read(buffer, bufferSize);
 
 		if (!lastRxSize) {
 			printf("Expected response but 0 bytes received from device\n");
@@ -380,11 +339,15 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 			return 0;
 		}
 
-		if (cmdResponseData[totalReadSize] == SAHARA_END_OF_IMAGE_TRANSFER) {
+		hexdump_rx(buffer, lastRxSize);
+		
+		if (!isValidResponse(NULL, buffer, lastRxSize)) {
 			printf("Error Encountered\n");
 			free(cmdResponseData);
 			return 0;
 		}
+
+		memmove(&cmdResponseData[totalReadSize], buffer, lastRxSize);
 
 		//TODO check for error
 		totalReadSize += lastRxSize;
@@ -478,7 +441,7 @@ int SaharaSerial::sendImage(std::string file)
 
         lastTxSize = write(fileBuffer, chunkSize);
 
-        hexdump(fileBuffer, lastTxSize);
+        hexdump_tx(fileBuffer, lastTxSize);
 
         totalSent += lastTxSize;
 
@@ -492,7 +455,7 @@ int SaharaSerial::sendImage(std::string file)
             return 0;
         }
 
-        hexdump(buffer, lastRxSize);
+        hexdump_rx(buffer, lastRxSize);
 
         if (buffer[0] != SAHARA_READ_DATA) {
             printf("Unexpected Response. Expected 0x%02x But Received 0x%02x\n", SAHARA_READ_DATA, buffer[0]);
@@ -518,14 +481,6 @@ int SaharaSerial::sendImage(std::string file)
 }
 
 
-/**
-* @brief readMemory
-* @param uint32_t address
-* @param uint32_t address
-* @param uint32_t responseData
-* @param size_t responseSize
-* @return int
-*/
 int SaharaSerial::readMemory(uint32_t address, uint32_t size, uint8_t** responseData, size_t& responseSize)
 {
 	if (!isOpen()) {
@@ -542,6 +497,84 @@ int SaharaSerial::readMemory(uint32_t address, uint32_t size, uint8_t** response
 	sahara_memory_read_tx_t packet;
 	packet.header.command = SAHARA_MEMORY_READ;
 	packet.header.size = sizeof(packet);
+
+	uint32_t lastAddress = NULL;
+	uint8_t* out = new uint8_t[size];
+	size_t outSize = size;
+	responseSize = 0;
+
+	do {
+		packet.address = responseSize > 0 ? lastAddress + bufferSize : address;
+		packet.length = size > bufferSize ? bufferSize : size;
+
+
+		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+		if (!lastTxSize) {
+			printf("Attempted to write to port but 0 bytes were written\n");
+			return 0;
+		}
+
+		hexdump_tx((uint8_t*)&packet, lastTxSize);
+
+		lastRxSize = read(buffer, bufferSize);
+
+		if (!lastRxSize) {
+			printf("Expected response but 0 bytes received from device\n");
+			return 0;
+		}
+
+		hexdump_rx(buffer, lastRxSize);
+
+		lastAddress = packet.address;
+
+		size_t newSize = responseSize + lastRxSize;
+		if (newSize > outSize) {
+			out = (uint8_t*)realloc(out, newSize);
+			outSize = newSize;
+		}
+
+		memcpy(&out[responseSize], buffer, lastRxSize);
+
+		responseSize += lastRxSize;
+
+		if (size <= responseSize) {
+			break; //done
+		}
+
+	} while (true);
+
+	*responseData = out;
+
+	//printf("\n\n\nFinal Data Size: %lu bytes\n", responseSize);
+	//hexdump(out, responseSize);
+
+	return 1;
+}
+
+int SaharaSerial::readMemory(uint32_t address, uint32_t size, const char* outFile, size_t& outFileSize)
+{
+	if (!isOpen()) {
+		return 0;
+	}
+
+	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {
+		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
+		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
+			return 0;
+		}
+	}
+
+	FILE* fp = fopen(outFile, "a+b");
+
+	if (!fp) {
+		printf("Error opening file %s for writing\n", outFile);
+		return 0;
+	}
+	
+	sahara_memory_read_tx_t packet;
+	packet.header.command = SAHARA_MEMORY_READ;
+	packet.header.size = sizeof(packet);
 	packet.address = address;
 	packet.length = size;
 
@@ -552,20 +585,31 @@ int SaharaSerial::readMemory(uint32_t address, uint32_t size, uint8_t** response
 		return 0;
 	}
 
-	hexdump((uint8_t*)&packet, lastTxSize);
+	hexdump_tx((uint8_t*)&packet, lastTxSize);
 
-	lastRxSize = read(buffer, bufferSize);
+	uint8_t memBuffer[SAHARA_MAX_MEMORY_DATA_SIZE];
 
-	if (!lastRxSize) {
-		printf("Expected response but 0 bytes received from device\n");
-		return 0;
-	}
+	outFileSize = 0;
 
+	do {
+		lastRxSize = read(memBuffer, SAHARA_MAX_MEMORY_DATA_SIZE);
 
-	hexdump(buffer, lastRxSize);
+		if (lastRxSize == 0) {
+			break;
+		}
+
+		hexdump_rx(memBuffer, lastRxSize);
+
+		fwrite(memBuffer, sizeof(uint8_t), lastRxSize, fp);
+
+		outFileSize += lastRxSize;
+	} while (true);
+
+	fclose(fp);
 
 	return 1;
 }
+
 
 /**
  * @brief SaharaSerial::sendDone
@@ -588,7 +632,7 @@ int SaharaSerial::sendDone()
         return 0;
     }
 
-    hexdump((uint8_t*)&packet, lastTxSize);
+    hexdump_tx((uint8_t*)&packet, lastTxSize);
 
     lastRxSize = read(buffer, bufferSize);
 
@@ -597,7 +641,7 @@ int SaharaSerial::sendDone()
         return 0;
     }
 
-    hexdump(buffer, lastRxSize);
+    hexdump_rx(buffer, lastRxSize);
 
 	if (!isValidResponse(SAHARA_DONE_RESPONSE, buffer, lastRxSize)) {
 		return 0;
@@ -622,27 +666,43 @@ int SaharaSerial::sendReset()
     packet.header.command = SAHARA_RESET;
     packet.header.size = sizeof(packet);
 
-    lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	try {
+		lastTxSize = write((uint8_t*)&packet, sizeof(packet)); 
+		hexdump_tx((uint8_t*)&packet, lastTxSize);
+
+		lastRxSize = read(buffer, bufferSize);
+		hexdump_rx(buffer, lastRxSize);
+
+	} catch (std::exception e) {
+		printf(e.what());
+		try {
+			close();
+		} catch (std::exception e) {
+			printf(e.what());
+		}
+		return 1;
+	}
 
     if (!lastTxSize) {
         printf("Attempted to write to port but 0 bytes were written\n");
         return 0;
     }
 
-    hexdump((uint8_t*)&packet, lastTxSize);
-
-    lastRxSize = read(buffer, bufferSize);
+    //hexdump_tx((uint8_t*)&packet, lastTxSize);
 
     if (!lastRxSize) {
         printf("Expected response but 0 bytes received from device\n");
         return 0;
     }
 
-    hexdump(buffer, lastRxSize);
+    //hexdump_rx(buffer, lastRxSize);
 
 	if (!isValidResponse(SAHARA_RESET_RESPONSE, buffer, lastRxSize)) {
 		return 0;
 	}
+
+	// close after reset
+	close();
 
     return 1;
 }
@@ -674,23 +734,24 @@ void SaharaSerial::close()
    memset(&readState,   0x00, sizeof(readState));
 }
 
-bool SaharaSerial::isValidResponse(uint32_t command, uint8_t* data, size_t dataSize)
+
+bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* data, size_t dataSize)
 {
-	if (command == data[0]) {
+	if (expectedResponseCommand == data[0]) {
 		return true;
 	}
 
 	if (data[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
 		sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*)data;
-		if (error->status > 0) {
+		if (error->status != 0x00 && expectedResponseCommand != SAHARA_READ_DATA) {
 			memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
 			printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
 			// we need to reset after an error and disconnect to prepare for another transfer if needed
-			//sendReset();
+			sendReset();
 			return false;
 		}
-	} else {
-		printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", command, data[0]);
+	} else if (NULL != expectedResponseCommand) {
+		printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", expectedResponseCommand, data[0]);
 		return false;
 	}
 
@@ -739,7 +800,7 @@ const char* SaharaSerial::getNamedErrorStatus(uint32_t status)
         case SAHARA_NAK_INVALID_TX_LENGTH:             return "Invalid TX Length";
         case SAHARA_NAK_INVALID_RX_LENGTH:             return "Invalid RX Length";
         case SAHARA_NAK_GENERAL_TX_RX_ERROR:           return "General TX RX Error";
-        case SAHARA_NAK_UNSUPPORTED_NUM_PHDRS:         return " Cannot receive specified number of program headers";
+        case SAHARA_NAK_UNSUPPORTED_NUM_PHDRS:         return "Cannot receive specified number of program headers";
         case SAHARA_NAK_INVALID_PDHR_SIZE:             return "Invalid data length received for program headers";
         case SAHARA_NAK_MULTIPLE_SHARED_SEG:           return "Multiple shared segments found in ELF image";
         case SAHARA_NAK_UNINIT_PHDR_LOC:               return "Uninitialized program header location";

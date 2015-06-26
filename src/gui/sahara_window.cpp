@@ -52,12 +52,11 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
 	QObject::connect(ui->resetButton,					SIGNAL(clicked()), this, SLOT(sendReset()));
 	QObject::connect(ui->doneButton,					SIGNAL(clicked()), this, SLOT(sendDone()));
 	QObject::connect(ui->sendImageFileBrowseButton,		SIGNAL(clicked()), this, SLOT(browseForImage()));
-	QObject::connect(ui->sendImageButton, SIGNAL(clicked()), this, SLOT(sendImage()));
-	QObject::connect(ui->memoryDebugReadButton, SIGNAL(clicked()), this, SLOT(memoryDebugRead()));
+	QObject::connect(ui->sendImageButton,				SIGNAL(clicked()), this, SLOT(sendImage()));
+	QObject::connect(ui->memoryReadButton,				SIGNAL(clicked()), this, SLOT(memoryRead()));
 
-	
-	QObject::connect(ui->streamingDloadHelloButton,		SIGNAL(clicked()), this, SLOT(sendStreamingDloadHello()));
-    QObject::connect(ui->clearLogButton,                SIGNAL(clicked()), this, SLOT(clearLog()));
+	QObject::connect(ui->readSomeButton, SIGNAL(clicked()), this, SLOT(readSome()));
+	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
 }
 
 /**
@@ -162,7 +161,7 @@ void SaharaWindow::readHello()
 	
 	log("Reading Hello");
 
-    if (!port.receiveHello()) {
+	if (!port.readHello()) {
         log("Did not receive hello. Not in sahara mode or requires restart.");
         return disconnectPort();
     }
@@ -199,29 +198,81 @@ void SaharaWindow::writeHello()
 	uint32_t version = std::stoul(ui->writeHelloVersionValue->text().toStdString().c_str(), nullptr, 16);
 	uint32_t minVersion = std::stoul(ui->writeHelloMinimumVersionValue->text().toStdString().c_str(), nullptr, 16);
 	uint32_t status = 0x00;
-	bool isSwitchMode = port.deviceState.mode != mode;
 
+	bool isSwitchMode = port.deviceState.mode != mode;
+	
 	if (!port.sendHello(mode, version, minVersion, status)) {
-        log("Error Saying Hello");
-        return disconnectPort();
-    }
+		log("Error Saying Hello");
+		return disconnectPort();
+	}
 
     ui->deviceStateModeValue->setText(port.getNamedMode(port.deviceState.mode));
-
-	
+		
 	if (isSwitchMode) {
-		log(tmp.sprintf("Device Switching Modes: %s", port.getNamedMode(mode)));
+		log(tmp.sprintf("Device switching modes: %s", port.getNamedMode(mode)));
 	}
 
     if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
 		ui->deviceStateRequestedImageValue->setText(port.getNamedRequestedImage(port.readState.imageId));
-        log(tmp.sprintf("Device Requesting %lu Bytes of Image 0x%02x - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
+        log(tmp.sprintf("Device requesting %lu bytes of image 0x%02X - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
     }
 
-	if (port.deviceState.mode == SAHARA_MEMORY_DEBUG) {
-		ui->memoryDebugAddressValue->setText(tmp.sprintf("0x%08X", port.memoryState.address));
-		ui->memoryDebugSizeValue->setText(tmp.sprintf("%lu", port.memoryState.length));
-		log(tmp.sprintf("Device Saying Read Memory at address 0x%08X with length of %lu bytes", port.memoryState.address, port.memoryState.length));
+	if (port.deviceState.mode == SAHARA_MODE_MEMORY_DEBUG) {
+		ui->memoryReadAddressValue->setText(tmp.sprintf("0x%08X", port.memoryState.memoryTableAddress));
+		ui->memoryReadSizeValue->setText(tmp.sprintf("%lu", port.memoryState.memoryTableLength));
+		log(tmp.sprintf("Memory table located at 0x%08X with size of %lu bytes", port.memoryState.memoryTableAddress, port.memoryState.memoryTableLength));
+		
+		uint8_t* memoryTableData = NULL;
+		size_t memoryTableSize = 0;
+
+		if (!port.readMemory(port.memoryState.memoryTableAddress, port.memoryState.memoryTableLength, &memoryTableData, memoryTableSize)) {
+			log("Error reading memory table");
+			return;
+		}
+
+		int totalRegions = memoryTableSize / sizeof(sahara_memory_table_entry_t);
+		
+		log(tmp.sprintf("Memory table references %d locations", totalRegions));
+		
+		sahara_memory_table_entry_t* entry;
+
+		for (int i = 0; i < totalRegions; i++) {
+			entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
+			log(tmp.sprintf("%s (%s) - Address: %08X Size: %lu", entry->name, entry->filename, entry->address, entry->size));
+		}
+
+		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Memory Table", tmp.sprintf("Pull all %d files referenced in the memory table?", totalRegions));
+
+		if (userResponse == QMessageBox::Yes) {
+
+			QString dumpPath = QFileDialog::getExistingDirectory(this, tr("Select where to dump the files"), "");
+			QString outFile;
+			size_t outFileSize;
+
+			if (dumpPath.length()) {
+				log("\n\n");
+				uint8_t* fileData = NULL;
+				size_t fileDataSize = 0;
+				for (int i = 0; i < totalRegions; i++) {
+					entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
+					outFile.sprintf("%s/%s", dumpPath.toStdString().c_str(), entry->filename);
+					log(tmp.sprintf("Dumping %s (%s) - Address: %08X Size: %lu to file %s", entry->name, entry->filename, entry->address, entry->size, outFile.toStdString().c_str()));
+					
+					
+					if (!port.readMemory(entry->address, entry->size, outFile.toStdString().c_str(), outFileSize)) {
+						free(memoryTableData); 
+						log("Error reading memory. Aborting operation");
+						return;
+					}
+
+					log(tmp.sprintf("Done with %s - File size: %lu", entry->filename, fileDataSize));
+				}
+			} else {
+				log("Dump all cancelled");
+			}
+		}
+	
+		free(memoryTableData);
 	}
 	
 }
@@ -344,10 +395,10 @@ void SaharaWindow::sendReset()
     log("Sending Reset Command");
 
     if (!port.sendReset()) {
-        log("Error Sending Reset");
-        return disconnectPort();
+        log("Error Sending Reset");        
     }
 
+	return disconnectPort();
 }
 
 
@@ -380,85 +431,73 @@ void SaharaWindow::sendDone()
  */
 void SaharaWindow::disconnectPort()
 {
-    if (port.isOpen()) {
-		port.close();
-		log("Port Closed");
-		ui->deviceStateVersionValue->setText("Waiting Hello");
-		ui->deviceStateMinVersionValue->setText("Waiting Hello");
-		ui->deviceStatePreferredMaxSizeValue->setText("Waiting Hello");
-		ui->deviceStateRequestedImageValue->setText("None");
-		ui->memoryDebugAddressValue->setText("");
-		ui->memoryDebugSizeValue->setText("");
-		ui->portDisconnectButton->setEnabled(false);
-	}
-	
+	port.close();
+	log("Port Closed");
+	ui->deviceStateVersionValue->setText("Waiting Hello");
+	ui->deviceStateMinVersionValue->setText("Waiting Hello");
+	ui->deviceStatePreferredMaxSizeValue->setText("Waiting Hello");
+	ui->deviceStateRequestedImageValue->setText("None");
+	ui->memoryReadAddressValue->setText("");
+	ui->memoryReadSizeValue->setText("");
+	ui->portDisconnectButton->setEnabled(false);	
 }
 
 
 /**
-* @brief SaharaWindow::memoryDebugRead
+* @brief SaharaWindow::memoryRead
 */
-void SaharaWindow::memoryDebugRead()
+void SaharaWindow::memoryRead()
 {
 	if (!port.isOpen()) {
 		log("Select a port and receive hello first.");
 		return;
 	}
 
-	uint32_t address = std::stoul(ui->memoryDebugAddressValue->text().toStdString().c_str(), nullptr, 16);
-	uint32_t size = std::stoul(ui->memoryDebugSizeValue->text().toStdString().c_str(), nullptr, 10);
-
-	uint8_t* data;
-	size_t dataSize = 0;
-
-	if (!port.readMemory(address, size, &data, dataSize)) {
-		log("Error Reading Memory");
+	if (!ui->memoryReadAddressValue->text().length()) {
+		log("Enter a starting read address in hexidecimal format");
 		return;
 	}
 
+	if (!ui->memoryReadSizeValue->text().length()) {
+		log("Enter an amount in bytes to read");
+		return;
+	}
+
+	uint32_t address = std::stoul(ui->memoryReadAddressValue->text().toStdString().c_str(), nullptr, 16);
+	uint32_t size = std::stoul(ui->memoryReadSizeValue->text().toStdString().c_str(), nullptr, 10);
+	
+	QString tmp;	
+	size_t outFileSize;
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Read Data"), "", tr("Binary Files (*.bin)"));
+
+	if (!fileName.length()) {
+		log("No file set to save memory content. Operation cancelled");
+		return;
+	}
+
+	log(tmp.sprintf("Reading %lu bytes from address 0x%08X", size, address));
+
+	if (!port.readMemory(address, size, fileName.toStdString().c_str(), outFileSize)) {
+		log("Error Reading Memory");
+		return;
+	}
+	
 	log("Memory Read Complete");
 }
-
 /**
- * @brief SaharaWindow::sendStreamingDloadHello
- */
-void SaharaWindow::sendStreamingDloadHello()
+* @brief SaharaWindow::readSome
+*/
+void SaharaWindow::readSome()
 {
 
-    if (!port.isOpen()) {
-        log("Port Not Open");
-        return;
-    }
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
 
-	if (!ui->streamingDloadHelloMagicValue->text().length()) {
-        log("No Magic Set");
-        return;
-    }
+	size_t rxSize = port.read(port.buffer, port.bufferSize);
 
-    streaming_dload_hello_tx_t dloadHello;
-    uint32_t outsize = 0;
-    uint8_t* outbuf = NULL;
-	std::string magic = ui->streamingDloadHelloMagicValue->text().toStdString();
-
-    dloadHello.command = STREAMING_DLOAD_HELLO;
-    memcpy(dloadHello.magic, magic.c_str(), magic.size());
-    dloadHello.version = 0x04;
-    dloadHello.compatibleVersion = 0x02;
-    dloadHello.featureBits = 0x11;
-
-    hdlc_request((uint8_t*)&dloadHello, sizeof(dloadHello), &outbuf, &outsize);
-
-    size_t bytesWritten = port.write(outbuf, outsize);
-    printf("Wrote %lu bytes\n", bytesWritten);
-    hexdump(outbuf, bytesWritten);
-
-    size_t bytesRead = port.read(port.buffer, port.bufferSize);
-    printf("Read %lu bytes\n", bytesRead);
-    hexdump(port.buffer, bytesRead);
-
-    if (outbuf != NULL) {
-        free(outbuf);
-    }
+	hexdump_rx(port.buffer, rxSize);
 }
 
 /**
