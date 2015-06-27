@@ -43,6 +43,8 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 	QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
 	QObject::connect(ui->readSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvReadGetSubscription()));
 	QObject::connect(ui->writeSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvWriteSetSubscription()));
+
+	QObject::connect(ui->readSpcValue, SIGNAL(textChanged(QString)), this, SLOT(decSpcTextChanged(QString)));
 }
 
 /**
@@ -174,7 +176,7 @@ void QcdmWindow::SecuritySendSpc()
 
     int result = port.sendSpc(ui->securitySpcValue->text().toStdString().c_str());
 
-	if (result == DIAG_CMD_NO_RESPONSE || result == DIAG_CMD_WRITE_FAIL) {
+	if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
         log(LOGTYPE_ERROR, "Error Sending SPC");
         return;
     }
@@ -204,8 +206,8 @@ void QcdmWindow::SecuritySend16Password()
 
 	int result = port.send16Password(ui->security16PasswordValue->text().toStdString().c_str());
 
-	if (result == DIAG_CMD_NO_RESPONSE || result == DIAG_CMD_WRITE_FAIL) {
-		log(LOGTYPE_ERROR, "Error Sending 16 Digit Password");
+	if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
+		log(LOGTYPE_ERROR, "Error Sending SPC");
 		return;
 	}
 
@@ -469,6 +471,21 @@ void QcdmWindow::nvWriteSetSubscription()
 	}
 	else {
 		log(LOGTYPE_ERROR, "Write Failure - Subscription Mode");
+	}
+}
+
+void QcdmWindow::decSpcTextChanged(QString value)
+{
+	if (value.length() == 6) {
+		QString result, tmp;
+		int i;
+
+		for (i = 0; i < value.length(); i++) {
+			tmp.sprintf("%02x", value.toStdString().c_str()[i]);
+			result.append(tmp);
+		}
+
+		ui->hexSpcValue->setText(result);
 	}
 }
 

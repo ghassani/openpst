@@ -52,14 +52,14 @@ int QcdmSerial::sendSpc(const char* spc)
 
     if (!lastTxSize) {
         printf("Attempted to write to device but 0 bytes were written\n");
-        return DIAG_CMD_WRITE_FAIL;
+        return DIAG_CMD_TX_FAIL;
     }
 
     lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
-		return DIAG_CMD_NO_RESPONSE;
+		return DIAG_CMD_RX_FAIL;
     }
 
     qcdm_spc_rx_t* rxPacket = (qcdm_spc_rx_t*) buffer;
@@ -86,14 +86,14 @@ int QcdmSerial::send16Password(const char* password)
 
 	if (!lastTxSize) {
 		printf("Attempted to write to device but 0 bytes were written\n");
-		return DIAG_CMD_WRITE_FAIL;
+		return DIAG_CMD_TX_FAIL;
 	}
 
 	lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
 	if (!lastRxSize) {
 		printf("Device did not respond\n");
-		return DIAG_CMD_NO_RESPONSE;
+		return DIAG_CMD_RX_FAIL;
 	}
 
 	qcdm_16pw_rx_t* rxPacket = (qcdm_16pw_rx_t*)buffer;
@@ -122,14 +122,14 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
 
 	if (!lastTxSize) {
 		printf("Attempted to write to device but 0 bytes were written\n");
-		return DIAG_CMD_WRITE_FAIL;
+		return DIAG_CMD_TX_FAIL;
 	}
 
 	lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
 	if (!lastRxSize) {
 		printf("Device did not respond\n");
-		return DIAG_CMD_NO_RESPONSE;
+		return DIAG_CMD_RX_FAIL;
 	}
 
 	*response = buffer;
@@ -161,14 +161,14 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
 
 	if (!lastTxSize) {
 		printf("Attempted to write to device but 0 bytes were written\n");
-		return DIAG_CMD_WRITE_FAIL;
+		return DIAG_CMD_TX_FAIL;
 	}
 
 	lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
 	if (!lastRxSize) {
 		printf("Device did not respond\n");
-		return DIAG_CMD_NO_RESPONSE;
+		return DIAG_CMD_RX_FAIL;
 	}
 
 	*response = buffer;
@@ -186,7 +186,7 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
 int QcdmSerial::sendHtcNvUnlock(uint8_t** response)
 {
 	if (!isOpen()) {
-		return -1;
+		return DIAG_CMD_PORT_CLOSED;
 	}
 
 	unsigned char data[] = { DIAG_SPC_F, 0x74, 0x64, 0x77, 0x61, 0x6F, 0x70 };
@@ -195,14 +195,14 @@ int QcdmSerial::sendHtcNvUnlock(uint8_t** response)
 
 	if (!lastTxSize) {
 		printf("Attempted to write to device but 0 bytes were written\n");
-		return -1;
+		return DIAG_CMD_TX_FAIL;
 	}
 
 	lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
 	if (!lastRxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return DIAG_CMD_RX_FAIL;
 	}
 
 	*response = buffer;
@@ -218,7 +218,7 @@ int QcdmSerial::sendHtcNvUnlock(uint8_t** response)
 int QcdmSerial::sendLgNvUnlock(uint8_t** response)
 {
 	if (!isOpen()) {
-		return -1;
+		return DIAG_CMD_PORT_CLOSED;
 	}
 
 	unsigned char data[] = { 0x33, 0x7D, 0x5F };
@@ -227,14 +227,14 @@ int QcdmSerial::sendLgNvUnlock(uint8_t** response)
 
 	if (!lastTxSize) {
 		printf("Attempted to write to device but 0 bytes were written\n");
-		return -1;
+		return DIAG_CMD_TX_FAIL;
 	}
 
 	lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
 	if (!lastRxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return DIAG_CMD_RX_FAIL;
 	}
 
 	*response = buffer;
@@ -250,7 +250,7 @@ int QcdmSerial::sendLgNvUnlock(uint8_t** response)
 int QcdmSerial::getLgSpc(uint8_t** response)
 {
 	if (!isOpen()) {
-		return -1;
+		return DIAG_CMD_PORT_CLOSED;
 	}
 
 	unsigned char data[] = { 0x11, 0x17, 0x00, 0x08 };
@@ -259,14 +259,14 @@ int QcdmSerial::getLgSpc(uint8_t** response)
 
 	if (!lastTxSize) {
 		printf("Attempted to write to device but 0 bytes were written\n");
-		return -1;
+		return DIAG_CMD_TX_FAIL;
 	}
 
 	lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
 
 	if (!lastRxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return DIAG_CMD_RX_FAIL;
 	}
 
 	*response = buffer;

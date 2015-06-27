@@ -46,6 +46,8 @@ public slots:
 	void nvReadGetSubscription();
 	void nvWriteSetSubscription();
 
+	void decSpcTextChanged(QString value);
+
 private:
 	void log(int type, const char* message);
 	void log(int type, std::string message);
