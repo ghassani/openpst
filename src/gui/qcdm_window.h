@@ -17,6 +17,7 @@
 #include <QVariant>
 #include <QFileDialog>
 #include "ui_qcdm_window.h"
+#include "qc/diag_nv.h"
 #include "serial/qcdm_serial.h"
 
 
@@ -43,6 +44,7 @@ public slots:
 	void nvReadGetSpc();
 	void nvWriteSetSpc();
 	void nvReadGetSubscription();
+	void nvWriteSetSubscription();
 
 private:
 	void log(int type, const char* message);

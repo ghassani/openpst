@@ -42,6 +42,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 	QObject::connect(ui->readSpcButton,				   SIGNAL(clicked()), this, SLOT(nvReadGetSpc()));
 	QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
 	QObject::connect(ui->readSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvReadGetSubscription()));
+	QObject::connect(ui->writeSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvWriteSetSubscription()));
 }
 
 /**
@@ -232,7 +233,7 @@ void QcdmWindow::nvReadGetMeid()
 
 	uint8_t* response = NULL;
 
-	int result = port.getNvItem(1943, &response);
+	int result = port.getNvItem(NV_MEID_I, &response);
 
 	if (result == DIAG_NV_READ_F){
 		int p;
@@ -272,7 +273,7 @@ void QcdmWindow::nvReadGetImei()
 
 	uint8_t* response = NULL;
 
-	int result = port.getNvItem(550, &response);
+	int result = port.getNvItem(NV_UE_IMEI_I, &response);
 
 	if (result == DIAG_NV_READ_F) {
 		int p;
@@ -320,7 +321,7 @@ void QcdmWindow::nvReadGetSpc()
 
 	switch (ui->readSpcMethod->currentData().toInt()) {
 	case 0:
-		result = port.getNvItem(85, &response);
+		result = port.getNvItem(NV_SEC_CODE_I, &response);
 		break;
 	case 1:
 		// EFS Method
@@ -328,7 +329,7 @@ void QcdmWindow::nvReadGetSpc()
 		break;
 	case 2:
 		port.sendHtcNvUnlock(&response); // HTC Method
-		result = port.getNvItem(85, &response);
+		result = port.getNvItem(NV_SEC_CODE_I, &response);
 		break;
 	case 3:
 		port.sendLgNvUnlock(&response); // LG Method
@@ -379,12 +380,12 @@ void QcdmWindow::nvWriteSetSpc()
 
 	uint8_t* response = NULL;
 
-	int result = port.setNvItem(85, ui->readSpcValue->text().toStdString().c_str(), 6, &response);
+	int result = port.setNvItem(NV_SEC_CODE_I, ui->readSpcValue->text().toStdString().c_str(), 6, &response);
 
 	if (result == DIAG_NV_WRITE_F) {
 		log(LOGTYPE_INFO, "Write Success - SPC: " + ui->readSpcValue->text());
 
-		nvReadGetSpc();
+		nvReadGetSpc(); // Remove after hooking onTextChanged
 	} else {
 		log(LOGTYPE_ERROR, "Write Failure - SPC");
 	}
@@ -399,7 +400,7 @@ void QcdmWindow::nvReadGetSubscription()
 
 	uint8_t* response = NULL;
 
-	int result = port.getNvItem(855, &response);
+	int result = port.getNvItem(NV_RTRE_CONFIG_I, &response);
 
 	if (result == DIAG_NV_READ_F) {
 		QString result;
@@ -426,6 +427,48 @@ void QcdmWindow::nvReadGetSubscription()
 		log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + result);
 	} else {
 		log(LOGTYPE_ERROR, "Read Failure - Subscription Mode");
+	}
+}
+
+void QcdmWindow::nvWriteSetSubscription()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_WARNING, "Connect to a Port First");
+		return;
+	}
+
+	uint8_t* response = NULL;
+
+	int index = ui->SubscriptionValue->currentIndex();
+
+	int result = port.setNvItem(NV_RTRE_CONFIG_I, static_cast<const char *>(static_cast<void*>(&index)), 1, &response);
+
+	if (result == DIAG_NV_WRITE_F) {
+		QString result;
+
+		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+
+		ui->SubscriptionValue->setCurrentIndex(rxPacket->data[0]);
+
+		switch (rxPacket->data[0]) {
+		case RTRE_MODE_RUIM_ONLY:
+			result = "RUIM_ONLY";
+			break;
+		case RTRE_MODE_NV_ONLY:
+			result = "NV_ONLY";
+			break;
+		case RTRE_MODE_RUIM_PREF:
+			result = "RUIM_PREF";
+			break;
+		case RTRE_MODE_GSM_1X:
+			result = "GSM_1X";
+			break;
+		}
+
+		log(LOGTYPE_INFO, "Write Success - Subscription Mode: " + result);
+	}
+	else {
+		log(LOGTYPE_ERROR, "Write Failure - Subscription Mode");
 	}
 }
 

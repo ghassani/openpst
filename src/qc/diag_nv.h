@@ -1489,7 +1489,7 @@ enum NV_ITEM {
     NV_CGPS_NMEA_CONFIG_INFO_I = 0x13b7, // 5047
     NV_MAX_I = 0x13b8, // 5048
     NV_ITEMS_ENUM_PAD = 0x7fff // 32767
-}
+};
 
 #endif // _QC_DIAG_NV_H
 
