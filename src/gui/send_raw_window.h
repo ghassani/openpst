@@ -19,16 +19,17 @@ namespace Ui {
 class SendRawWindow;
 }
 
-class SendRawWindow : public QMainWindow
-{
-	Q_OBJECT
+namespace openpst{
+	class SendRawWindow : public QMainWindow
+	{
+		Q_OBJECT
 
-public:
-    explicit SendRawWindow(QWidget *parent = 0);
-    ~SendRawWindow();
+		public:
+			explicit SendRawWindow(QWidget *parent = 0);
+			~SendRawWindow();
 
-private:
-    Ui::SendRawWindow *ui;
-};
-
+		private:
+			Ui::SendRawWindow *ui;
+		};
+}
 #endif // _GUI_SEND_RAW_WINDOW_H

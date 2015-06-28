@@ -43,8 +43,8 @@ enum DIAG_SPC_STATUS {
 enum DIAG_CMD_STATUS {
 	DIAG_CMD_GENERAL_FAIL = -1,
 	DIAG_CMD_PORT_CLOSED = -2,
-	DIAG_CMD_RX_FAIL = -3,
-	DIAG_CMD_TX_FAIL = -4
+	DIAG_CMD_NO_RESPONSE = -3,
+	DIAG_CMD_WRITE_FAIL = -4
 };
 
 enum DIAG_COMMAND {
@@ -112,6 +112,7 @@ enum DIAG_RTRE_MODE {
 	RTRE_MODE_RUIM_PREF = 0x2,
 	RTRE_MODE_GSM_1X = 0x3
 };
+
 
 
 typedef struct qcdm_spc_tx_t{

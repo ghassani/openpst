@@ -11,6 +11,8 @@
 
 #include "main_window.h"
 
+using namespace openpst;
+
 /**
  * @brief MainWindow::MainWindow
  * @param parent

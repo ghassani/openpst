@@ -23,141 +23,142 @@ namespace Ui {
 class StreamingDloadWindow;
 }
 
-class StreamingDloadWindow : public QMainWindow
-{
-	
-	Q_OBJECT
+namespace openpst{
+	class StreamingDloadWindow : public QMainWindow
+	{
 
-public:
-    explicit StreamingDloadWindow(QWidget *parent = 0);
-    ~StreamingDloadWindow();
-	
+		Q_OBJECT
 
-public slots:
-    /**
-     * @brief updatePortList
-     */
-    void updatePortList();
+		public:
+			explicit StreamingDloadWindow(QWidget *parent = 0);
+			~StreamingDloadWindow();
 
-    /**
-     * @brief connectToPort
-     */
-	void connectToPort();
 
-    /**
-     * @brief disconnectPort
-     */
-	void disconnectPort();
+			public slots:
+			/**
+			 * @brief updatePortList
+			 */
+			void updatePortList();
 
-    /**
-     * @brief sendHello
-     */
-	void sendHello();
+			/**
+			 * @brief connectToPort
+			 */
+			void connectToPort();
 
-	/**
-	* @brief sendUnlock
-	*/
-	void sendUnlock();
+			/**
+			 * @brief disconnectPort
+			 */
+			void disconnectPort();
 
-	/**
-	* @brief setSecurityMode
-	*/
-	void setSecurityMode();
+			/**
+			 * @brief sendHello
+			 */
+			void sendHello();
 
-	/**
-	* @brief sendNop
-	*/
-	void sendNop();
+			/**
+			* @brief sendUnlock
+			*/
+			void sendUnlock();
 
-	/**
-	* @brief sendReset
-	*/
-	void sendReset();
+			/**
+			* @brief setSecurityMode
+			*/
+			void setSecurityMode();
 
-	/**
-	* @brief sendPowerDown
-	*/
-	void sendPowerDown();
+			/**
+			* @brief sendNop
+			*/
+			void sendNop();
 
-	/**
-	* @brief openMode
-	*/
-	void openMode();
+			/**
+			* @brief sendReset
+			*/
+			void sendReset();
 
-	/**
-	* @brief closeMode
-	*/
-	void closeMode();
+			/**
+			* @brief sendPowerDown
+			*/
+			void sendPowerDown();
 
-	/**
-	* @brief openMultiMode
-	*/
-	void openMultiMode();
+			/**
+			* @brief openMode
+			*/
+			void openMode();
 
-	/**
-	* @brief readEccState
-	*/
-	void readEccState();
+			/**
+			* @brief closeMode
+			*/
+			void closeMode();
 
-	/**
-	* @brief setEccState
-	*/
-	void setEccState();
+			/**
+			* @brief openMultiMode
+			*/
+			void openMultiMode();
 
-	/**
-	* @brief read - Read address and size
-	*/
-	void read();
+			/**
+			* @brief readEccState
+			*/
+			void readEccState();
 
-	/**
-	* @brief readQfprom
-	*/
-	void readQfprom();
+			/**
+			* @brief setEccState
+			*/
+			void setEccState();
 
-	/**
-	* @brief eraseFlash
-	*/
-	void eraseFlash();
+			/**
+			* @brief read - Read address and size
+			*/
+			void read();
 
-	/**
-	* @brief clearLog
-	*/
-	void clearLog();
-	
-	/**
-     * @brief SaveLog
-     */
-	void saveLog();
+			/**
+			* @brief readQfprom
+			*/
+			void readQfprom();
 
-	/**
-	* @brief browseForPartitionTable
-	*/
-	void browseForParitionTable();
+			/**
+			* @brief eraseFlash
+			*/
+			void eraseFlash();
 
-	/**
-	* @brief writePartitionTable
-	*/
-	void writePartitionTable();
+			/**
+			* @brief clearLog
+			*/
+			void clearLog();
 
-	/**
-	* @brief browseForWriteFile
-	*/
-	void browseForWriteFile();
+			/**
+			 * @brief SaveLog
+			 */
+			void saveLog();
 
-	/**
-	* @brief log
-	*/
-	void log(const char* message);
+			/**
+			* @brief browseForPartitionTable
+			*/
+			void browseForParitionTable();
 
-	/**
-	* @brief SaveLog
-	*/
-	void log(QString message);
+			/**
+			* @brief writePartitionTable
+			*/
+			void writePartitionTable();
 
-private:
-	Ui::StreamingDloadWindow *ui;
-	openpst::StreamingDloadSerial port;
-	serial::PortInfo currentPort;
-};
+			/**
+			* @brief browseForWriteFile
+			*/
+			void browseForWriteFile();
 
+			/**
+			* @brief log
+			*/
+			void log(const char* message);
+
+			/**
+			* @brief SaveLog
+			*/
+			void log(QString message);
+
+		private:
+			Ui::StreamingDloadWindow *ui;
+			openpst::StreamingDloadSerial port;
+			serial::PortInfo currentPort;
+		};
+}
 #endif // _GUI_STREAMING_DLOAD_WINDOW_H

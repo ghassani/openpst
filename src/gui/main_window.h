@@ -24,28 +24,29 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
-	Q_OBJECT
+namespace openpst {
+	class MainWindow : public QMainWindow
+	{
+		Q_OBJECT
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	public:
+		explicit MainWindow(QWidget *parent = 0);
+		~MainWindow();
 
-public slots:
-    void startSaharaMode();
-    void startPortRawWriteRead();
-    void startMbnTool();
-	void startQcdm();
-	void startStreamingDload();
+		public slots:
+		void startSaharaMode();
+		void startPortRawWriteRead();
+		void startMbnTool();
+		void startQcdm();
+		void startStreamingDload();
 
-private:
-	SaharaWindow		 *saharaWindow;
-	SendRawWindow		 *sendRawWindow;
-	MbnToolWindow		 *mbnToolWindow;
-	QcdmWindow			 *qcdmWindow;
-	StreamingDloadWindow *streamingDloadWindow;
-	Ui::MainWindow		 *ui;
-};
-
+	private:
+		SaharaWindow		 *saharaWindow;
+		SendRawWindow		 *sendRawWindow;
+		MbnToolWindow		 *mbnToolWindow;
+		QcdmWindow			 *qcdmWindow;
+		StreamingDloadWindow *streamingDloadWindow;
+		Ui::MainWindow		 *ui;
+	};
+}
 #endif // _GUI_MAINWINDOW_H

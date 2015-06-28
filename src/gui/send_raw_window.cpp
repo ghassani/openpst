@@ -11,6 +11,8 @@
 #include "send_raw_window.h"
 #include "ui_send_raw_window.h"
 
+using namespace openpst;
+
 SendRawWindow::SendRawWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::SendRawWindow)

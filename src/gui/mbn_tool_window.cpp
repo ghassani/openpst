@@ -11,6 +11,8 @@
 
 #include "mbn_tool_window.h"
 
+using namespace openpst;
+
 MbnToolWindow::MbnToolWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MbnToolWindow)
