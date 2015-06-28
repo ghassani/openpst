@@ -84,26 +84,42 @@ namespace openpst {
 			int sendImage(std::string file);
 
 			/**
-			* @brief readMemory - Read size from address into a memory allocated block
+			* @brief readMemory - Read size starting from address and 
+			*					  store it in a memory allocated buffer
 			*
 			* @param uint32_t address
 			* @param uint32_t address
-			* @param uint32_t responseData
-			* @param size_t responseSize
+			* @param uint8_t** out
+			* @param size_t outSize
 			* @return int
 			*/
-			int readMemory(uint32_t address, uint32_t size, uint8_t** responseData, size_t& responseSize);
+			int readMemory(uint32_t address, size_t size, uint8_t** out, size_t& outSize);
 			
 			/**
-			* @brief readMemory - Read size from address into file
+			* @brief readMemory - Read size starting from address and
+			*					  save the result into the specified outFilePath
 			*
 			* @param uint32_t address
 			* @param uint32_t address
-			* @param const char* outFile
-			* @param size_t outFileSize
+			* @param const char* outFilePath
+			* @param size_t outSize
 			* @return int
 			*/
-			int readMemory(uint32_t address, uint32_t size, const char* outFile, size_t& outFileSize);
+			int readMemory(uint32_t address, size_t size, const char* outFilePath, size_t& outSize);
+			
+			/**
+			* @brief readMemory - Read size starting from address and
+			*					  save the result into an existing file pointer.
+			*				
+			* @note - Will not close the file pointer handle
+			*
+			* @param uint32_t address
+			* @param uint32_t address
+			* @param FILE* out
+			* @param size_t outSize
+			* @return int
+			*/
+			int readMemory(uint32_t address, size_t size, FILE* out, size_t& outSize);
 
 			/**
 			 * @brief sendReset
@@ -129,18 +145,21 @@ namespace openpst {
 			 * @return const char*
 			 */
 			const char* getNamedMode(uint32_t mode);
+
 			/**
 			 * @brief getNamedClientCommand
 			 * @param command
 			 * @return const char*
 			 */
 			const char* getNamedClientCommand(uint32_t command);
+
 			/**
 			 * @brief getNamedErrorStatus
 			 * @param status
 			 * @return const char*
 			 */
 			const char* getNamedErrorStatus(uint32_t status);
+
 			/**
 			 * @brief getNamedRequestedImage
 			 * @param imageId

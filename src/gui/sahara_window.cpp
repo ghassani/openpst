@@ -11,10 +11,12 @@
 
 #include "sahara_window.h"
 
+using namespace openpst;
+
 SaharaWindow::SaharaWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::SaharaWindow),
-    port("", 115200)
+	port("", 115200)
 {
     ui->setupUi(this);
 
@@ -54,9 +56,12 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
 	QObject::connect(ui->sendImageFileBrowseButton,		SIGNAL(clicked()), this, SLOT(browseForImage()));
 	QObject::connect(ui->sendImageButton,				SIGNAL(clicked()), this, SLOT(sendImage()));
 	QObject::connect(ui->memoryReadButton,				SIGNAL(clicked()), this, SLOT(memoryRead()));
+	QObject::connect(ui->clearLogButton,				SIGNAL(clicked()), this, SLOT(clearLog()));
+	QObject::connect(ui->saveLogButton,					SIGNAL(clicked()), this, SLOT(saveLog()));
+	QObject::connect(ui->cancelOperationButton,			SIGNAL(clicked()), this, SLOT(cancelOperation()));
+	
+	qRegisterMetaType<sahara_memory_read_worker_request>("sahara_memory_read_worker_request");
 
-	QObject::connect(ui->readSomeButton, SIGNAL(clicked()), this, SLOT(readSome()));
-	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
 }
 
 /**
@@ -218,8 +223,6 @@ void SaharaWindow::writeHello()
     }
 
 	if (port.deviceState.mode == SAHARA_MODE_MEMORY_DEBUG) {
-		ui->memoryReadAddressValue->setText(tmp.sprintf("0x%08X", port.memoryState.memoryTableAddress));
-		ui->memoryReadSizeValue->setText(tmp.sprintf("%lu", port.memoryState.memoryTableLength));
 		log(tmp.sprintf("Memory table located at 0x%08X with size of %lu bytes", port.memoryState.memoryTableAddress, port.memoryState.memoryTableLength));
 		
 		uint8_t* memoryTableData = NULL;
@@ -256,32 +259,53 @@ void SaharaWindow::writeHello()
 				for (int i = 0; i < totalRegions; i++) {
 					entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
 
-					if (entry->size > SAHARA_MAX_MEMORY_REQUEST_SIZE) { // confirm larger files
+					if (entry->size > 1000000) { // confirm files larger than 1mb
 						QMessageBox::StandardButton largeFileUserResponse = QMessageBox::question(this, "Confirm Large File", tmp.sprintf("Pull large file %s (%lu bytes) or skip it?", entry->filename, entry->size));
 
 						if (largeFileUserResponse != QMessageBox::Yes) {
+							log(tmp.sprintf("Skipping %s - %s", entry->filename, entry->name));
 							continue;
 						}
 					}
 
 					outFile.sprintf("%s/%s", dumpPath.toStdString().c_str(), entry->filename);
-					log(tmp.sprintf("Dumping %s (%s) - Address: %08X Size: %lu to file %s", entry->name, entry->filename, entry->address, entry->size, outFile.toStdString().c_str()));
-					
-					
-					if (!port.readMemory(entry->address, entry->size, outFile.toStdString().c_str(), outFileSize)) {
-						free(memoryTableData); 
-						log("Error reading memory. Aborting operation");
-						return;
-					}
 
-					log(tmp.sprintf("Done with %s - File size: %lu", entry->filename, fileDataSize));
+					// queue a read request
+					sahara_memory_read_worker_request memoryReadWorkerRequest;
+					memoryReadWorkerRequest.address		= entry->address;
+					memoryReadWorkerRequest.size		= entry->size;
+					memoryReadWorkerRequest.outFilePath = outFile.toStdString();
+
+					memoryReadQueue.push_back(memoryReadWorkerRequest);
+
 				}
+
 			} else {
 				log("Dump all cancelled");
 			}
 		}
-	
+
+		QMessageBox::StandardButton saveMemoryTableResponse = QMessageBox::question(this, "Save Memory Table", "Save the raw memory table to a file?");
+
+		if (saveMemoryTableResponse == QMessageBox::Yes) {
+			QString memoryTableFileName = QFileDialog::getSaveFileName(this, tr("Save Raw Memory Table"), "", tr("Binary Files (*.bin)"));
+			if (memoryTableFileName.length()) {
+				FILE* fp = fopen(memoryTableFileName.toStdString().c_str(), "a+b");
+				if (fp) {
+					fwrite(memoryTableData, sizeof(uint8_t), memoryTableSize, fp);
+				} else {
+					log("Error opening memory table file for writing");
+				}
+			} else {
+				log("Save raw memory table cancelled");
+			}
+		}
+
 		free(memoryTableData);
+
+		if (memoryReadQueue.size()) {
+			return memoryReadStartThread();
+		}
 	}
 	
 }
@@ -383,10 +407,10 @@ void SaharaWindow::sendClientCommand()
 		
 		log(tmp.sprintf("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
 			requestedCommand, port.getNamedClientCommand(requestedCommand), readDataSize
-			));
-
-		logHex(readData, readDataSize);
-
+		));
+		tmp.clear();
+		hexdump(readData, readDataSize, tmp);
+		log(tmp);
 		free(readData);
 	}
 }
@@ -486,27 +510,131 @@ void SaharaWindow::memoryRead()
 
 	log(tmp.sprintf("Reading %lu bytes from address 0x%08X", size, address));
 
-	if (!port.readMemory(address, size, fileName.toStdString().c_str(), outFileSize)) {
-		log("Error Reading Memory");
+	FILE* fp = fopen(fileName.toStdString().c_str(), "a+b");
+
+	if (!fp) {
+		log(tmp.sprintf("Error opening file %s for writing", fileName.toStdString().c_str()));
+		return;
+	}
+
+	// queue a read request and setup the worker
+	sahara_memory_read_worker_request memoryReadWorkerRequest;
+	memoryReadWorkerRequest.address = address;
+	memoryReadWorkerRequest.size = size;
+	memoryReadWorkerRequest.outFilePath = fileName.toStdString();
+
+	memoryReadQueue.push_front(memoryReadWorkerRequest);
+
+	memoryReadStartThread();
+}
+
+void SaharaWindow::memoryReadChunkReadyHandler(sahara_memory_read_worker_request request)
+{
+	// update progress bar
+	QString tmp;
+	ui->progressBar->setValue(ui->progressBar->value() + request.lastChunkSize);	
+	ui->progressBarTextLabel->setText(tmp.sprintf("%lu / %lu bytes", ui->progressBar->value(), request.size));
+}
+
+void SaharaWindow::memoryReadCompleteHandler(sahara_memory_read_worker_request request)
+{
+	QString tmp;
+	
+	if (memoryReadQueue.size()) { // in case it was cancelled, would have been emptied
+		memoryReadQueue.pop_front();
+	}
+	
+	log(tmp.sprintf("Memory read complete. Contents dumped to %s. Final size is %lu bytes", request.outFilePath.c_str(), request.outSize));
+	
+	memoryReadWorker = NULL;
+
+	memoryReadStartThread();
+}
+
+void SaharaWindow::memoryReadChunkErrorHandler(sahara_memory_read_worker_request request, QString msg)
+{
+	if (memoryReadQueue.size()) { // in case it was cancelled, would have been emptied
+		memoryReadQueue.pop_front();
+	}
+
+	log(msg);
+
+	if (memoryReadQueue.size() == 0) {
+		enableControls();
+		return;
+	}
+
+	memoryReadWorker = NULL;
+
+	memoryReadStartThread();
+}
+
+void SaharaWindow::memoryReadStartThread()
+{
+
+	if (memoryReadQueue.size() == 0) {		 
+		enableControls();
 		return;
 	}
 	
-	log("Memory Read Complete");
+	sahara_memory_read_worker_request request = memoryReadQueue.front();
+	QString tmp;
+
+	// setup progress bar
+	ui->progressBar->reset();
+	ui->progressBar->setMaximum(request.size);
+	ui->progressBar->setMinimum(0);
+	ui->progressBar->setValue(0);
+
+	ui->progressBarTextLabel2->setText(tmp.sprintf("%s", request.outFilePath.c_str()));
+	ui->progressBarTextLabel->setText(tmp.sprintf("0 / %lu bytes", request.size));
+
+	disableControls(); 
+	memoryReadWorker = new SaharaMemoryReadWorker(port, request, this);
+	connect(memoryReadWorker, &SaharaMemoryReadWorker::chunkReady, this, &SaharaWindow::memoryReadChunkReadyHandler, Qt::QueuedConnection);
+	connect(memoryReadWorker, &SaharaMemoryReadWorker::complete,   this, &SaharaWindow::memoryReadCompleteHandler);
+	connect(memoryReadWorker, &SaharaMemoryReadWorker::error,      this, &SaharaWindow::memoryReadChunkErrorHandler);
+	connect(memoryReadWorker, &SaharaMemoryReadWorker::finished, memoryReadWorker, &QObject::deleteLater);
+	memoryReadWorker->start();
+	
 }
-/**
-* @brief SaharaWindow::readSome
-*/
-void SaharaWindow::readSome()
+
+void SaharaWindow::cancelOperation()
 {
 
-	if (!port.isOpen()) {
-		log("Port Not Open");
-		return;
+	if (NULL != memoryReadWorker && memoryReadWorker->isRunning()) {		
+		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
+
+		if (userResponse == QMessageBox::Yes) {
+			memoryReadWorker->cancel();
+			if (!memoryReadWorker->wait(5000)) {
+				memoryReadWorker->terminate();
+				memoryReadWorker->wait();
+			}
+			log("Memory read cancelled");
+		}
+	} else {
+		log("No operation currently running");
 	}
 
-	size_t rxSize = port.read(port.buffer, port.bufferSize);
+	memoryReadQueue.clear();
 
-	hexdump_rx(port.buffer, rxSize);
+	enableControls();
+}
+
+void SaharaWindow::disableControls()
+{
+	ui->mainTabSet->setEnabled(false);
+	ui->cancelOperationButton->setEnabled(true);
+}
+
+void SaharaWindow::enableControls()
+{
+	ui->mainTabSet->setEnabled(true);	
+	ui->progressBarTextLabel2->setText("");
+	ui->progressBarTextLabel->setText("");
+	ui->progressBar->setValue(0);
+	ui->cancelOperationButton->setEnabled(false);
 }
 
 /**
@@ -522,7 +650,22 @@ void SaharaWindow::clearLog()
  */
 void SaharaWindow::saveLog()
 {
-   log("Not Implemented Yet");
+	
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Log"), "", tr("Log Files (*.log)"));
+
+	if (!fileName.length()) {
+		return;
+	}
+
+	FILE* fp = fopen(fileName.toStdString().c_str(), "a+");
+
+	if (!fp) {
+		log("Error opening file for writing");
+	}
+
+	QString content = ui->log->toPlainText();
+
+	fwrite(content.toStdString().c_str(), sizeof(uint8_t), content.size(), fp);
 }
 
 /**
@@ -549,46 +692,4 @@ void SaharaWindow::log(std::string message)
 void SaharaWindow::log(QString message)
 {
 	ui->log->appendPlainText(message);
-}
-
-/**
- * @brief SaharaWindow::logTxHex
- * @param data
- * @param amount
- */
-void SaharaWindow::logTxHex(uint8_t* data, size_t amount)
-{
-
-    QString tmp;
-    log(tmp.sprintf("Dumping %lu bytes written", amount));
-    printf(tmp.append("\n").toStdString().c_str());
-    logHex(data, amount);
-}
-
-/**
- * @brief SaharaWindow::logRxHex
- * @param data
- * @param amount
- */
-void SaharaWindow::logRxHex(uint8_t* data, size_t amount)
-{
-
-    QString tmp;
-    log(tmp.sprintf("Dumping %lu bytes read", amount));
-    printf(tmp.append("\n").toStdString().c_str());
-    logHex(data, amount);
-}
-
-/**
- * @brief SaharaWindow::logHex
- * @param data
- * @param amount
- */
-void SaharaWindow::logHex(uint8_t* data, size_t amount)
-{   
-
-    QString out;
-    hexdump(data, amount, out);
-    log(out);
-    return;
 }

@@ -16,8 +16,10 @@
 #include <QVariant>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QRegExp>
 #include <iostream>
 #include <stdio.h>
+#include <deque>
 #include "ui_sahara_window.h"
 #include "serial/sahara_serial.h"
 #include "qc/sahara.h"
@@ -26,48 +28,152 @@
 #include "util/hexdump.h"
 #include "util/sleep.h"
 #include "util/endian.h"
+#include "worker/sahara_memory_read_worker.h"
+
+using namespace serial;
 
 namespace Ui {
-class SaharaWindow;
+	class SaharaWindow;
 }
 
-class SaharaWindow : public QMainWindow
-{
-	Q_OBJECT
+namespace openpst {
 
-public:
-    explicit SaharaWindow(QWidget *parent = 0);
-    ~SaharaWindow();
+	class SaharaWindow : public QMainWindow
+	{
+		Q_OBJECT
 
-public slots:
-    void updatePortList();
-    void connectToPort();
-    void disconnectPort();
-    void readHello();
-    void writeHello();
-    void switchMode();
-    void sendClientCommand();
-    void sendReset();
-    void browseForImage();
-    void sendImage();
-	void sendDone();
-	void memoryRead();
-	void readSome();
-    void clearLog();
-    void saveLog();
+		public:
+			explicit SaharaWindow(QWidget *parent = 0);
+			~SaharaWindow();
 
-private:
-    Ui::SaharaWindow *ui;
-    openpst::SaharaSerial port;
-    serial::PortInfo currentPort;
+		public slots:
+			/**
+			* @brief updatePortList 
+			*/
+			void updatePortList();
 
-    void log(const char* message);
-    void log(std::string message);
-    void log(QString message);
-    void logHex(uint8_t* data, size_t amount);
-    void logRxHex(uint8_t* data, size_t amount);
-    void logTxHex(uint8_t* data, size_t amount);
+			/**
+			* @brief connectToPort
+			*/
+			void connectToPort();
 
-};
+			/**
+			* @brief disconnectPort
+			*/
+			void disconnectPort();
 
+			/**
+			* @brief readHello
+			*/
+			void readHello();
+
+			/**
+			* @brief writeHello
+			*/
+			void writeHello();
+
+			/**
+			* @brief switchMode
+			*/
+			void switchMode();
+
+			/**
+			* @brief sendClientCommand
+			*/
+			void sendClientCommand();
+
+			/**
+			* @brief sendReset
+			*/			
+			void sendReset();
+
+			/**
+			* @brief browseForImage
+			*/
+			void browseForImage();
+
+			/**
+			* @brief sendImage
+			*/
+			void sendImage();
+
+			/**
+			* @brief sendDone
+			*/
+			void sendDone();
+
+			/**
+			* @brief memoryRead
+			*/
+			void memoryRead();
+
+			/**
+			* @brief cancelOperation
+			*/
+			void cancelOperation();
+
+			/**
+			* @brief clearLog
+			*/
+			void clearLog();
+
+			/**
+			* @brief saveLog
+			*/
+			void saveLog();
+
+			/**
+			* @brief memoryReadChunkReadyHandler
+			*/
+			void memoryReadChunkReadyHandler(sahara_memory_read_worker_request request);
+
+			/**
+			* @brief memoryReadCompleteHandler
+			*/
+			void memoryReadCompleteHandler(sahara_memory_read_worker_request request);
+
+			/**
+			* @brief memoryReadChunkErrorHandler
+			*/
+			void memoryReadChunkErrorHandler(sahara_memory_read_worker_request request, QString msg);
+
+		private:
+
+			/**
+			* @brief memoryReadStartThread
+			*/
+			void memoryReadStartThread();
+
+			/**
+			* @brief disableControls
+			*/
+			void disableControls();
+
+			/**
+			* @brief enableControls
+			*/
+			void enableControls();
+
+			/**
+			* @brief log
+			*/
+			void log(const char* message);
+			
+			/**
+			* @brief log
+			*/
+			void log(std::string message);
+
+			/**
+			* @brief log
+			*/
+			void log(QString message);
+
+			Ui::SaharaWindow *ui;
+			SaharaSerial port;
+			PortInfo currentPort;
+			SaharaMemoryReadWorker* memoryReadWorker;
+			std::deque<sahara_memory_read_worker_request> memoryReadQueue;
+	};
+}
 #endif // _GUI_SAHARA_WINDOW_H

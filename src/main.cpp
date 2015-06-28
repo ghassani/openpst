@@ -10,6 +10,7 @@
 */
 
 #include <QApplication>
+#include <QMetaType>
 #include "gui/main_window.h"
 #ifdef _WIN32
 	#include <windows.h>
@@ -31,9 +32,11 @@ int main(int argc, char *argv[])
 
 	QApplication application(argc, argv);
 
-    MainWindow mainWindow;
+    openpst::MainWindow mainWindow;
 
     mainWindow.show();
+
+	qRegisterMetaType<size_t>("size_t");
 
     return application.exec();
 }

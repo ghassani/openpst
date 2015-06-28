@@ -75,6 +75,12 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Header Files\src\worker">
+      <UniqueIdentifier>{e90ce53f-72bf-4f00-91d3-f910830b6794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\worker">
+      <UniqueIdentifier>{5a62f67b-abda-4f98-ba1c-e434b87bcfd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\build\Win32-Debug\generated\moc_main_window.cpp">
@@ -154,6 +160,15 @@
     </ClCompile>
     <ClCompile Include="..\src\serial\hdlc_serial.cpp">
       <Filter>Source Files\src\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\worker\sahara_memory_read_worker.cpp">
+      <Filter>Source Files\src\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_memory_read_worker.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_memory_read_worker.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
@@ -272,6 +287,12 @@
     </CustomBuild>
     <CustomBuild Include="..\src\include\definitions.h">
       <Filter>Header Files\src\include</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\worker\sahara_memory_read_worker.h">
+      <Filter>Header Files\src\worker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\build\Win32-Debug\generated\sahara_memory_read_worker.moc">
+      <Filter>Generated Files\Debug_Win32</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -34,7 +34,7 @@
 /**
  * These are all known commands, both rx and tx.
  */
-enum SAHARA_COMMAND : uint32_t {
+enum SAHARA_COMMAND {
     SAHARA_HELLO                    = 0x01, // Initialize connection and protocol
     SAHARA_HELLO_RESPONSE           = 0x02, // Acknowledge connection/protocol, mode of operation
     SAHARA_READ_DATA                = 0x03, // Read specified number of bytes from host
@@ -61,7 +61,7 @@ enum SAHARA_COMMAND : uint32_t {
  * The initial hello lets you know which
  * mode the device is currently in. Your
  */
-enum SAHARA_MODE : uint32_t {
+enum SAHARA_MODE {
     SAHARA_MODE_IMAGE_TX_PENDING  = 0x00,
     SAHARA_MODE_IMAGE_TX_COMPLETE = 0x01,
     SAHARA_MODE_MEMORY_DEBUG      = 0x02,
@@ -74,7 +74,7 @@ enum SAHARA_MODE : uint32_t {
  * When in or switched to command mode, these are
  * all commands that are currently known
  */
-enum SAHARA_CLIENT_COMMAND : uint32_t {
+enum SAHARA_CLIENT_COMMAND {
       SAHARA_EXEC_CMD_NOP                      = 0x00,
       SAHARA_EXEC_CMD_SERIAL_NUM_READ          = 0x01,
       SAHARA_EXEC_CMD_MSM_HW_ID_READ           = 0x02,
@@ -85,7 +85,7 @@ enum SAHARA_CLIENT_COMMAND : uint32_t {
       SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL = 0x07,
 };
 
-enum SAHARA_STATUS_CODE : uint32_t {
+enum SAHARA_STATUS_CODE {
   SAHARA_STATUS_SUCCESS                     = 0x00,
   SAHARA_NAK_INVALID_CMD                    = 0x01,
   SAHARA_NAK_PROTOCOL_MISMATCH              = 0x02,

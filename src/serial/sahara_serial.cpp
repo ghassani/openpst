@@ -29,12 +29,6 @@ SaharaSerial::~SaharaSerial()
     delete buffer;
 }
 
-
-/**
-* @brief SaharaSerial::sendPacket Sends a generic packet
-* @param sahara_packet_t packet
-* @return size_t - The amount of bytes written
-*/
 size_t SaharaSerial::sendPacket(sahara_packet_t* packet)
 {
     if (!isOpen()) {
@@ -53,10 +47,6 @@ size_t SaharaSerial::sendPacket(sahara_packet_t* packet)
     return lastTxSize;
 }
 
-/**
- * @brief SaharaSerial::readHello
- * @return
- */
 int SaharaSerial::readHello()
 {
     if (!isOpen()) {
@@ -93,14 +83,6 @@ int SaharaSerial::readHello()
     return 1;
 }
 
-/**
-* @brief sendHello
-* @param uint32_t mode - @see enum SAHARA_MODE - if null defaults to current mode
-* @param uint32_t version -The version of sahara protocol to request, defaults to 2
-* @param uint32_t minVersion - The minimum version we can support, defaults to 1
-* @param uint32_t status - indicate to device our status, if set to anything other than 0x00, sahara protocol will abort
-* @return
-*/
 int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion, uint32_t status)
 {
     if (!isOpen()) {
@@ -175,11 +157,6 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 	return SAHARA_OPERATION_SUCCESS;
 }
 
-/**
- * @brief SaharaSerial::switchMode
- * @param mode
- * @return
- */
 int SaharaSerial::switchMode(uint32_t mode)
 {
     if (!isOpen()) {
@@ -239,16 +216,7 @@ int SaharaSerial::switchMode(uint32_t mode)
 
     return 1;
 }
-/**
-* @brief SaharaSerial::sendClientCommand
-* @param uint32_t command - @see enum SAHARA_CLIENT_COMMAND
-* @param responseData - A pointer to the memory allocated block with the command 
-						response data if the client command returns some sort of 
-						data like debug data, sn, chip info. 
-						You will need to free this.
-* @param responseDataSize - The size of the response data
-* @return int
-*/
+
 int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, size_t &responseDataSize)
 {
     if (!isOpen()) {
@@ -379,11 +347,6 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
     return 1;
 }
 
-/**
- * @brief SaharaSerial::sendImage
- * @param file
- * @return
- */
 int SaharaSerial::sendImage(std::string file)
 {
     if (!isOpen()) {
@@ -481,32 +444,122 @@ int SaharaSerial::sendImage(std::string file)
 }
 
 
-int SaharaSerial::readMemory(uint32_t address, uint32_t size, uint8_t** responseData, size_t& responseSize)
+int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_t& outSize)
 {
+	
 	if (!isOpen()) {
 		return 0;
 	}
 
-	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {		
+	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {
 		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
 		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
 			return 0;
 		}
 	}
 
+	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
+
 	sahara_memory_read_tx_t packet;
 	packet.header.command = SAHARA_MEMORY_READ;
 	packet.header.size = sizeof(packet);
 
-	uint32_t lastAddress = NULL;
-	uint8_t* out = new uint8_t[size];
-	size_t outSize = size;
-	responseSize = 0;
+
+	uint8_t* outBuffer = new uint8_t[SAHARA_MAX_MEMORY_DATA_SIZE];
+	size_t   outBufferSize = SAHARA_MAX_MEMORY_DATA_SIZE;
+	outSize = 0;
 
 	do {
-		packet.address = responseSize > 0 ? lastAddress + bufferSize : address;
-		packet.length = size > bufferSize ? bufferSize : size;
+		packet.address = address + outSize;
 
+		if (isOverMax) {
+			if ((size - outSize) < SAHARA_MAX_MEMORY_REQUEST_SIZE) {
+				packet.length = size - outSize;
+			}
+			else {
+				packet.length = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+			}
+		}
+		else {
+			packet.length = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
+		}
+
+		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+		if (!lastTxSize) {
+			printf("Attempted to write to port but 0 bytes were written\n");
+			free(outBuffer);
+			return 0;
+		}
+
+		//hexdump_tx((uint8_t*)&packet, lastTxSize);
+
+		lastRxSize = 0;
+
+		do {
+
+			size_t newSize = outSize + lastRxSize;
+			
+			if (newSize > outBufferSize) {
+				outBuffer = (uint8_t*)realloc(out, newSize);
+				outBufferSize = newSize;
+			}
+
+			lastRxSize = read(&outBuffer[outSize], SAHARA_MAX_MEMORY_DATA_SIZE);
+
+			if (lastRxSize == 0) {
+				break;
+			}
+
+			//hexdump_rx(&outBuffer[outSize], lastRxSize);
+			
+			outSize += lastRxSize;
+
+		} while (true);
+
+	} while (outSize < size);
+
+	*out = outBuffer;
+
+	return 1;
+}
+
+int SaharaSerial::readMemory(uint32_t address, size_t size, FILE* out, size_t& outSize)
+{
+	if (!isOpen()) {
+		return 0;
+	}
+
+	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {
+		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
+		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
+			return 0;
+		}
+	}
+
+	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
+
+	sahara_memory_read_tx_t packet;
+	packet.header.command = SAHARA_MEMORY_READ;
+	packet.header.size = sizeof(packet);
+
+	uint8_t memBuffer[SAHARA_MAX_MEMORY_DATA_SIZE];
+
+	outSize = 0;
+	
+	do {
+		packet.address = address + outSize;
+
+		if (isOverMax) {
+			if ((size - outSize) < SAHARA_MAX_MEMORY_REQUEST_SIZE) {
+				packet.length = size - outSize;
+			} else {
+				packet.length = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+			}
+		}
+		else {
+			packet.length = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
+		}
 
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
@@ -515,44 +568,29 @@ int SaharaSerial::readMemory(uint32_t address, uint32_t size, uint8_t** response
 			return 0;
 		}
 
-		hexdump_tx((uint8_t*)&packet, lastTxSize);
+		//hexdump_tx((uint8_t*)&packet, lastTxSize);
 
-		lastRxSize = read(buffer, bufferSize);
+		do {
 
-		if (!lastRxSize) {
-			printf("Expected response but 0 bytes received from device\n");
-			return 0;
-		}
+			lastRxSize = read(memBuffer, SAHARA_MAX_MEMORY_DATA_SIZE);
 
-		hexdump_rx(buffer, lastRxSize);
+			if (lastRxSize == 0) {
+				break;
+			}
 
-		lastAddress = packet.address;
+			//hexdump_rx(memBuffer, lastRxSize);
 
-		size_t newSize = responseSize + lastRxSize;
-		if (newSize > outSize) {
-			out = (uint8_t*)realloc(out, newSize);
-			outSize = newSize;
-		}
+			fwrite(memBuffer, sizeof(uint8_t), lastRxSize, out);
 
-		memcpy(&out[responseSize], buffer, lastRxSize);
+			outSize += lastRxSize;
+		} while (true);
 
-		responseSize += lastRxSize;
-
-		if (size <= responseSize) {
-			break; //done
-		}
-
-	} while (true);
-
-	*responseData = out;
-
-	//printf("\n\n\nFinal Data Size: %lu bytes\n", responseSize);
-	//hexdump(out, responseSize);
+	} while (outSize < size);
 
 	return 1;
 }
 
-int SaharaSerial::readMemory(uint32_t address, uint32_t size, const char* outFile, size_t& outFileSize)
+int SaharaSerial::readMemory(uint32_t address, size_t size, const char* outFile, size_t& outFileSize)
 {
 	if (!isOpen()) {
 		return 0;
@@ -572,64 +610,13 @@ int SaharaSerial::readMemory(uint32_t address, uint32_t size, const char* outFil
 		return 0;
 	}
 
-	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
-
-	sahara_memory_read_tx_t packet;
-	packet.header.command = SAHARA_MEMORY_READ;
-	packet.header.size = sizeof(packet);
-
-	uint8_t memBuffer[SAHARA_MAX_MEMORY_DATA_SIZE];
-	outFileSize = 0;
-
-	do {
-		packet.address = address + outFileSize;
-
-		if (isOverMax) {
-			if ((size - outFileSize) < SAHARA_MAX_MEMORY_REQUEST_SIZE) {
-				packet.length = size - outFileSize;
-			} else {
-				packet.length = SAHARA_MAX_MEMORY_REQUEST_SIZE;
-			}
-		} else {
-			packet.length = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
-		}
-
-		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
-
-		if (!lastTxSize) {
-			printf("Attempted to write to port but 0 bytes were written\n");
-			return 0;
-		}
-
-		hexdump_tx((uint8_t*)&packet, lastTxSize);
-
-		do {
-
-			lastRxSize = read(memBuffer, SAHARA_MAX_MEMORY_DATA_SIZE);
-
-			if (lastRxSize == 0) {
-				break;
-			}
-
-			hexdump_rx(memBuffer, lastRxSize);
-
-			fwrite(memBuffer, sizeof(uint8_t), lastRxSize, fp);
-
-			outFileSize += lastRxSize;
-		} while (true);
-	
-	} while (outFileSize < size);
+	int res = readMemory(address, size, fp, outFileSize);
 
 	fclose(fp);
 
-	return 1;
+	return res;
 }
 
-
-/**
- * @brief SaharaSerial::sendDone
- * @return
- */
 int SaharaSerial::sendDone()
 {
     if (!isOpen()) {
@@ -667,10 +654,7 @@ int SaharaSerial::sendDone()
     return 1;
 }
 
-/**
- * @brief SaharaSerial::sendReset
- * @return
- */
+
 int SaharaSerial::sendReset()
 {
     if (!isOpen()) {
@@ -722,11 +706,6 @@ int SaharaSerial::sendReset()
     return 1;
 }
 
-/**
- * @brief SaharaSerial::getNamedMode
- * @param mode
- * @return
- */
 const char* SaharaSerial::getNamedMode(uint32_t mode)
 {
     switch(mode) {
@@ -739,16 +718,12 @@ const char* SaharaSerial::getNamedMode(uint32_t mode)
     }
 }
 
-/**
- * @brief SaharaSerial::close
- */
 void SaharaSerial::close()
 {
    serial::Serial::close();
    memset(&deviceState, 0x00, sizeof(deviceState));
    memset(&readState,   0x00, sizeof(readState));
 }
-
 
 bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* data, size_t dataSize)
 {
@@ -773,11 +748,6 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* da
 	return true;
 }
 
-/**
- * @brief SaharaSerial::getNamedClientCommand
- * @param command
- * @return
- */
 const char* SaharaSerial::getNamedClientCommand(uint32_t command)
 {
     switch(command) {
@@ -794,11 +764,6 @@ const char* SaharaSerial::getNamedClientCommand(uint32_t command)
     }
 }
 
-/**
- * @brief SaharaSerial::getNamedErrorStatus
- * @param status
- * @return
- */
 const char* SaharaSerial::getNamedErrorStatus(uint32_t status)
 {
     switch(status) {
@@ -845,11 +810,6 @@ const char* SaharaSerial::getNamedErrorStatus(uint32_t status)
         }
 }
 
-/**
- * @brief SaharaSerial::getNamedRequestedImage
- * @param imageId
- * @return
- */
 const char* SaharaSerial::getNamedRequestedImage(uint32_t imageId)
 {
     switch(imageId) {
