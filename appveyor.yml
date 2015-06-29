@@ -5,7 +5,7 @@ environment:
   QTDIR: C:\Qt\5.4\msvc2013_64_opengl
 
 before_build:
-  - git submodule init --depth=1
+  - git submodule init
   - git submodule update --depth=1
 
 platform:
