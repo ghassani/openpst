@@ -29,6 +29,7 @@
 #include "util/sleep.h"
 #include "util/endian.h"
 #include "worker/sahara_memory_read_worker.h"
+#include "worker/sahara_image_transfer_worker.h"
 
 using namespace serial;
 
@@ -137,6 +138,21 @@ namespace openpst {
 			*/
 			void memoryReadChunkErrorHandler(sahara_memory_read_worker_request request, QString msg);
 
+			/**
+			* @brief imageTransferChunkDoneHandler
+			*/
+			void imageTransferChunkDoneHandler(sahara_image_transfer_worker_request request);
+
+			/**
+			* @brief imageTransferCompleteHandler
+			*/
+			void imageTransferCompleteHandler(sahara_image_transfer_worker_request request);
+
+			/**
+			* @brief imageTransferErrorHandler
+			*/
+			void imageTransferErrorHandler(sahara_image_transfer_worker_request request, QString msg);
+
 		private:
 
 			/**
@@ -173,6 +189,7 @@ namespace openpst {
 			SaharaSerial port;
 			PortInfo currentPort;
 			SaharaMemoryReadWorker* memoryReadWorker;
+			SaharaImageTransferWorker* imageTransferWorker;
 			std::deque<sahara_memory_read_worker_request> memoryReadQueue;
 	};
 }

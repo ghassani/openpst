@@ -187,7 +187,7 @@ typedef struct { // 0x03
     sahara_header_t header;
     uint32_t imageId;
     uint32_t offset;
-    uint32_t length;
+    uint32_t size;
 } sahara_read_data_rx_t;
 
 /**
@@ -248,7 +248,7 @@ typedef struct { // 0x09
 typedef struct { // 0x0a
   sahara_header_t header;
   uint32_t address;
-  uint32_t length;
+  uint32_t size;
 } sahara_memory_read_tx_t;
 
 /**
@@ -306,10 +306,10 @@ typedef struct { // 0x0e
 * sahara_command_execute_data_tx_t
 *
 * Sent in response to sahara_command_execute_response_rx_t
-* indicating we are ready to receive the data of n length
+* indicating we are ready to receive the data of n size
 * defined in sahara_command_execute_response_rx_t
 *
-* After sent, read the length of data from the device
+* After sent, read the size of data from the device
 */
 typedef struct { // 0x0f
     sahara_header_t header;
@@ -323,7 +323,7 @@ typedef struct { // 0x0f
 typedef struct { // 0x10
     sahara_header_t header;
     uint64_t address;
-    uint64_t length;
+    uint64_t size;
 } sahara_memory_debug_64_tx_t;
 
 /**
@@ -332,7 +332,7 @@ typedef struct { // 0x10
 typedef struct { // 0x11
     sahara_header_t header;
     uint64_t address;
-    uint64_t length;
+    uint64_t size;
 } sahara_memory_read_64_tx_t;
 
 

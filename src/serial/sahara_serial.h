@@ -77,20 +77,29 @@ namespace openpst {
 			int sendClientCommand(uint32_t command, uint8_t** responseData, size_t &responseDataSize);
 
 			/**
-			 * @brief sendImage
+			 * @brief sendImage - Send a whole image file to the device. 
 			 * @param std::string file
 			 * @return int
 			 */
 			int sendImage(std::string file);
 
 			/**
+			* @brief readNextImageChunkSize
+			* @param uint32_t offset - Will hold the next offset to send from
+			* @param size_t size - Will hold the next size to read from the file being
+			*					  requested
+			* @return int - if success returned and offset and size are 0 then transfer is complete
+			*/
+			int readNextImageOffset(uint32_t& offset, size_t& size);
+
+			/**
 			* @brief readMemory - Read size starting from address and 
 			*					  store it in a memory allocated buffer
 			*
-			* @param uint32_t address
-			* @param uint32_t address
-			* @param uint8_t** out
-			* @param size_t outSize
+			* @param uint32_t address - The starting address to read from
+			* @param size_t size - If the size is over SAHARA_MAX_MEMORY_REQUEST_SIZE, it will read in chunks of SAHARA_MAX_MEMORY_REQUEST_SIZE
+			* @param uint8_t** out - Pointer to the memory allocated buffer with the read data
+			* @param size_t outSize - Total size of the read data
 			* @return int
 			*/
 			int readMemory(uint32_t address, size_t size, uint8_t** out, size_t& outSize);
@@ -99,10 +108,10 @@ namespace openpst {
 			* @brief readMemory - Read size starting from address and
 			*					  save the result into the specified outFilePath
 			*
-			* @param uint32_t address
-			* @param uint32_t address
-			* @param const char* outFilePath
-			* @param size_t outSize
+			* @param uint32_t address - The starting address to read from
+			* @param size_t size - If the size is over SAHARA_MAX_MEMORY_REQUEST_SIZE, it will read in chunks of SAHARA_MAX_MEMORY_REQUEST_SIZE
+			* @param const char* outFilePath - Path to the file to create and store the read data
+			* @param size_t outSize - Total size of the read data
 			* @return int
 			*/
 			int readMemory(uint32_t address, size_t size, const char* outFilePath, size_t& outSize);
@@ -114,8 +123,8 @@ namespace openpst {
 			* @note - Will not close the file pointer handle
 			*
 			* @param uint32_t address
-			* @param uint32_t address
-			* @param FILE* out
+			* @param size_t size - If the size is over SAHARA_MAX_MEMORY_REQUEST_SIZE, it will read in chunks of SAHARA_MAX_MEMORY_REQUEST_SIZE
+			* @param FILE* out - File pointer to the file to store the read data
 			* @param size_t outSize
 			* @return int
 			*/
@@ -128,7 +137,8 @@ namespace openpst {
 			int sendReset();
 
 			/**
-			 * @brief sendDone
+			 * @brief sendDone - Sends the done command. In emergency mode this will 
+			 *					 transition to the uploaded programmer 
 			 * @return int
 			 */
 			int sendDone();

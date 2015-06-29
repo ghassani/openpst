@@ -61,6 +61,7 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
 	QObject::connect(ui->cancelOperationButton,			SIGNAL(clicked()), this, SLOT(cancelOperation()));
 	
 	qRegisterMetaType<sahara_memory_read_worker_request>("sahara_memory_read_worker_request");
+	qRegisterMetaType<sahara_image_transfer_worker_request>("sahara_image_transfer_worker_request");
 
 }
 
@@ -219,7 +220,7 @@ void SaharaWindow::writeHello()
 
     if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
 		ui->deviceStateRequestedImageValue->setText(port.getNamedRequestedImage(port.readState.imageId));
-        log(tmp.sprintf("Device requesting %lu bytes of image 0x%02X - %s", port.readState.length, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
+		log(tmp.sprintf("Device requesting %lu bytes of image 0x%02X - %s", port.readState.size, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
     }
 
 	if (port.deviceState.mode == SAHARA_MODE_MEMORY_DEBUG) {
@@ -344,12 +345,39 @@ void SaharaWindow::sendImage()
         return;
     }
 
-	if (!port.sendImage(fileName.toStdString())) {
-        log("Error Sending Image");
-		return;
-    }
+	sahara_image_transfer_worker_request request;
+	request.imageType = port.readState.imageId;
+	request.imagePath = fileName.toStdString();
+	request.offset = port.readState.offset;
+	request.chunkSize = port.readState.size;
+	
+	FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+	// get file size
+	fseek(fp, 0, SEEK_END);
+	request.fileSize = ftell(fp);
+	fclose(fp);
 
-    log("Image Transfer Complete");
+	QString tmp;
+
+	// setup progress bar
+	ui->progressBar->reset();
+	ui->progressBar->setMaximum(request.fileSize);
+	ui->progressBar->setMinimum(0);
+	ui->progressBar->setValue(0);
+
+	ui->progressBarTextLabel2->setText(tmp.sprintf("%s", request.imagePath.c_str()));
+	ui->progressBarTextLabel->setText(tmp.sprintf("0 / %lu bytes", request.fileSize));
+
+	disableControls();
+
+	imageTransferWorker = new SaharaImageTransferWorker(port, request, this);
+	connect(imageTransferWorker, &SaharaImageTransferWorker::chunkDone, this, &SaharaWindow::imageTransferChunkDoneHandler, Qt::QueuedConnection);
+	connect(imageTransferWorker, &SaharaImageTransferWorker::complete, this, &SaharaWindow::imageTransferCompleteHandler);
+	connect(imageTransferWorker, &SaharaImageTransferWorker::error, this, &SaharaWindow::imageTransferErrorHandler);
+	connect(imageTransferWorker, &SaharaImageTransferWorker::finished, imageTransferWorker, &QObject::deleteLater);
+	
+	imageTransferWorker->start();
+
 }
 
 /**
@@ -599,10 +627,51 @@ void SaharaWindow::memoryReadStartThread()
 	
 }
 
+
+void SaharaWindow::imageTransferChunkDoneHandler(sahara_image_transfer_worker_request request)
+{
+	// update progress bar
+	QString tmp;
+	ui->progressBar->setValue(ui->progressBar->value() + request.chunkSize);
+	ui->progressBarTextLabel->setText(tmp.sprintf("%lu / %lu bytes", ui->progressBar->value(), request.fileSize));
+}
+
+/**
+* @brief imageTransferCompleteHandler
+*/
+void SaharaWindow::imageTransferCompleteHandler(sahara_image_transfer_worker_request request)
+{
+	QString tmp;
+	
+	log(tmp.sprintf("Successfully transfered %s", request.imagePath.c_str()));
+
+	memoryReadWorker = NULL;
+
+	enableControls();
+
+	QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirmation", "Would you like to send the done command?");
+
+	if (userResponse == QMessageBox::Yes) {
+		return sendDone();
+	}
+}
+
+/**
+* @brief imageTransferErrorHandler
+*/
+void SaharaWindow::imageTransferErrorHandler(sahara_image_transfer_worker_request request, QString msg)
+{
+	log(msg);
+
+	enableControls();
+	
+	imageTransferWorker = NULL;
+}
+
 void SaharaWindow::cancelOperation()
 {
 
-	if (NULL != memoryReadWorker && memoryReadWorker->isRunning()) {		
+	if (NULL != memoryReadWorker && memoryReadWorker->isRunning()) {
 		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
 
 		if (userResponse == QMessageBox::Yes) {
@@ -611,13 +680,28 @@ void SaharaWindow::cancelOperation()
 				memoryReadWorker->terminate();
 				memoryReadWorker->wait();
 			}
+
+			if (memoryReadQueue.size()) {
+				memoryReadQueue.clear();
+			}
+
 			log("Memory read cancelled");
+		}
+	} else if (NULL != imageTransferWorker && imageTransferWorker->isRunning()) {
+		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
+
+		if (userResponse == QMessageBox::Yes) {
+			imageTransferWorker->cancel();
+			if (!imageTransferWorker->wait(5000)) {
+				imageTransferWorker->terminate();
+				imageTransferWorker->wait();
+			}
+			log("Image transfer cancelled");
 		}
 	} else {
 		log("No operation currently running");
 	}
 
-	memoryReadQueue.clear();
 
 	enableControls();
 }

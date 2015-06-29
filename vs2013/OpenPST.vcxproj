@@ -145,6 +145,9 @@
     <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_window.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_image_transfer_worker.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_memory_read_worker.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -164,6 +167,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\build\Win32-Release\generated\moc_qcdm_window.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_image_transfer_worker.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_memory_read_worker.cpp">
@@ -194,6 +200,7 @@
     <ClCompile Include="..\src\gui\sahara_window.cpp" />
     <ClCompile Include="..\src\gui\send_raw_window.cpp" />
     <ClCompile Include="..\src\util\sleep.cpp" />
+    <ClCompile Include="..\src\worker\sahara_image_transfer_worker.cpp" />
     <ClCompile Include="..\src\worker\sahara_memory_read_worker.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -587,6 +594,16 @@ endlocal
     <ClInclude Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\ui_send_raw_window.h" />
     <ClInclude Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\ui_streaming_dload_window.h" />
     <ClInclude Include="..\src\serial\streaming_dload_serial.h" />
+    <CustomBuild Include="..\src\worker\sahara_image_transfer_worker.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing sahara_image_transfer_worker.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\build\$(PlatformName)-$(ConfigurationName)\generated\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\..\build\$(PlatformName)-$(ConfigurationName)\generated\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_LOCATION_LIB "-I.\..\src" "-I.\..\lib\serial\include" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\mkspecs\win32-msvc2013" "-I$(QTDIR)\include\QtLocation" "-I.\..\build\$(PlatformName)-$(ConfigurationName)\generated"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing sahara_image_transfer_worker.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\build\$(PlatformName)-$(ConfigurationName)\generated\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\..\build\$(PlatformName)-$(ConfigurationName)\generated\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DNDEBUG -DQT_LOCATION_LIB "-I.\..\lib\serial\include" "-I.\..\src" "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtCore" "-I.\release" "-I$(QTDIR)\mkspecs\win32-msvc2013" "-I$(QTDIR)\include\QtLocation" "-I.\build\$(PlatformName)-$(ConfigurationName)\." "-I.\..\build\$(PlatformName)-$(ConfigurationName)\generated"</Command>
+    </CustomBuild>
     <CustomBuild Include="..\src\worker\sahara_memory_read_worker.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing sahara_memory_read_worker.h...</Message>

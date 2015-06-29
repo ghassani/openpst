@@ -31,7 +31,8 @@ SOURCES += \
     src/serial/streaming_dload_serial.cpp \
     src/gui/qcdm_window.cpp \
     src/serial/qcdm_serial.cpp \
-    src/worker/sahara_memory_read_worker.cpp
+    src/worker/sahara_memory_read_worker.cpp \
+    src/worker/sahara_image_transfer_worker.cpp
 
 HEADERS  += \
     lib/serial/include/serial/serial.h \
@@ -58,7 +59,9 @@ HEADERS  += \
     src/serial/streaming_dload_serial.h \
     src/serial/hdlc_serial.h \
     src/serial/qcdm_serial.h \
-    src/worker/sahara_memory_read_worker.h
+    src/worker/sahara_memory_read_worker.h \
+    src/worker/sahara_image_transfer_worker.h
+
 
 
 linux:unix:!macx {

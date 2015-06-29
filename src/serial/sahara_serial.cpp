@@ -347,6 +347,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
     return 1;
 }
 
+
 int SaharaSerial::sendImage(std::string file)
 {
     if (!isOpen()) {
@@ -379,22 +380,22 @@ int SaharaSerial::sendImage(std::string file)
 
     printf("Loaded File %s With Size %lu\n", file.c_str(), fileSize);
 
-    uint8_t* fileBuffer = new uint8_t[readState.length];
-    size_t fileBufferSize = readState.length;
+    uint8_t* fileBuffer = new uint8_t[readState.size];
+    size_t fileBufferSize = readState.size;
 
     while (totalSent != fileSize) {
-        if (readState.length > fileBufferSize) {
-            fileBuffer = (uint8_t*) realloc(fileBuffer, readState.length);
+        if (readState.size > fileBufferSize) {
+            fileBuffer = (uint8_t*) realloc(fileBuffer, readState.size);
             if (fileBuffer == NULL) {
-                printf("Could Not Allocate %lu Bytes For File Buffer\n", readState.length);
+                printf("Could Not Allocate %lu Bytes For File Buffer\n", readState.size);
                 free(fileBuffer);
                 return 0;
             }
         }
 
-        chunkSize = readState.length;
+        chunkSize = readState.size;
 
-        totalRequestLength += readState.length;
+        totalRequestLength += readState.size;
 
         if (fileSize < (totalSent + chunkSize)) {
             chunkSize = fileSize - totalSent;
@@ -408,33 +409,19 @@ int SaharaSerial::sendImage(std::string file)
 
         totalSent += lastTxSize;
 
-        // get next segment if any
-        lastRxSize = read(buffer, bufferSize);
+		uint32_t nextOffset;
+		size_t nextSize;
 
-        if (!lastRxSize) {
-            printf("Expected response but 0 bytes received from device\n");
-            free(fileBuffer);
-            fclose(fp);
-            return 0;
-        }
-
-        hexdump_rx(buffer, lastRxSize);
-
-        if (buffer[0] != SAHARA_READ_DATA) {
-            printf("Unexpected Response. Expected 0x%02x But Received 0x%02x\n", SAHARA_READ_DATA, buffer[0]);
-            if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-                sahara_transfer_response_rx_t* endTransfer = (sahara_transfer_response_rx_t*) buffer;
-                if (endTransfer->status != SAHARA_STATUS_SUCCESS) {
-                    printf("Device Responded With Error: %s\n", getNamedErrorStatus(endTransfer->status));
-                    free(fileBuffer);
-                    fclose(fp);
-                    return 0;
-                }
-            }
-            break;
-        }
-
-        memcpy(&readState, buffer, sizeof(readState));
+		if (!readNextImageOffset(nextOffset, nextSize)) {
+			printf("Error getting next image offset and size\n");
+			free(fileBuffer);
+			fclose(fp);
+			return 0;
+		}
+        
+		if (nextOffset == 0x00 && nextSize == 0x00) {
+			break;
+		}
     }
 
     free(fileBuffer);
@@ -443,6 +430,36 @@ int SaharaSerial::sendImage(std::string file)
     return 1;
 }
 
+
+int SaharaSerial::readNextImageOffset(uint32_t& offset, size_t& size)
+{
+	// get next segment if any
+	lastRxSize = read(buffer, bufferSize);
+
+	if (!lastRxSize) {
+		printf("Expected response but 0 bytes received from device\n");
+		return 0;
+	}
+
+	hexdump_rx(buffer, lastRxSize);
+
+	if (!isValidResponse(SAHARA_READ_DATA, buffer, lastRxSize)) {
+		return 0;
+	}
+
+	if (buffer[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
+		offset = 0x00;
+		size = 0x00;
+		return 1;
+	}
+
+	memcpy(&readState, buffer, sizeof(readState));
+
+	offset = readState.offset;
+	size   = readState.size;
+
+	return 1;
+}
 
 int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_t& outSize)
 {
@@ -474,14 +491,14 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 
 		if (isOverMax) {
 			if ((size - outSize) < SAHARA_MAX_MEMORY_REQUEST_SIZE) {
-				packet.length = size - outSize;
+				packet.size = size - outSize;
 			}
 			else {
-				packet.length = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+				packet.size = SAHARA_MAX_MEMORY_REQUEST_SIZE;
 			}
 		}
 		else {
-			packet.length = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
+			packet.size = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
 		}
 
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
@@ -552,13 +569,13 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, FILE* out, size_t& o
 
 		if (isOverMax) {
 			if ((size - outSize) < SAHARA_MAX_MEMORY_REQUEST_SIZE) {
-				packet.length = size - outSize;
+				packet.size = size - outSize;
 			} else {
-				packet.length = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+				packet.size = SAHARA_MAX_MEMORY_REQUEST_SIZE;
 			}
 		}
 		else {
-			packet.length = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
+			packet.size = isOverMax ? SAHARA_MAX_MEMORY_REQUEST_SIZE : size;
 		}
 
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet));

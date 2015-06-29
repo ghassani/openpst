@@ -176,6 +176,15 @@
     <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_window.cpp">
       <Filter>Generated Files\Release_Win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\worker\sahara_image_transfer_worker.cpp">
+      <Filter>Source Files\src\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_image_transfer_worker.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_image_transfer_worker.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_stdint.h">
@@ -293,6 +302,9 @@
     </CustomBuild>
     <CustomBuild Include="..\build\Win32-Debug\generated\sahara_memory_read_worker.moc">
       <Filter>Generated Files\Debug_Win32</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\worker\sahara_image_transfer_worker.h">
+      <Filter>Header Files\src\worker</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
