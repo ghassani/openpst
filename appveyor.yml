@@ -1,8 +1,7 @@
 clone_depth: 1
 
-environment:
-  QT_DIR: C:\Qt\5.4\msvc2013_64_opengl
-  QTDIR: C:\Qt\5.4\msvc2013_64_opengl
+environment:    
+  QTDIR: C:\Qt\5.4\msvc2013_opengl
 
 before_build:
   - git submodule init lib/serial
@@ -12,7 +11,6 @@ before_build:
 
 platform:
   - Win32
-  - x64
 
 configuration:
   - Debug
