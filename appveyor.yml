@@ -5,8 +5,10 @@ environment:
   QTDIR: C:\Qt\5.4\msvc2013_64_opengl
 
 before_build:
-  - git submodule init
-  - git submodule update --depth=1
+  - git submodule init lib/serial
+  - git submodule init lib/xerces
+  - git submodule update lib/serial
+  - git submodule update lib/xerces
 
 platform:
   - x86
@@ -17,4 +19,4 @@ configuration:
   - Release
 
 build:
-  project: OpenPST.sln
+  project: OpenPST-vs2013.sln
