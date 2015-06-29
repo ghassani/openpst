@@ -1,8 +1,8 @@
 clone_depth: 1
 
 environment:
-	QT_DIR: C:\Qt\5.4\msvc2013_64_opengl
-	QTDIR: C:\Qt\5.4\msvc2013_64_opengl
+  QT_DIR: C:\Qt\5.4\msvc2013_64_opengl
+  QTDIR: C:\Qt\5.4\msvc2013_64_opengl
 
 before_build:
   - git submodule init --depth=1
