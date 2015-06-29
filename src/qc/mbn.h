@@ -13,7 +13,7 @@
 
 #include "include/definitions.h"
 
-PACKED(struct eighty_byte_mbn_header_t {
+PACKED(typedef struct {
     uint32_t  codeword;            /* Codeword/magic number defining flash type
                                 information. */
     uint32_t  magic;               /* Magic number */
@@ -48,9 +48,9 @@ PACKED(struct eighty_byte_mbn_header_t {
     uint32_t  reserved5;          /* RESERVED */
     uint32_t  reserved6;          /* RESERVED */
     uint32_t  reserved7;          /* RESERVED */
-});
+}) eighty_byte_mbn_header_t;
 
-PACKED(struct fourty_byte_mbn_header_t {
+PACKED(typedef struct {
   uint32_t image_id;           /**< Identifies the type of image this header
                                   represents (OEM SBL, AMSS, Apps boot loader,
                                   etc.). */
@@ -68,7 +68,7 @@ PACKED(struct fourty_byte_mbn_header_t {
   uint8_t* cert_chain_ptr;     /**< Pointer to the chain of attestation
                                  certificates associated with the image. */
   uint32_t cert_chain_size;    /**< Size of the attestation chain in bytes */
-});
+}) fourty_byte_mbn_header_t;
 
 enum MBN_IMAGE {
     MBN_IMAGE_NONE           = 0x00,

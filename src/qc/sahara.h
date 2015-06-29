@@ -342,7 +342,7 @@ PACKED(typedef struct {
 	uint32_t size;
 	uint8_t name[20];
 	uint8_t filename[20];
-} sahara_memory_table_entry_t);
+}) sahara_memory_table_entry_t;
 
 
 #endif // _QC_SAHARA_H

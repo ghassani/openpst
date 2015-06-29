@@ -115,36 +115,36 @@ enum DIAG_RTRE_MODE {
 
 
 
-typedef struct qcdm_spc_tx_t{
+PACKED(typedef struct qcdm_spc_tx_t{
     uint8_t command;
     uint8_t spc[6];
-} qcdm_spc_tx_t;
+}) qcdm_spc_tx_t;
 
-typedef struct qcdm_spc_rx_t{
+PACKED(typedef struct qcdm_spc_rx_t{
     uint8_t command;
     uint8_t status;
-} qcdm_spc_rx_t;
+}) qcdm_spc_rx_t;
 
-typedef struct qcdm_16pw_tx_t{
+PACKED(typedef struct{
 	uint8_t command;
 	uint8_t password[16];
-} qcdm_16pw_tx_t;
+}) qcdm_16pw_tx_t;
 
-typedef struct qcdm_16pw_rx_t{
+PACKED(typedef struct {
 	uint8_t command;
 	uint8_t status;
-} qcdm_16pw_rx_t;
+}) qcdm_16pw_rx_t;
 
 PACKED(typedef struct {
 	uint8_t cmd;
 	uint16_t nvItem;
 	uint8_t data[DIAG_NV_ITEM_SIZE];
-} qcdm_nv_tx_t);
+}) qcdm_nv_tx_t;
 
 PACKED(typedef struct {
     uint8_t cmd;
     uint16_t nvItem;
     uint8_t data[DIAG_NV_ITEM_SIZE];
-} qcdm_nv_rx_t);
+}) qcdm_nv_rx_t;
 
 #endif // _QC_DIAG_H
