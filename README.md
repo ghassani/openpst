@@ -1,7 +1,7 @@
 Linux:
 [![Build Status](https://travis-ci.org/openpst/openpst.svg?branch=master)](https://travis-ci.org/openpst/openpst)
 Windows:
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/openpst/openpst)](https://ci.appveyor.com/project/ghassani/openpst)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/openpst/openpst)](https://ci.appveyor.com/project/openpst/openpst)
 
 # OpenPST
 
