@@ -11,8 +11,8 @@ before_install:
   - sudo apt-get install -qq qt5-qmake qtbase5-dev qtdeclarative5-dev qt5-default qttools5-dev-tools
   - if [ "$CXX" = "clang++" ]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 install:
   - make
 script:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
   - make
