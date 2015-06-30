@@ -37,12 +37,17 @@ void SaharaMemoryReadWorker::run()
 	request.lastChunkSize = 0;
 	request.outSize = 0;
 
+#ifdef _WIN32
+	FILE* fp;
+	fopen_s(&fp, request.outFilePath.c_str(), "a+b");
+#else
 	FILE* fp = fopen(request.outFilePath.c_str(), "a+b");
 
 	if (!fp) {
 		emit error(request, tmp.sprintf("Error opening %s for writing", request.outFilePath.c_str()));
 		return;
 	}
+#endif
 	
 	if (request.size > 100000) {
 		

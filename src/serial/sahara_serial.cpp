@@ -205,7 +205,7 @@ int SaharaSerial::switchMode(uint32_t mode)
 	} else if (packet.mode == SAHARA_MODE_MEMORY_DEBUG && isValidResponse(SAHARA_MEMORY_DEBUG, buffer, lastRxSize)) {
 
 	} else if (packet.mode == SAHARA_MODE_IMAGE_TX_PENDING && isValidResponse(SAHARA_READ_DATA, buffer, lastRxSize)) {
-		if (!readHello() || !sendHello()) {
+		if (!readHello() || !sendHello(SAHARA_MODE_IMAGE_TX_PENDING)) {
 			return 0;
 		}
 	} else {
@@ -287,8 +287,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 
 			cmdResponseDataLength = newSize;
 		}
-
-
+		
 		lastTxSize = write((uint8_t*)&execData, sizeof(execData));
 
 		if (!lastTxSize) {
@@ -317,7 +316,6 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 
 		memmove(&cmdResponseData[totalReadSize], buffer, lastRxSize);
 
-		//TODO check for error
 		totalReadSize += lastRxSize;
 
 		if (lastRxSize < bufferSize) {
@@ -359,13 +357,17 @@ int SaharaSerial::sendImage(std::string file)
         return 0;
     }
 
-    FILE* fp = fopen(file.c_str(), "rb");
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, file.c_str(), "rb");
+#else
+	FILE* fp = fopen(file.c_str(), "rb");
+#endif	
 
     if (!fp) {
         printf("Could Not Open File %s\n", file.c_str());
         return 0;
     }
-
 
     size_t fileSize,
            fileReadResult,
@@ -620,7 +622,12 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, const char* outFile,
 		}
 	}
 
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, outFile, "a+b");
+#else
 	FILE* fp = fopen(outFile, "a+b");
+#endif	
 
 	if (!fp) {
 		printf("Error opening file %s for writing\n", outFile);
@@ -746,6 +753,8 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* da
 {
 	if (expectedResponseCommand == data[0]) {
 		return true;
+	} else if (dataSize == 0) {
+		return false;
 	}
 
 	if (data[0] == SAHARA_END_OF_IMAGE_TRANSFER) {

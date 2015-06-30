@@ -286,8 +286,11 @@ std::string QcdmSerial::transformHexToString(const char *input, int length)
 	int i;
 
 	for (i = 0; i <= length; i++) {
+#ifdef _WIN32
+		sprintf_s(outputBuffer, "%c", hex_trans[input[i]]);
+#else
 		sprintf(outputBuffer, "%c", hex_trans[input[i]]);
-		
+#endif					
 		result.append(outputBuffer);
 	}
 

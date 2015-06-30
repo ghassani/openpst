@@ -37,7 +37,12 @@ void SaharaImageTransferWorker::run()
 	QString tmp; 
 	request.sent = 0;
 
+#ifdef _WIN32
+	FILE* fp;
+	fopen_s(&fp, request.imagePath.c_str(), "rb");
+#else
 	FILE* fp = fopen(request.imagePath.c_str(), "rb");
+#endif
 
 	if (!fp) {
 		emit error(request, tmp.sprintf("Error opening image %s for reading", request.imagePath.c_str()));

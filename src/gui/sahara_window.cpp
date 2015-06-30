@@ -96,7 +96,7 @@ void SaharaWindow::updatePortList()
 
 	QString tmp;
 
-	log(tmp.sprintf("Found %d devices", devices.size()));
+	log(tmp.sprintf("Found %lu devices", devices.size()));
 
 	while (iter != devices.end()) {
 		serial::PortInfo device = *iter++;
@@ -220,7 +220,7 @@ void SaharaWindow::writeHello()
 
     if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
 		ui->deviceStateRequestedImageValue->setText(port.getNamedRequestedImage(port.readState.imageId));
-		log(tmp.sprintf("Device requesting %lu bytes of image 0x%02X - %s", port.readState.size, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
+		log(tmp.sprintf("Device requesting %du bytes of image 0x%02X - %s", port.readState.size, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
     }
 
 	if (port.deviceState.mode == SAHARA_MODE_MEMORY_DEBUG) {
@@ -242,7 +242,7 @@ void SaharaWindow::writeHello()
 
 		for (int i = 0; i < totalRegions; i++) {
 			entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
-			log(tmp.sprintf("%s (%s) - Address: %08X Size: %lu", entry->name, entry->filename, entry->address, entry->size));
+			log(tmp.sprintf("%s (%s) - Address: %08X Size: %u", entry->name, entry->filename, entry->address, entry->size));
 		}
 
 		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Memory Table", tmp.sprintf("Pull all %d files referenced in the memory table?", totalRegions));
@@ -251,12 +251,9 @@ void SaharaWindow::writeHello()
 
 			QString dumpPath = QFileDialog::getExistingDirectory(this, tr("Select where to dump the files"), "");
 			QString outFile;
-			size_t outFileSize;
 
 			if (dumpPath.length()) {
 				log("\n\n");
-				uint8_t* fileData = NULL;
-				size_t fileDataSize = 0;
 				for (int i = 0; i < totalRegions; i++) {
 					entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
 
@@ -291,7 +288,12 @@ void SaharaWindow::writeHello()
 		if (saveMemoryTableResponse == QMessageBox::Yes) {
 			QString memoryTableFileName = QFileDialog::getSaveFileName(this, tr("Save Raw Memory Table"), "", tr("Binary Files (*.bin)"));
 			if (memoryTableFileName.length()) {
+#ifdef _WIN32
+				FILE* fp;
+				errno_t err = fopen_s(&fp, memoryTableFileName.toStdString().c_str(), "a+b");
+#else
 				FILE* fp = fopen(memoryTableFileName.toStdString().c_str(), "a+b");
+#endif				
 				if (fp) {
 					fwrite(memoryTableData, sizeof(uint8_t), memoryTableSize, fp);
 				} else {
@@ -350,8 +352,14 @@ void SaharaWindow::sendImage()
 	request.imagePath = fileName.toStdString();
 	request.offset = port.readState.offset;
 	request.chunkSize = port.readState.size;
-	
+
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "rb");
+#else
 	FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+#endif	
+	
 	// get file size
 	fseek(fp, 0, SEEK_END);
 	request.fileSize = ftell(fp);
@@ -528,7 +536,7 @@ void SaharaWindow::memoryRead()
 	uint32_t size = std::stoul(ui->memoryReadSizeValue->text().toStdString().c_str(), nullptr, 10);
 	
 	QString tmp;	
-	size_t outFileSize;
+
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Read Data"), "", tr("Binary Files (*.bin)"));
 
 	if (!fileName.length()) {
@@ -538,7 +546,12 @@ void SaharaWindow::memoryRead()
 
 	log(tmp.sprintf("Reading %lu bytes from address 0x%08X", size, address));
 
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "a+b");
+#else
 	FILE* fp = fopen(fileName.toStdString().c_str(), "a+b");
+#endif	
 
 	if (!fp) {
 		log(tmp.sprintf("Error opening file %s for writing", fileName.toStdString().c_str()));
@@ -741,7 +754,12 @@ void SaharaWindow::saveLog()
 		return;
 	}
 
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "a+");
+#else
 	FILE* fp = fopen(fileName.toStdString().c_str(), "a+");
+#endif
 
 	if (!fp) {
 		log("Error opening file for writing");

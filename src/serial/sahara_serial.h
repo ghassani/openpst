@@ -18,6 +18,8 @@
 #include "qc/mbn.h"
 #include "util/hexdump.h"
 #include "util/sleep.h"
+#include <iostream>
+#include <fstream>
 
 namespace openpst {
 
@@ -49,13 +51,13 @@ namespace openpst {
 
 			/**
 			 * @brief sendHello
-			 * @param uint32_t mode - @see enum SAHARA_MODE - if null defaults to current mode
+			 * @param uint32_t mode - @see enum SAHARA_MODE
 			 * @param uint32_t version -The version of sahara protocol to request, defaults to 2
 			 * @param uint32_t minVersion - The minimum version we can support, defaults to 1
 			 * @param uint32_t status - indicate to device our status, if set to anything other than 0x00, sahara protocol will abort
 			 * @return int
 			 */
-			int sendHello(uint32_t mode = NULL, uint32_t version = 0x02, uint32_t minVersion = 0x01, uint32_t status = 0x00);
+			int sendHello(uint32_t mode, uint32_t version = 0x02, uint32_t minVersion = 0x01, uint32_t status = 0x00);
 
 			/**
 			 * @brief sendHello
@@ -81,7 +83,7 @@ namespace openpst {
 			 * @param std::string file
 			 * @return int
 			 */
-			int sendImage(std::string file);
+			int sendImage(std::string filePath);
 
 			/**
 			* @brief readNextImageChunkSize

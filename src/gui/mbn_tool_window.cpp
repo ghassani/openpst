@@ -49,7 +49,12 @@ void MbnToolWindow::LoadFile()
         return;
     }
 
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "rb");
+#else
+	FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+#endif	     
 
     if (!fp) {
         log("Error Opening File");
@@ -60,8 +65,6 @@ void MbnToolWindow::LoadFile()
     size_t fileSize = ftell(fp);
     rewind(fp);
 
-
-    ui->savePathInput->setText(fileName.replace("\.[A-Za-z]{1,}$", "_edited$1"));
 
     log(tmp.sprintf("SBL Header Size: %lu", sizeof(eighty_byte_mbn_header_t)));
 
@@ -144,7 +147,12 @@ void MbnToolWindow::readX509Chain()
         return;
     }
 
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+#ifdef _WIN32
+	FILE* fp;
+	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "rb");
+#else
+	FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+#endif	    
 
     if (!fp) {
         log("Error Opening File");
@@ -162,11 +170,11 @@ void MbnToolWindow::readX509Chain()
     rewind(fp);
 
     uint32_t codeSize     = sblHeader.code_size;
-    uint32_t imgSize       = sblHeader.image_size;
+    uint32_t imgSize      = sblHeader.image_size;
     uint32_t imgSrc       = sblHeader.image_src;
     uint32_t certChainPtr = flip_endian32(sblHeader.cert_chain_ptr);
     uint32_t certSize     = sblHeader.cert_chain_size;
-    uint32_t sigSize     = sblHeader.signature_size;
+    uint32_t sigSize      = sblHeader.signature_size;
     uint32_t offset       = sizeof(eighty_byte_mbn_header_t) + imgSrc + codeSize;
 
     if (offset > fileSize) {

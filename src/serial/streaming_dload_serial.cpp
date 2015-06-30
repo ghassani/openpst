@@ -73,17 +73,17 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 		return 0;
 	}
 
-	int packetStartIndex = (buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0);
+	int idx = (buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0);
 
-	streaming_dload_hello_rx_header_t* resp = (streaming_dload_hello_rx_header_t*)buffer;
-	memcpy((uint8_t*)&deviceState, &buffer[packetStartIndex], sizeof(streaming_dload_hello_rx_header_t));
+	streaming_dload_hello_rx_header_t* resp = (streaming_dload_hello_rx_header_t*)buffer[idx];
+	memcpy((uint8_t*)&deviceState, resp, sizeof(streaming_dload_hello_rx_header_t));
 	
 	if (bufferSize < deviceState.maxPreferredBlockSize && deviceState.maxPreferredBlockSize > 0) {
 		buffer = (uint8_t*) realloc(buffer, deviceState.maxPreferredBlockSize);
 		bufferSize = deviceState.maxPreferredBlockSize;
 	}
 
-	int dataStartIndex = (packetStartIndex + sizeof(streaming_dload_hello_rx_header_t));
+	int dataStartIndex = (idx + sizeof(streaming_dload_hello_rx_header_t));
 
 	// parse the packet and get the things that are not obvious without calculation
 	// flashIdenfier, windowSize, numberOfSectors, sectorSizes, featureBits
@@ -513,7 +513,12 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 		return -1;
 	}
 	
+#ifdef _WIN32
+	FILE* fp;
+	fopen_s(&fp, fileName.c_str(), "rb");
+#else
 	FILE* fp = fopen(fileName.c_str(), "rb");
+#endif
 
 	if (!fp) {
 		printf("Could Not Open File %s\n", fileName.c_str());
@@ -598,6 +603,8 @@ int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 	if (!isValidResponse(STREAMING_DLOAD_QFPROM_READ_RESPONSE, buffer, lastRxSize)) {
 		return 0;
 	}
+
+	return 1;
 }
 
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t& responseSize)
@@ -608,11 +615,11 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 		if (response[idx] == STREAMING_DLOAD_LOG) {
 			streaming_dload_log_rx_t* packet = (streaming_dload_log_rx_t*)&response[1];
 			printf("Received Log Response\n");
-			memcpy((uint8_t*)&lastLog, &buffer[idx], (responseSize - (HDLC_TRAILER_LENGTH + idx)));
+			memcpy((uint8_t*)&lastLog, packet, (responseSize - (HDLC_TRAILER_LENGTH)));
 		} else if (response[idx] == STREAMING_DLOAD_ERROR) {
 			streaming_dload_error_rx_t* packet = (streaming_dload_error_rx_t*)&response[idx];
 			printf("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code));
-			memcpy((uint8_t*)&lastError, &response[idx], (responseSize - (HDLC_TRAILER_LENGTH + idx)));
+			memcpy((uint8_t*)&lastError, packet, (responseSize - (HDLC_TRAILER_LENGTH)));
 		} else {
 			printf("Unexpected Response\n");
 		}

@@ -77,19 +77,16 @@ void QcdmWindow::UpdatePortList()
 
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
-        if (!strstr("n/a", device.hardware_id.c_str())) {
-            ui->portList->addItem(device.description.c_str(), device.port.c_str());
+        ui->portList->addItem(device.description.c_str(), device.port.c_str());
 
-			QString logMsg = "Found ";
-			logMsg.append(device.hardware_id.c_str()).append(" on port ").append(device.port.c_str());
+		QString logMsg = "Found ";
+		logMsg.append(device.hardware_id.c_str()).append(" on port ").append(device.port.c_str());
 
-            if (device.description.length()) {
-                logMsg.append(" - ").append(device.description.c_str());
-            }
-
-            log(LOGTYPE_DEBUG, logMsg);
-
+        if (device.description.length()) {
+            logMsg.append(" - ").append(device.description.c_str());
         }
+
+        log(LOGTYPE_DEBUG, logMsg);
     }
 }
 
