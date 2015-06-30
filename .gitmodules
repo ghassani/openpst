@@ -5,7 +5,3 @@
 [submodule "xerces"]
 	path = lib/xerces
 	url = https://github.com/apache/xerces-c.git
-
-[submodule "openpst-assets"]
-	path = assets
-	url = https://github.com/openpst/openpst-assets.git
