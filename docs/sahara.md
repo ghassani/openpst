@@ -8,7 +8,9 @@ When recieving the hello and responding back, the device will then send a memory
 
 When in this mode, OpenPST can read any size chunk of memory space to your local filesystem. 
 
-Memory debug is known to be available on a USB interfaces named Qualcomm HS-USB Diagnostic 9006. This USB interface has a vendor ID of 05c6 and product id of 9006.
+Memory debug is known to be available on the following USB interfaces:
+- LGE AndroidNet USB Serial Port. This USB interface has a vendor ID of 1004 (LG) and product id 61A1.
+- Qualcomm HS-USB Diagnostic 9006. This USB interface has a vendor ID of 05c6 and product id of 9006.
 
 May be available in other diagnostic interfaces.
 
@@ -23,11 +25,6 @@ In emergency mode it will only request the EHOSTDL file which will be a signed (
 Available on the following known USB interfaces:
 
 - Qualcomm HS-USB QDLoader 9008. This USB interface has a vendor ID of 05c6 (Qualcomm) and product id of 9006.
-- LGE AndroidNet USB Serial Port. This USB interface has a vendor ID of 1004 (LG) and product id 61A1.
-
-### Memory Debug
-
-Memory debug mode is available on 9006 port
 
 ### Known Linux Problems
 
