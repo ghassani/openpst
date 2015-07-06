@@ -296,6 +296,7 @@ void SaharaWindow::writeHello()
 #endif				
 				if (fp) {
 					fwrite(memoryTableData, sizeof(uint8_t), memoryTableSize, fp);
+					fclose(fp);
 				} else {
 					log("Error opening memory table file for writing");
 				}
@@ -441,12 +442,30 @@ void SaharaWindow::sendClientCommand()
 		
 	if (readData != NULL && readDataSize > 0) {
 		
-		log(tmp.sprintf("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
-			requestedCommand, port.getNamedClientCommand(requestedCommand), readDataSize
-		));
-		tmp.clear();
-		hexdump(readData, readDataSize, tmp);
-		log(tmp);
+		if (requestedCommand == SAHARA_EXEC_CMD_OEM_PK_HASH_READ) {
+			sahara_oem_pk_hash_rx_t* resp = (sahara_oem_pk_hash_rx_t*)readData;		
+			hexdump(resp->hash, sizeof(sahara_oem_pk_hash_rx_t), tmp);
+			log(tmp.sprintf("OEM Public Key Hash Hex:\n %s", tmp.toStdString().c_str()));
+		} else if (requestedCommand == SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL) {
+			sahara_sbl_version_rx_t* resp = (sahara_sbl_version_rx_t*)readData;
+			log(tmp.sprintf("SBL SW Version: %u", resp->version));
+		} else if (requestedCommand == SAHARA_EXEC_CMD_SERIAL_NUM_READ) {
+			sahara_serial_number_rx_t* resp = (sahara_serial_number_rx_t*)readData;
+			log(tmp.sprintf("Serial Number: %u - %08X", resp->serial, resp->serial));
+		} else if (requestedCommand == SAHARA_EXEC_CMD_MSM_HW_ID_READ) {
+			sahara_msm_hw_id_rx_t* resp = (sahara_msm_hw_id_rx_t*)readData;
+			log(tmp.sprintf("Unknown ID 1: %u", resp->unknown1));
+			log(tmp.sprintf("Unknown ID 2: %u", resp->unknown2));
+			log(tmp.sprintf("MSM HW ID: %u - %08X", resp->msmId, resp->msmId));
+		}
+		else {
+			log(tmp.sprintf("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
+				requestedCommand, port.getNamedClientCommand(requestedCommand), readDataSize
+			));
+			tmp.clear();
+			log(tmp);
+		}
+
 		free(readData);
 	}
 }

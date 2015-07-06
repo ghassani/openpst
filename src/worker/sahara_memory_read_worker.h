@@ -12,8 +12,8 @@
 #define _WORKER_SAHARA_MEMORY_READ_WORKER_H
 
 #include <QThread>
-#include <serial/sahara_serial.h>
-#include <qc/sahara.h>
+#include "serial/sahara_serial.h"
+#include "qc/sahara.h"
 
 using namespace serial;
 

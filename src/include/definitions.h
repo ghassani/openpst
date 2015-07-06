@@ -23,5 +23,4 @@
     #define PACKED( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
 
-
 #endif //_INCLUDE_DEFINITIONS_H

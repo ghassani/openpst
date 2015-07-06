@@ -16,6 +16,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 /* QCDM protocol frames are pseudo Async HDLC frames which end with a 3-byte
 *  trailer. This trailer consists of the 16-bit CRC of the frame plus an ending
@@ -26,12 +27,14 @@
 #define HDLC_ESC_CHAR			0x7D  /* Escape sequence 1st character value */
 #define HDLC_ESC_MASK			0x20  /* Escape sequence complement value */
 #define HDLC_CONTROL_CHAR		0x7E
-#define HDLC_TRAILER_LENGTH		0x03
-#define HDLC_OVERHEAD_LENGTH	HDLC_TRAILER_LENGTH + 1
+#define HDLC_OVERHEAD_LENGTH	4
+#define HDLC_TRAILER_LENGTH		3
+#define HDLC_LEADING_LENGTH		1
 
-int hdlc_request(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize);
-int hdlc_response(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize);
-int hdlc_escape(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize);
-int hdlc_unescape(uint8_t* input, uint32_t insize, uint8_t** output, uint32_t* outsize);
+
+int hdlc_request(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize);
+int hdlc_response(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize);
+int hdlc_request(std::vector<uint8_t> &data);
+int hdlc_response(std::vector<uint8_t> &data);
 
 #endif // _UTIL_HDLC_H

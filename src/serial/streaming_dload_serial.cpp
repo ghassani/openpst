@@ -21,11 +21,8 @@ using namespace openpst;
 StreamingDloadSerial::StreamingDloadSerial(std::string port, int baudrate) :
     HdlcSerial (port, baudrate)
 {
-	buffer = new uint8_t[1024]; // this will get resized after hello if needed
-	bufferSize = 1024;
-	memset(&deviceState, 0x00, sizeof(deviceState));
-	memset(&lastError,	 0x00, sizeof(lastError));
-	memset(&lastLog,	 0x00, sizeof(lastLog));
+	memset(&state, 0x00, sizeof(state));
+	state.hello.maxPreferredBlockSize = STREAMING_DLOAD_MAX_PACKET_SIZE;
 }
 
 /**
@@ -33,7 +30,7 @@ StreamingDloadSerial::StreamingDloadSerial(std::string port, int baudrate) :
  */
 StreamingDloadSerial::~StreamingDloadSerial()
 {
-	delete buffer;
+
 }
 
 
@@ -44,184 +41,191 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
+	size_t rxSize, txSize; 
+	std::vector<uint8_t> buffer; 
 	streaming_dload_hello_tx_t hello;
-
+	
 	hello.command = STREAMING_DLOAD_HELLO;
 	memcpy(hello.magic, magic.c_str(), magic.size());
 	hello.version = version;
 	hello.compatibleVersion = compatibleVersion;
 	hello.featureBits = featureBits;
 
-	lastTxSize = write((uint8_t*)&hello, sizeof(hello));
+	txSize = write((uint8_t*)&hello, sizeof(hello));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n"); 
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 	
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_HELLO_RESPONSE, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_HELLO_RESPONSE, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
-
-	int idx = (buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0);
-
-	streaming_dload_hello_rx_header_t* resp = (streaming_dload_hello_rx_header_t*)buffer[idx];
-	memcpy((uint8_t*)&deviceState, resp, sizeof(streaming_dload_hello_rx_header_t));
+		
+	streaming_dload_hello_rx_header_t* resp = (streaming_dload_hello_rx_header_t*)&buffer[0];
 	
-	if (bufferSize < deviceState.maxPreferredBlockSize && deviceState.maxPreferredBlockSize > 0) {
-		buffer = (uint8_t*) realloc(buffer, deviceState.maxPreferredBlockSize);
-		bufferSize = deviceState.maxPreferredBlockSize;
-	}
-
-	int dataStartIndex = (idx + sizeof(streaming_dload_hello_rx_header_t));
+	memcpy(&state.hello, &buffer[0], sizeof(streaming_dload_hello_rx_header_t));
+	
+	int dataStartIndex = sizeof(streaming_dload_hello_rx_header_t);
 
 	// parse the packet and get the things that are not obvious without calculation
 	// flashIdenfier, windowSize, numberOfSectors, sectorSizes, featureBits
-	memcpy(&deviceState.flashIdenfier, &buffer[dataStartIndex], deviceState.flashIdLength);	
-	memcpy(&deviceState.windowSize, &buffer[dataStartIndex + deviceState.flashIdLength], sizeof(deviceState.windowSize));
-	memcpy(&deviceState.numberOfSectors, &buffer[dataStartIndex + deviceState.flashIdLength + sizeof(deviceState.windowSize)], sizeof(deviceState.numberOfSectors));
+	memcpy(&state.hello.flashIdenfier, &buffer[dataStartIndex], state.hello.flashIdLength);
+	memcpy(&state.hello.windowSize, &buffer[dataStartIndex + state.hello.flashIdLength], sizeof(state.hello.windowSize));
+	memcpy(&state.hello.numberOfSectors, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize)], sizeof(state.hello.numberOfSectors));
 
-	int sectorSize = 4 * deviceState.numberOfSectors;
-	memcpy(&deviceState.sectorSizes, &buffer[dataStartIndex + deviceState.flashIdLength + sizeof(deviceState.windowSize) + sizeof(deviceState.numberOfSectors)], sectorSize-1);
-	memcpy(&deviceState.featureBits, &buffer[dataStartIndex + deviceState.flashIdLength + sizeof(deviceState.windowSize) + sizeof(deviceState.numberOfSectors) + sectorSize-1], sizeof(deviceState.featureBits));
-	deviceState.featureBits = flip_endian16(deviceState.featureBits);
-	return 1;
+	int sectorSize = 4 * state.hello.numberOfSectors;
+	memcpy(&state.hello.sectorSizes, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors)], sectorSize-1);
+	memcpy(&state.hello.featureBits, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors) + sectorSize-1], sizeof(state.hello.featureBits));
+	state.hello.featureBits = flip_endian16(state.hello.featureBits);
+
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::sendUnlock(std::string code)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer; 
 	streaming_dload_unlock_tx_t packet;
+	
 	packet.command = STREAMING_DLOAD_UNLOCK;
 	packet.code = std::stoul(code.c_str(), nullptr, 16);
 	
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_UNLOCKED, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_UNLOCKED, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
 	streaming_dload_security_mode_tx_t packet;
 	packet.command = STREAMING_DLOAD_SECURITY_MODE;
 	packet.mode = mode;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_SECUIRTY_MODE_RECEIVED, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_SECUIRTY_MODE_RECEIVED, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::sendReset()
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
+	
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
 	
 	streaming_dload_reset_tx_t packet;
 	packet.command = STREAMING_DLOAD_RESET;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_RESET_ACK, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_RESET_ACK, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::sendPowerOff()
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
-	
+
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
 	streaming_dload_reset_tx_t packet;
 	packet.command = STREAMING_DLOAD_POWER_OFF;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_POWERING_DOWN, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_POWERING_DOWN, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 
@@ -229,168 +233,178 @@ int StreamingDloadSerial::sendNop()
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
-	
+
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
 	streaming_dload_nop_tx_t packet;
 	packet.command = STREAMING_DLOAD_NOP;
 	packet.identifier = std::rand();
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_NOP_RESPONSE, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_NOP_RESPONSE, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)&buffer[0];
 
 	if (resp->identifier  != packet.identifier) {
 		printf("Received NOP response but identifier did not match\n");
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer; 
 	streaming_dload_get_ecc_state_tx_t packet;
 	packet.command = STREAMING_DLOAD_GET_ECC_STATE;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_CURRENT_ECC_STATE, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_CURRENT_ECC_STATE, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	streaming_dload_get_ecc_state_rx_t* resp = (streaming_dload_get_ecc_state_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+	streaming_dload_get_ecc_state_rx_t* resp = (streaming_dload_get_ecc_state_rx_t*)&buffer[0];
 	
 	statusOut = resp->status;
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::setEcc(uint8_t status)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer; 
 	streaming_dload_set_ecc_state_tx_t packet;
 	packet.command = STREAMING_DLOAD_SET_ECC;
 	packet.status = status;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_SET_ECC_RESPONSE, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_SET_ECC_RESPONSE, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::openMode(uint8_t mode)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer; 	
 	streaming_dload_open_tx_t packet;
 	packet.command = STREAMING_DLOAD_OPEN;
 	packet.mode = mode;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_OPENED, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_OPENED, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::closeMode()
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer; 
 	streaming_dload_close_tx_t packet;
 	packet.command = STREAMING_DLOAD_CLOSE;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_CLOSED, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_CLOSED, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 
@@ -399,43 +413,48 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
 	streaming_dload_open_multi_image_tx_t packet;
 	packet.command = STREAMING_DLOAD_OPEN_MULTI_IMAGE;
 	packet.type = imageType;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_OPENED_MULTI_IMAGE, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_OPENED_MULTI_IMAGE, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	bool isComplete = false;
 	
+	size_t txSize, rxSize;
+	uint8_t buffer[STREAMING_DLOAD_MAX_PACKET_SIZE];
+
 	uint32_t lastAddress = 0;
 
 	uint8_t* out = new uint8_t[length];
@@ -454,42 +473,42 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 		packet.length = length <= chunkSize ? length : chunkSize;
 		isFirstRead = false;
 
-		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+		txSize = write((uint8_t*)&packet, sizeof(packet));
 
-		if (!lastTxSize) {
+		if (!txSize) {
 			printf("Wrote 0 bytes\n");
 			free(out); 
-			return -1;
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		lastRxSize = read(buffer, bufferSize);
+		rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-		if (!lastRxSize) {
+		if (!rxSize) {
 			printf("Device did not respond\n");
 			free(out);
-			return -1;
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, buffer, lastRxSize)) {
+		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, buffer, rxSize)) {
 			printf("Invalid Response\n");
 			free(out);
-			return 0;
+			return STREAMING_DLOAD_OPERATION_ERROR;
 		}
 		
 		lastAddress = packet.address;
 
-		size_t newSize = dataSize + lastRxSize;
+		size_t newSize = dataSize + rxSize;
 		if (newSize > outSize) {			 
 			out = (uint8_t*)realloc(out, newSize);
 			outSize = newSize;
 		}
 
-		readRx = (streaming_dload_read_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+		readRx = (streaming_dload_read_rx_t*)&buffer[0];
 
-		overhead = (sizeof(readRx->address) + sizeof(readRx->command) + HDLC_OVERHEAD_LENGTH);
+		overhead = (sizeof(readRx->address) + sizeof(readRx->command));
 
-		memcpy(&out[dataSize], readRx->data, lastRxSize - overhead);
-		dataSize += (lastRxSize - overhead);
+		memcpy(&out[dataSize], readRx->data, rxSize - overhead);
+		dataSize += (rxSize - overhead);
 
 		if (length <= dataSize) {
 			isComplete = true;
@@ -503,14 +522,70 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 	printf("\n\n\nFinal Data Size: %lu bytes\n", dataSize);
 	hexdump(out, dataSize);
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
+}
+
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize)
+{
+	if (!isOpen()) {
+		printf("Port Not Open\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	bool isComplete = false;
+
+	size_t txSize, rxSize;
+	size_t totalRead = 0;
+
+	streaming_dload_read_tx_t packet;
+	packet.command = STREAMING_DLOAD_READ;
+	packet.address = address;
+	streaming_dload_read_rx_t* readRx;
+
+	do {
+		packet.address = packet.address + totalRead;
+		packet.length = length <= chunkSize ? length : chunkSize;
+
+		txSize = write((uint8_t*)&packet, sizeof(packet));
+
+		if (!txSize) {
+			printf("Wrote 0 bytes\n");
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		}
+
+		rxSize = read(out, state.hello.maxPreferredBlockSize);
+
+		if (!rxSize) {
+			printf("Device did not respond\n");
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		}
+		totalRead += rxSize;
+
+		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, out)) {
+			printf("Invalid Response\n");
+			return STREAMING_DLOAD_OPERATION_ERROR;
+		}
+		
+
+
+		if (length <= totalRead) {
+			break; //done
+		}
+
+	} while (true);
+
+
+	printf("\n\n\nFinal Data Size: %lu bytes\n", totalRead);
+	hexdump(&out[0], totalRead);
+
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
 int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& outStatus, bool overwrite)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
 #ifdef _WIN32
@@ -522,7 +597,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 
 	if (!fp) {
 		printf("Could Not Open File %s\n", fileName.c_str());
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	fseek(fp, 0, SEEK_END);
@@ -532,94 +607,94 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 	if (fileSize > 512) {
 		printf("File can\'t exceed 512 bytes");
 		fclose(fp);
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
 	streaming_partition_table_tx_t packet;
 	packet.command = STREAMING_DLOAD_PARTITION_TABLE;
 	packet.overrideExisting = overwrite;
 	fread(&packet.data, sizeof(uint8_t), fileSize, fp);
 	fclose(fp);
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 	
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_PARTITION_TABLE_RECEIVED, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_PARTITION_TABLE_RECEIVED, &buffer[0], rxSize)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	streaming_dload_partition_table_rx_t* resp = (streaming_dload_partition_table_rx_t*)&buffer[buffer[0] == HDLC_CONTROL_CHAR ? 1 : 0];
+	streaming_dload_partition_table_rx_t* resp = (streaming_dload_partition_table_rx_t*)&buffer[0];
 
 	outStatus = resp->status;
 
 	if (resp->status > 1) {
 		printf("Received Error Response %02X\n", resp->status);
-		return 0;
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 	
 }
-
 
 int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer; 
 	streaming_dload_qfprom_read_tx_t packet;
 	packet.command = STREAMING_DLOAD_QFPROM_READ;
 	packet.addressType = addressType;
 	packet.rowAddress = rowAddress;
 
-	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	txSize = write((uint8_t*)&packet, sizeof(packet));
 
-	if (!lastTxSize) {
+	if (!txSize) {
 		printf("Wrote 0 bytes\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	lastRxSize = read(buffer, bufferSize);
+	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
-	if (!lastRxSize) {
+	if (!rxSize) {
 		printf("Device did not respond\n");
-		return -1;
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	if (!isValidResponse(STREAMING_DLOAD_QFPROM_READ_RESPONSE, buffer, lastRxSize)) {
-		return 0;
+	if (!isValidResponse(STREAMING_DLOAD_QFPROM_READ_RESPONSE, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
-	return 1;
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t& responseSize)
+bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)
 {
-	int idx = response[0] == HDLC_CONTROL_CHAR ? 1 : 0;
-
-	if (response[idx] != expectedCommand) {
-		if (response[idx] == STREAMING_DLOAD_LOG) {
-			streaming_dload_log_rx_t* packet = (streaming_dload_log_rx_t*)&response[1];
+	if (response[0] != expectedCommand) {
+		if (response[0] == STREAMING_DLOAD_LOG) {
+			streaming_dload_log_rx_t* packet = (streaming_dload_log_rx_t*)response;
 			printf("Received Log Response\n");
-			memcpy((uint8_t*)&lastLog, packet, (responseSize - (HDLC_TRAILER_LENGTH)));
-		} else if (response[idx] == STREAMING_DLOAD_ERROR) {
-			streaming_dload_error_rx_t* packet = (streaming_dload_error_rx_t*)&response[idx];
+			memcpy((uint8_t*)&lastLog, packet, responseSize);
+		} else if (response[0] == STREAMING_DLOAD_ERROR) {
+			streaming_dload_error_rx_t* packet = (streaming_dload_error_rx_t*)response;
 			printf("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code));
-			memcpy((uint8_t*)&lastError, packet, (responseSize - (HDLC_TRAILER_LENGTH)));
+			memcpy((uint8_t*)&lastError, packet, responseSize);
 		} else {
 			printf("Unexpected Response\n");
 		}
@@ -627,6 +702,11 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 	}
 
 	return true;
+}
+
+bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, std::vector<uint8_t> &data)
+{
+	return isValidResponse(expectedCommand, &data[0], data.size());
 }
 
 const char* StreamingDloadSerial::getNamedError(uint8_t code)
@@ -684,9 +764,9 @@ const char* StreamingDloadSerial::getNamedMultiImage(uint8_t imageType)
 		case STREAMING_DLOAD_OPEN_MULTI_MODE_FLASH_BIN:		return "Flash.bin for Windows Mobile";
 		case STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1:			return "DSP1 runtime image";
 		case STREAMING_DLOAD_OPEN_MULTI_MODE_CUSTOM:		return "User-defined partition";
-		case STREAMING_DLOAD_OPEN_MULTI_MODE_DBL:			return "DBL image for Secure  Boot 2.0";
-		case STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL:			return "OSBL image for Secure  Boot 2.0";
-		case STREAMING_DLOAD_OPEN_MULTI_MODE_FSBL:			return "FSBL image for Secure  Boot 2.0";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_DBL:			return "DBL image for Secure Boot 2.0";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL:			return "OSBL image for Secure Boot 2.0";
+		case STREAMING_DLOAD_OPEN_MULTI_MODE_FSBL:			return "FSBL image for Secure Boot 2.0";
 		case STREAMING_DLOAD_OPEN_MULTI_MODE_DSP2:			return "DSP2 executable";
 		case STREAMING_DLOAD_OPEN_MULTI_MODE_RAW:			return "Apps EFS2 raw image ";
 		case STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS1:			return "ROFS1 - Symbian";

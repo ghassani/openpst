@@ -336,6 +336,55 @@ typedef struct { // 0x11
 } sahara_memory_read_64_tx_t;
 
 
+/**
+* represents a response from client command
+* SAHARA_EXEC_CMD_MSM_HW_ID_READ
+*/
+typedef struct {
+	uint16_t unknown1;
+	uint16_t unknown2;
+	uint16_t msmId;
+} sahara_msm_hw_id_rx_t;
+
+/**
+* represents a response from client command
+* SAHARA_EXEC_CMD_SERIAL_NUM_READ
+*/
+typedef struct {
+	uint32_t serial;
+} sahara_serial_number_rx_t;
+
+/**
+* represents a response from client command
+* SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL
+*/
+typedef struct {
+	uint32_t version;
+} sahara_sbl_version_rx_t;
+
+/**
+* represents a response from client command
+* SAHARA_EXEC_CMD_OEM_PK_HASH_READ
+*/
+typedef struct {
+	uint8_t hash[32];
+} sahara_oem_pk_hash_rx_t;
+
+/**
+* represents a single log entry from client command
+* SAHARA_EXEC_CMD_READ_DEBUG_DATA response
+*/
+typedef struct {
+	uint8_t message[SAHARA_LOG_LENGTH];
+} sahara_debug_log_entry_t;
+
+/**
+* This structure represents the memory table entry
+* when reading the memory table from the specified address
+* of a SAHARA_MEMORY_DEBUG response
+* 
+* The total number of entries would be response.size / sizeof(sahara_memory_table_entry_t)
+*/
 PACKED(typedef struct {
 	uint32_t unknown1;
 	uint32_t address;

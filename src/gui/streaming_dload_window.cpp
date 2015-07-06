@@ -105,6 +105,7 @@ StreamingDloadWindow::~StreamingDloadWindow()
 		port.close();
 	}
 
+	this->close();
 	delete ui;
 }
 
@@ -232,30 +233,30 @@ void StreamingDloadWindow::sendHello()
 	uint8_t version = std::stoul(ui->helloVersionValue->text().toStdString().c_str(), nullptr, 16);
 	uint8_t compatibleVersion = std::stoul(ui->helloCompatibleVersionValue->text().toStdString().c_str(), nullptr, 16);
 	uint8_t featureBits = std::stoul(ui->helloFeatureBitsValue->text().toStdString().c_str(), nullptr, 16);
-
+	
 	if (!port.sendHello(magic, version, compatibleVersion, featureBits)) {
 		log("Error Sending Hello");
 		return;
 	}	
-
-	log(tmp.sprintf("Hello Response: %02X", port.deviceState.command));
-	log(tmp.sprintf("Magic: %s", port.deviceState.magic));
-	log(tmp.sprintf("Version: %02X", port.deviceState.version));
-	log(tmp.sprintf("Compatible Version: %02X", port.deviceState.compatibleVersion));
-	log(tmp.sprintf("Max Prefered Block Size: %d", port.deviceState.maxPreferredBlockSize));
-	log(tmp.sprintf("Base Flash Address: 0x%08X", port.deviceState.baseFlashAddress));
-	log(tmp.sprintf("Flash ID Length: %d", port.deviceState.flashIdLength));	
-	log(tmp.sprintf("Flash Identifier: %s", port.deviceState.flashIdenfier));
-	log(tmp.sprintf("Window Size: %d", port.deviceState.windowSize));
-	log(tmp.sprintf("Number of Sectors: %d", port.deviceState.numberOfSectors));
-
+	
+	log(tmp.sprintf("Hello Response: %02X", port.state.hello.command));
+	log(tmp.sprintf("Magic: %s", port.state.hello.magic));
+	log(tmp.sprintf("Version: %02X", port.state.hello.version));
+	log(tmp.sprintf("Compatible Version: %02X", port.state.hello.compatibleVersion));
+	log(tmp.sprintf("Max Prefered Block Size: %d", port.state.hello.maxPreferredBlockSize));
+	log(tmp.sprintf("Base Flash Address: 0x%08X", port.state.hello.baseFlashAddress));
+	log(tmp.sprintf("Flash ID Length: %d", port.state.hello.flashIdLength));	
+	log(tmp.sprintf("Flash Identifier: %s", port.state.hello.flashIdenfier));
+	log(tmp.sprintf("Window Size: %d", port.state.hello.windowSize));
+	log(tmp.sprintf("Number of Sectors: %d", port.state.hello.numberOfSectors));
+	
 	/*
 	// dump all sector sizes
-	for (int i = 0; i < port.deviceState.numberOfSectors; i++) {
-		log(tmp.sprintf("Sector %d: %d", i, port.deviceState.sectorSizes[i*4]));
+	for (int i = 0; i < port.state.hello.numberOfSectors; i++) {
+		log(tmp.sprintf("Sector %d: %d", i, port.state.hello.sectorSizes[i*4]));
 	}*/
 
-	log(tmp.sprintf("Feature Bits: %04X", port.deviceState.featureBits));
+	log(tmp.sprintf("Feature Bits: %04X", port.state.hello.featureBits));
 }
 
 /**

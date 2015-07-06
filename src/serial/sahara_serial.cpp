@@ -119,15 +119,14 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 		open();
 		
 		if (!readHello()) {
-			printf("Error on re-handshake\n");
-			return SAHARA_OPERATION_ERROR;
+			return SAHARA_OPERATION_IO_ERROR;
 		}
 
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet)); // resend the hello response
 
 		if (!lastTxSize) {
 			printf("Attempted to write to port but 0 bytes were written\n");
-			return SAHARA_OPERATION_ERROR;
+			return SAHARA_OPERATION_IO_ERROR;
 		}
 
 		hexdump_tx((uint8_t*)&packet, lastTxSize);
@@ -137,7 +136,7 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 	
     if (!lastRxSize) {
         printf("Expected response but 0 bytes received from device\n");
-		return SAHARA_OPERATION_ERROR;
+		return SAHARA_OPERATION_IO_ERROR;
     }
 
 	hexdump_rx(buffer, lastRxSize);

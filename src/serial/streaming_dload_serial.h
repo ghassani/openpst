@@ -21,13 +21,23 @@
 #include "util/endian.h"
 
 namespace openpst {
+
+	enum STREAMING_DLOAD_OPERATION_RESULT {
+		STREAMING_DLOAD_OPERATION_IO_ERROR = -1,
+		STREAMING_DLOAD_OPERATION_ERROR = 0,
+		STREAMING_DLOAD_OPERATION_SUCCESS = 1
+	}; 
+	
+	struct streaming_dload_device_state {
+		uint8_t openMode;
+		uint8_t openMultiMode;
+		streaming_dload_hello_rx_t hello;
+		streaming_dload_error_rx_t lastError;
+		streaming_dload_log_rx_t   lastLog;
+	}; 
+	
 	class StreamingDloadSerial : public HdlcSerial {
 		public:
-			uint8_t* buffer;
-			size_t bufferSize;
-			size_t lastRxSize;
-			size_t lastTxSize;
-
             StreamingDloadSerial(std::string port, int baudrate = 115200);
             ~StreamingDloadSerial();
 
@@ -42,9 +52,11 @@ namespace openpst {
 			int openMode(uint8_t mode);
 			int closeMode();
 			int openMultiImage(uint8_t imageType);
-			int readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize = 1024);
+			int readAddress(uint32_t address, size_t length, uint8_t** out, size_t& outSize, size_t chunkSize = 1024);
+			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize = 1024);
 			int readQfprom(uint32_t rowAddress, uint32_t addressType);
 			int writePartitionTable(std::string filePath, uint8_t& outStatus, bool overwrite = false);
+
 			streaming_dload_hello_rx_t deviceState;
 			streaming_dload_error_rx_t lastError;
 			streaming_dload_log_rx_t   lastLog;
@@ -52,9 +64,11 @@ namespace openpst {
 			const char* getNamedError(uint8_t code);
 			const char* getNamedOpenMode(uint8_t mode);
 			const char* getNamedMultiImage(uint8_t imageType);
-
+			streaming_dload_device_state state;
 	private:
-		bool isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t& responseSize);
+		bool isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize);
+		bool isValidResponse(uint8_t expectedCommand, std::vector<uint8_t> &response);
+
     };
 }
 
