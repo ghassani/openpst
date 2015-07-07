@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>811</width>
+    <width>821</width>
     <height>535</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>110</y>
-      <width>791</width>
+      <width>801</width>
       <height>241</height>
      </rect>
     </property>
@@ -42,7 +42,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>211</width>
+        <width>221</width>
         <height>121</height>
        </rect>
       </property>
@@ -52,7 +52,7 @@
       <widget class="QPushButton" name="readSpcButton">
        <property name="geometry">
         <rect>
-         <x>151</x>
+         <x>171</x>
          <y>50</y>
          <width>51</width>
          <height>29</height>
@@ -71,9 +71,9 @@
       <widget class="QComboBox" name="readSpcMethod">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>90</x>
          <y>20</y>
-         <width>141</width>
+         <width>131</width>
          <height>27</height>
         </rect>
        </property>
@@ -108,7 +108,7 @@
         <rect>
          <x>10</x>
          <y>25</y>
-         <width>41</width>
+         <width>51</width>
          <height>20</height>
         </rect>
        </property>
@@ -127,7 +127,7 @@
         <rect>
          <x>60</x>
          <y>51</y>
-         <width>91</width>
+         <width>111</width>
          <height>27</height>
         </rect>
        </property>
@@ -169,7 +169,7 @@
       <widget class="QPushButton" name="writeSpcButton">
        <property name="geometry">
         <rect>
-         <x>151</x>
+         <x>171</x>
          <y>79</y>
          <width>51</width>
          <height>29</height>
@@ -195,7 +195,7 @@
         <rect>
          <x>60</x>
          <y>80</y>
-         <width>91</width>
+         <width>111</width>
          <height>27</height>
         </rect>
        </property>
@@ -222,9 +222,9 @@
      <widget class="QGroupBox" name="groupBox_4">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>250</x>
         <y>10</y>
-        <width>211</width>
+        <width>241</width>
         <height>121</height>
        </rect>
       </property>
@@ -234,7 +234,7 @@
       <widget class="QPushButton" name="readMeidButton">
        <property name="geometry">
         <rect>
-         <x>152</x>
+         <x>180</x>
          <y>50</y>
          <width>51</width>
          <height>29</height>
@@ -253,9 +253,9 @@
       <widget class="QLineEdit" name="hexMeidValue">
        <property name="geometry">
         <rect>
-         <x>41</x>
+         <x>39</x>
          <y>51</y>
-         <width>111</width>
+         <width>141</width>
          <height>27</height>
         </rect>
        </property>
@@ -300,9 +300,9 @@
       <widget class="QLineEdit" name="decMeidValue">
        <property name="geometry">
         <rect>
-         <x>41</x>
+         <x>39</x>
          <y>80</y>
-         <width>111</width>
+         <width>141</width>
          <height>27</height>
         </rect>
        </property>
@@ -325,7 +325,7 @@
       <widget class="QPushButton" name="writeMeidButton">
        <property name="geometry">
         <rect>
-         <x>152</x>
+         <x>180</x>
          <y>79</y>
          <width>51</width>
          <height>29</height>
@@ -371,9 +371,9 @@
       <widget class="QComboBox" name="meidMethod">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>80</x>
          <y>19</y>
-         <width>141</width>
+         <width>151</width>
          <height>27</height>
         </rect>
        </property>
@@ -389,7 +389,7 @@
         <rect>
          <x>10</x>
          <y>24</y>
-         <width>41</width>
+         <width>51</width>
          <height>20</height>
         </rect>
        </property>
@@ -407,9 +407,9 @@
      <widget class="QGroupBox" name="groupBox_5">
       <property name="geometry">
        <rect>
-        <x>450</x>
+        <x>500</x>
         <y>10</y>
-        <width>261</width>
+        <width>281</width>
         <height>61</height>
        </rect>
       </property>
@@ -419,7 +419,7 @@
       <widget class="QPushButton" name="readImeiButton">
        <property name="geometry">
         <rect>
-         <x>151</x>
+         <x>171</x>
          <y>20</y>
          <width>51</width>
          <height>29</height>
@@ -440,7 +440,7 @@
         <rect>
          <x>40</x>
          <y>21</y>
-         <width>111</width>
+         <width>131</width>
          <height>27</height>
         </rect>
        </property>
@@ -485,7 +485,7 @@
       <widget class="QPushButton" name="writeImeiButton">
        <property name="geometry">
         <rect>
-         <x>201</x>
+         <x>221</x>
          <y>20</y>
          <width>51</width>
          <height>29</height>
@@ -507,9 +507,9 @@
      <widget class="QGroupBox" name="groupBox_6">
       <property name="geometry">
        <rect>
-        <x>450</x>
+        <x>500</x>
         <y>70</y>
-        <width>261</width>
+        <width>281</width>
         <height>61</height>
        </rect>
       </property>
@@ -519,7 +519,7 @@
       <widget class="QPushButton" name="readSubscriptionButton">
        <property name="geometry">
         <rect>
-         <x>151</x>
+         <x>170</x>
          <y>20</y>
          <width>51</width>
          <height>29</height>
@@ -563,7 +563,7 @@
       <widget class="QPushButton" name="writeSubscriptionButton">
        <property name="geometry">
         <rect>
-         <x>201</x>
+         <x>220</x>
          <y>20</y>
          <width>51</width>
          <height>29</height>
@@ -584,9 +584,9 @@
       <widget class="QComboBox" name="SubscriptionValue">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>49</x>
          <y>21</y>
-         <width>101</width>
+         <width>121</width>
          <height>27</height>
         </rect>
        </property>
@@ -623,7 +623,7 @@
      <rect>
       <x>10</x>
       <y>360</y>
-      <width>791</width>
+      <width>801</width>
       <height>151</height>
      </rect>
     </property>
@@ -638,7 +638,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>391</width>
+      <width>401</width>
       <height>27</height>
      </rect>
     </property>
@@ -713,7 +713,7 @@
    <widget class="QLabel" name="programNameText">
     <property name="geometry">
      <rect>
-      <x>670</x>
+      <x>680</x>
       <y>10</y>
       <width>111</width>
       <height>31</height>
@@ -733,7 +733,7 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>391</width>
+      <width>401</width>
       <height>61</height>
      </rect>
     </property>
@@ -750,7 +750,7 @@
     <widget class="QPushButton" name="securitySendSpcButton">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>101</x>
        <y>19</y>
        <width>51</width>
        <height>29</height>
@@ -770,7 +770,7 @@
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>160</x>
        <y>24</y>
        <width>61</width>
        <height>20</height>
@@ -796,7 +796,7 @@
     <widget class="QLineEdit" name="security16PasswordValue">
      <property name="geometry">
       <rect>
-       <x>209</x>
+       <x>219</x>
        <y>20</y>
        <width>121</width>
        <height>27</height>
@@ -819,7 +819,7 @@
     <widget class="QPushButton" name="securitySend16PasswordButton">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>340</x>
        <y>19</y>
        <width>51</width>
        <height>29</height>
@@ -859,9 +859,9 @@
     <widget class="QLineEdit" name="securitySpcValue">
      <property name="geometry">
       <rect>
-       <x>39</x>
+       <x>40</x>
        <y>20</y>
-       <width>51</width>
+       <width>61</width>
        <height>27</height>
       </rect>
      </property>
@@ -883,9 +883,9 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>420</x>
       <y>40</y>
-      <width>391</width>
+      <width>381</width>
       <height>61</height>
      </rect>
     </property>
