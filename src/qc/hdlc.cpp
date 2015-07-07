@@ -10,7 +10,7 @@
 #include "hdlc.h"
 #include "util/hexdump.h"
 
-int hdlc_request(uint8_t* in, uint32_t inSize, uint8_t** out, size_t &outSize) {
+int hdlc_request(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize) {
 
     uint16_t crc = 0;
 
