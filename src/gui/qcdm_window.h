@@ -39,19 +39,19 @@ public slots:
     void DisconnectPort();
     void DisableUiButtons();
     void EnableUiButtons();
-    void SecuritySendSpc();
-    void SecuritySend16Password();
-    void nvReadGetMeid();
-    void nvWriteSetMeid();
-    void nvReadGetImei();
-    void nvReadGetSpc();
-    void nvWriteSetSpc();
-    void nvReadGetSubscription();
-    void nvWriteSetSubscription();
+    void sendSpc();
+    void sendPassword();
+    void readMeid();
+    void writeMeid();
+    void readImei();
+    void readSpc();
+    void writeSpc();
+    void readSubscription();
+    void writeSubscription();
 
-    void sendQcdmPhoneMode();
+    void sendPhoneMode();
 
-    void decSpcTextChanged(QString value);
+    void spcTextChanged(QString value);
 
 private:
     void log(int type, const char* message);

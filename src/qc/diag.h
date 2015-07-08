@@ -218,7 +218,7 @@ enum DIAG_RTRE_MODE {
 PACKED(typedef struct qcdm_phone_mode_tx_t{
     uint8_t command;
     uint8_t mode;
-    uint8_t space;
+    uint8_t padding;
 }) qcdm_phone_mode_tx_t;
 
 PACKED(typedef struct qcdm_phone_mode_rx_t{

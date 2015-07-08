@@ -40,14 +40,14 @@ namespace openpst {
             * @param password - a 16 digit password to unlock secure operations
             * @return
             */
-            int send16Password(const char* password);
+            int sendPassword(const char* password);
 
             /**
             * @brief sendQcdmPhoneMode
             * @param mode - DIAG_PHONE_MODE
             * @return
             */
-            int sendQcdmPhoneMode(uint8_t mode);
+            int sendPhoneMode(uint8_t mode);
 
             /**
             * @brief getNvItem

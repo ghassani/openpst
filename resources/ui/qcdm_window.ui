@@ -31,13 +31,13 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tabGeneral">
      <attribute name="title">
       <string>General</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox_3">
+     <widget class="QGroupBox" name="spcGroupBox">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -109,7 +109,7 @@
         </property>
        </item>
       </widget>
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="decSpcLabel">
        <property name="geometry">
         <rect>
          <x>8</x>
@@ -128,7 +128,7 @@
         <string> SPC</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="readSpcMethodLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -147,7 +147,7 @@
         <string>Method</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="readSpcValue">
+      <widget class="QLineEdit" name="decSpcValue">
        <property name="geometry">
         <rect>
          <x>60</x>
@@ -172,7 +172,7 @@
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QLabel" name="label_8">
+      <widget class="QLabel" name="hexSpcLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -244,7 +244,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_4">
+     <widget class="QGroupBox" name="meidGroupBox">
       <property name="geometry">
        <rect>
         <x>250</x>
@@ -297,7 +297,7 @@
         <number>14</number>
        </property>
       </widget>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="hexMeidLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -368,7 +368,7 @@
         <string>Write</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="decMeidLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -419,7 +419,7 @@
         </property>
        </item>
       </widget>
-      <widget class="QLabel" name="label_9">
+      <widget class="QLabel" name="meidMethodLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -439,7 +439,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_5">
+     <widget class="QGroupBox" name="imeiGroupBox">
       <property name="geometry">
        <rect>
         <x>520</x>
@@ -492,7 +492,7 @@
         <number>15</number>
        </property>
       </widget>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="imeiLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -539,7 +539,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_6">
+     <widget class="QGroupBox" name="subscriptionGroupBox">
       <property name="geometry">
        <rect>
         <x>520</x>
@@ -570,7 +570,7 @@
         <string>Read</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_10">
+      <widget class="QLabel" name="subscriptionLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -616,7 +616,7 @@
         <string>Write</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="SubscriptionValue">
+      <widget class="QComboBox" name="subscriptionValue">
        <property name="geometry">
         <rect>
          <x>59</x>
@@ -698,7 +698,7 @@
        <string>Write</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_11">
+     <widget class="QLabel" name="MdnValueLabel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -767,7 +767,7 @@
        <number>15</number>
       </property>
      </widget>
-     <widget class="QLabel" name="label_12">
+     <widget class="QLabel" name="MinValueLabel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -809,7 +809,7 @@
      </font>
     </property>
    </widget>
-   <widget class="QComboBox" name="portList">
+   <widget class="QComboBox" name="portListComboBox">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -904,7 +904,7 @@
      <string>OpenPST</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="securityGroupBox">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -923,7 +923,7 @@
     <property name="title">
      <string>Security</string>
     </property>
-    <widget class="QPushButton" name="securitySendSpcButton">
+    <widget class="QPushButton" name="sendSpcButton">
      <property name="geometry">
       <rect>
        <x>102</x>
@@ -943,7 +943,7 @@
       <string>Send</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="sendPasswordLabel">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -969,7 +969,7 @@
       <number>-1</number>
      </property>
     </widget>
-    <widget class="QLineEdit" name="security16PasswordValue">
+    <widget class="QLineEdit" name="sendPasswordValue">
      <property name="geometry">
       <rect>
        <x>239</x>
@@ -992,7 +992,7 @@
       <number>16</number>
      </property>
     </widget>
-    <widget class="QPushButton" name="securitySend16PasswordButton">
+    <widget class="QPushButton" name="sendPasswordButton">
      <property name="geometry">
       <rect>
        <x>360</x>
@@ -1012,7 +1012,7 @@
       <string>Send</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="sendSpcLabel">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1032,7 +1032,7 @@
       <string> SPC</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="securitySpcValue">
+    <widget class="QLineEdit" name="sendSpcValue">
      <property name="geometry">
       <rect>
        <x>41</x>
@@ -1056,7 +1056,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QGroupBox" name="extraGroupBox">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -1075,7 +1075,7 @@
     <property name="title">
      <string>Extra</string>
     </property>
-    <widget class="QPushButton" name="sendQcdmPhoneModeButton">
+    <widget class="QPushButton" name="sendPhoneModeButton">
      <property name="geometry">
       <rect>
        <x>321</x>
@@ -1094,7 +1094,7 @@
       <string>Send</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_13">
+    <widget class="QLabel" name="phoneModeLabel">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -1119,7 +1119,7 @@
       <number>-1</number>
      </property>
     </widget>
-    <widget class="QComboBox" name="qcdmPhoneModeValue">
+    <widget class="QComboBox" name="phoneModeValue">
      <property name="geometry">
       <rect>
        <x>220</x>

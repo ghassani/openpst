@@ -72,7 +72,7 @@ int QcdmSerial::sendSpc(const char* spc)
 * @param password - a 16 digit password to unlock secure operations
 * @return Password status response
 */
-int QcdmSerial::send16Password(const char* password)
+int QcdmSerial::sendPassword(const char* password)
 {
     if (!isOpen()) {
         return DIAG_CMD_PORT_CLOSED;
@@ -110,7 +110,7 @@ int QcdmSerial::send16Password(const char* password)
 * @param mode - DIAG_PHONE_MODE
 * @return
 */
-int QcdmSerial::sendQcdmPhoneMode(uint8_t mode)
+int QcdmSerial::sendPhoneMode(uint8_t mode)
 {
     if (!isOpen()) {
         return DIAG_CMD_PORT_CLOSED;
@@ -119,7 +119,7 @@ int QcdmSerial::sendQcdmPhoneMode(uint8_t mode)
     qcdm_phone_mode_tx_t packet;
     packet.command = DIAG_CONTROL_F;
     packet.mode = mode;
-    packet.space = 0x0;
+    packet.padding = 0x0;
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
