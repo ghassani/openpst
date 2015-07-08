@@ -474,30 +474,25 @@ void StreamingDloadWindow::read()
 	size_t chunkSize = std::stoi(ui->readChunkSizeValue->currentText().toStdString().c_str(), nullptr, 10);
 
 	QString tmp;
-	uint8_t* data = NULL;
-	size_t dataSize = 0;
+	std::vector<uint8_t> data;
 
 	log(tmp.sprintf("Attempting Read %lu bytes starting from address %08X", length, address));
 
-	if (!port.readAddress(address, length, &data, dataSize, chunkSize)) {
+	if (!port.readAddress(address, length, data)) {
 		log(tmp.sprintf("Error reading data from address %08X with size %lu", address, length));
 		return;
 	}
 	
-	log(tmp.sprintf("Read %lu bytes starting from address %08X", dataSize, address));
+	log(tmp.sprintf("Read %lu bytes starting from address %08X", data.size(), address));
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Read Data"), "", tr("Binary Files (*.bin)"));
 
 	if (fileName.length()) {
 		FILE* outFile = fopen(fileName.toStdString().c_str(), "a+b");
 		if (outFile) {
-			fwrite(data, sizeof(uint8_t), dataSize, outFile);
+			fwrite(&data[0], sizeof(uint8_t), data.size(), outFile);
 			fclose(outFile);
 		}
-	}
-
-	if (dataSize > 0 && data != NULL) {
-		free(data);
 	}
 }
 

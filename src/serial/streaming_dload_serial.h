@@ -52,8 +52,8 @@ namespace openpst {
 			int openMode(uint8_t mode);
 			int closeMode();
 			int openMultiImage(uint8_t imageType);
-			int readAddress(uint32_t address, size_t length, uint8_t** out, size_t& outSize, size_t chunkSize = 1024);
-			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize = 1024);
+			int readAddress(uint32_t address, size_t length, uint8_t** out, size_t& outSize);
+			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out);
 			int readQfprom(uint32_t rowAddress, uint32_t addressType);
 			int writePartitionTable(std::string filePath, uint8_t& outStatus, bool overwrite = false);
 

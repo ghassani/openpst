@@ -443,15 +443,13 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	bool isComplete = false;
-	
 	size_t txSize, rxSize;
 	uint8_t buffer[STREAMING_DLOAD_MAX_PACKET_SIZE];
 
@@ -466,12 +464,9 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 
 	streaming_dload_read_rx_t* readRx;
 	int overhead;
-	bool isFirstRead = true;
-
 	do {
-		packet.address = isFirstRead == true ? address : lastAddress + chunkSize;
-		packet.length = length <= chunkSize ? length : chunkSize;
-		isFirstRead = false;
+		packet.address = address + dataSize;
+		packet.length = length <= state.hello.maxPreferredBlockSize ? length : state.hello.maxPreferredBlockSize;
 
 		txSize = write((uint8_t*)&packet, sizeof(packet));
 
@@ -511,11 +506,10 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 		dataSize += (rxSize - overhead);
 
 		if (length <= dataSize) {
-			isComplete = true;
 			break; //done
 		}
 			
-	} while (!isComplete);
+	} while (true);
 
 	*data = out;
 	
@@ -525,26 +519,25 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out)
 {
 	if (!isOpen()) {
 		printf("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	bool isComplete = false;
-
 	size_t txSize, rxSize;
-	size_t totalRead = 0;
 
 	streaming_dload_read_tx_t packet;
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 	streaming_dload_read_rx_t* readRx;
 
+	out.clear();
+
 	do {
-		packet.address = packet.address + totalRead;
-		packet.length = length <= chunkSize ? length : chunkSize;
+		packet.address = packet.address + out.size();
+		packet.length = length <= state.hello.maxPreferredBlockSize ? length : state.hello.maxPreferredBlockSize;
 
 		txSize = write((uint8_t*)&packet, sizeof(packet));
 
@@ -559,24 +552,17 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 			printf("Device did not respond\n");
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
-		totalRead += rxSize;
 
 		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, out)) {
 			printf("Invalid Response\n");
 			return STREAMING_DLOAD_OPERATION_ERROR;
 		}
 		
-
-
-		if (length <= totalRead) {
+		if (length <= out.size()) {
 			break; //done
 		}
 
 	} while (true);
-
-
-	printf("\n\n\nFinal Data Size: %lu bytes\n", totalRead);
-	hexdump(&out[0], totalRead);
 
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
