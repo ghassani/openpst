@@ -21,28 +21,23 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 
     UpdatePortList();
 
-	ui->readSpcMethod->addItem("Default", 0);
-	ui->readSpcMethod->addItem("EFS", 1);
-	ui->readSpcMethod->addItem("HTC", 2);
-	ui->readSpcMethod->addItem("LG", 3);
-	ui->readSpcMethod->addItem("Samsung", 4);
-
-	ui->SubscriptionValue->addItem("RUIM_ONLY", RTRE_MODE_RUIM_ONLY);
-	ui->SubscriptionValue->addItem("NV_ONLY", RTRE_MODE_NV_ONLY);
-	ui->SubscriptionValue->addItem("RUIM_PREF", RTRE_MODE_RUIM_PREF);
-	ui->SubscriptionValue->addItem("GSM_1X", RTRE_MODE_GSM_1X);
+    ui->readSpcValue->setInputMask("999999");
+    ui->hexMeidValue->setInputMask("HHHHHHHHHHHHHH");
 
     QObject::connect(ui->portListRefreshButton,        SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
     QObject::connect(ui->securitySendSpcButton,        SIGNAL(clicked()), this, SLOT(SecuritySendSpc()));
-	QObject::connect(ui->securitySend16PasswordButton, SIGNAL(clicked()), this, SLOT(SecuritySend16Password()));
+    QObject::connect(ui->securitySend16PasswordButton, SIGNAL(clicked()), this, SLOT(SecuritySend16Password()));
 	QObject::connect(ui->readMeidButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetMeid()));
+    QObject::connect(ui->writeMeidButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetMeid()));
 	QObject::connect(ui->readImeiButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetImei()));
 	QObject::connect(ui->readSpcButton,				   SIGNAL(clicked()), this, SLOT(nvReadGetSpc()));
 	QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
 	QObject::connect(ui->readSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvReadGetSubscription()));
 	QObject::connect(ui->writeSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvWriteSetSubscription()));
+
+    QObject::connect(ui->sendQcdmPhoneModeButton, SIGNAL(clicked()), this, SLOT(sendQcdmPhoneMode()));
 
 	QObject::connect(ui->readSpcValue, SIGNAL(textChanged(QString)), this, SLOT(decSpcTextChanged(QString)));
 }
@@ -217,6 +212,29 @@ void QcdmWindow::SecuritySend16Password()
 }
 
 /**
+* @brief QcdmWindow::sendQcdmPhoneMode
+*/
+void QcdmWindow::sendQcdmPhoneMode()
+{
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
+
+    int result = port.sendQcdmPhoneMode((uint8_t)ui->qcdmPhoneModeValue->currentIndex());
+
+    if (result == MODE_RESET_F) {
+        DisconnectPort();
+    }
+
+    if (result == (uint8_t)ui->qcdmPhoneModeValue->currentIndex()){
+        log(LOGTYPE_INFO, "Send QCDM Phone Mode Success");
+    } else {
+        log(LOGTYPE_INFO, "Send QCDM Phone Mode Failure");
+    }
+}
+
+/**
 * @brief QcdmWindow::nvReadGetMeid
 */
 void QcdmWindow::nvReadGetMeid() 
@@ -253,6 +271,31 @@ void QcdmWindow::nvReadGetMeid()
 	} else {
 		log(LOGTYPE_ERROR, "Read Failure - MEID");
 	}
+}
+
+/**
+* @brief QcdmWindow::nvWriteSetMeid
+*/
+void QcdmWindow::nvWriteSetMeid()
+{
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
+
+    if (ui->hexMeidValue->text().length() != 14) {
+        log(LOGTYPE_WARNING, "Enter a Valid 14 Character MEID");
+    }
+
+    uint8_t* response = NULL;
+
+    int result = port.setNvItem(NV_MEID_I, ui->hexMeidValue->text().toStdString().c_str(), 6, &response);
+
+    if (result == DIAG_NV_WRITE_F) {
+        log(LOGTYPE_INFO, "Write Success - MEID: " + ui->hexMeidValue->text());
+    } else {
+        log(LOGTYPE_ERROR, "Write Failure - MEID");
+    }
 }
 
 /**

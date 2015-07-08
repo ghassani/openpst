@@ -18,6 +18,7 @@
 #include "serial/serial.h"
 #include "serial/hdlc_serial.h"
 #include "qc/diag.h"
+#include "qc/diag_nv.h"
 #include "qc/hdlc.h"
 #include "util/hexdump.h"
 
@@ -39,7 +40,14 @@ namespace openpst {
 			* @param password - a 16 digit password to unlock secure operations
 			* @return
 			*/
-			int send16Password(const char* password);
+            int send16Password(const char* password);
+
+            /**
+            * @brief sendQcdmPhoneMode
+            * @param mode - DIAG_PHONE_MODE
+            * @return
+            */
+            int sendQcdmPhoneMode(uint8_t mode);
 
 			/**
 			* @brief getNvItem

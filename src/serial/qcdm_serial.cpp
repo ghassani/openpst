@@ -78,9 +78,13 @@ int QcdmSerial::send16Password(const char* password)
 		return DIAG_CMD_PORT_CLOSED;
 	}
 
+    long data = std::stoul(password, nullptr, 16);
+
+    data = __builtin_bswap64(data);
+
 	qcdm_16pw_tx_t packet;
 	packet.command = DIAG_PASSWORD_F;
-	memcpy(&packet.password, password, 16);
+    memcpy(&packet.password, &data, sizeof(data));
 
 	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
@@ -99,6 +103,41 @@ int QcdmSerial::send16Password(const char* password)
 	qcdm_16pw_rx_t* rxPacket = (qcdm_16pw_rx_t*)buffer;
 
 	return rxPacket->status;
+}
+
+/**
+* @brief sendQcdmPhoneMode
+* @param mode - DIAG_PHONE_MODE
+* @return
+*/
+int QcdmSerial::sendQcdmPhoneMode(uint8_t mode)
+{
+    if (!isOpen()) {
+        return DIAG_CMD_PORT_CLOSED;
+    }
+
+    qcdm_phone_mode_tx_t packet;
+    packet.command = DIAG_CONTROL_F;
+    packet.mode = mode;
+    packet.space = 0x0;
+
+    lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+
+    if (!lastTxSize) {
+        printf("Attempted to write to device but 0 bytes were written\n");
+        return DIAG_CMD_TX_FAIL;
+    }
+
+    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+
+    if (!lastRxSize) {
+        printf("Device did not respond\n");
+        return DIAG_CMD_RX_FAIL;
+    }
+
+    qcdm_phone_mode_rx_t* rxPacket = (qcdm_phone_mode_rx_t*)buffer;
+
+    return rxPacket->status;
 }
 
 /**
@@ -155,7 +194,13 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
 	memset(&packet, 0, sizeof(packet));
 	packet.cmd = DIAG_NV_WRITE_F;
 	packet.nvItem = itemId;
-	memcpy(&packet.data, data, length);
+
+    if (itemId != NV_MEID_I) {
+        memcpy(&packet.data, data, length);
+    } else {
+        long newData = std::stoul(data, nullptr, 16);
+        memcpy(&packet.data, &newData, sizeof(newData));
+    }
 
 	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 

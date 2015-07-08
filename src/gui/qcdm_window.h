@@ -40,11 +40,14 @@ public slots:
     void SecuritySendSpc();
 	void SecuritySend16Password();
 	void nvReadGetMeid();
+    void nvWriteSetMeid();
 	void nvReadGetImei();
 	void nvReadGetSpc();
 	void nvWriteSetSpc();
 	void nvReadGetSubscription();
 	void nvWriteSetSubscription();
+
+    void sendQcdmPhoneMode();
 
 	void decSpcTextChanged(QString value);
 
