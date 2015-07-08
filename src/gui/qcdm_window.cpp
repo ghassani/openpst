@@ -59,11 +59,6 @@ QcdmWindow::~QcdmWindow()
  */
 void QcdmWindow::UpdatePortList()
 {
-    if (port.isOpen()) {
-        log(LOGTYPE_WARNING, "Port is currently open. Disconnect before Refresh...");
-        return;
-    }
-
     std::vector<serial::PortInfo> devices = serial::list_ports();
     std::vector<serial::PortInfo>::iterator iter = devices.begin();
 
@@ -171,11 +166,6 @@ void QcdmWindow::DisconnectPort()
  */
 void QcdmWindow::SecuritySendSpc()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->securitySpcValue->text().length() != 6) {
         log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
         return;
@@ -201,11 +191,6 @@ void QcdmWindow::SecuritySendSpc()
 */
 void QcdmWindow::SecuritySend16Password()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->security16PasswordValue->text().length() != 16) {
         log(LOGTYPE_WARNING, "Enter a Valid 16 Digit Password");
         return;
@@ -231,11 +216,6 @@ void QcdmWindow::SecuritySend16Password()
 */
 void QcdmWindow::sendQcdmPhoneMode()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     int result = port.sendQcdmPhoneMode((uint8_t)ui->qcdmPhoneModeValue->currentIndex());
 
     if (result == MODE_RESET_F) {
@@ -254,11 +234,6 @@ void QcdmWindow::sendQcdmPhoneMode()
 */
 void QcdmWindow::nvReadGetMeid()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->hexMeidValue->text().length() != 0) {
         ui->hexMeidValue->setText("");
     }
@@ -292,11 +267,6 @@ void QcdmWindow::nvReadGetMeid()
 */
 void QcdmWindow::nvWriteSetMeid()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->hexMeidValue->text().length() != 14) {
         log(LOGTYPE_WARNING, "Enter a Valid 14 Character MEID");
     }
@@ -318,11 +288,6 @@ void QcdmWindow::nvWriteSetMeid()
 void QcdmWindow::nvReadGetImei()
 
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->imeiValue->text().length() != 0) {
         ui->imeiValue->setText("");
     }
@@ -360,11 +325,6 @@ void QcdmWindow::nvReadGetImei()
 */
 void QcdmWindow::nvReadGetSpc()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->hexSpcValue->text().length() != 0 || ui->readSpcValue->text().length() != 0) {
         ui->hexSpcValue->setText("");
         ui->readSpcValue->setText("");
@@ -414,11 +374,6 @@ void QcdmWindow::nvReadGetSpc()
 */
 void QcdmWindow::nvWriteSetSpc()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     if (ui->readSpcValue->text().length() != 6) {
         log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
         return;
@@ -437,11 +392,6 @@ void QcdmWindow::nvWriteSetSpc()
 
 void QcdmWindow::nvReadGetSubscription()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     uint8_t* response = NULL;
 
     int result = port.getNvItem(NV_RTRE_CONFIG_I, &response);
@@ -476,11 +426,6 @@ void QcdmWindow::nvReadGetSubscription()
 
 void QcdmWindow::nvWriteSetSubscription()
 {
-    if (!port.isOpen()) {
-        log(LOGTYPE_WARNING, "Connect to a Port First");
-        return;
-    }
-
     uint8_t* response = NULL;
 
     int index = ui->SubscriptionValue->currentIndex();
