@@ -23,6 +23,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 
     ui->readSpcValue->setInputMask("999999");
     ui->hexMeidValue->setInputMask("HHHHHHHHHHHHHH");
+    ui->imeiValue->setInputMask("999999999999999");
 
     QObject::connect(ui->portListRefreshButton,        SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
@@ -72,10 +73,14 @@ void QcdmWindow::UpdatePortList()
 
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
-        ui->portList->addItem(device.description.c_str(), device.port.c_str());
+
+        QString item = device.port.c_str();
+        item.append(" - ").append(device.description.c_str());
+
+        ui->portList->addItem(item, device.port.c_str());
 
 		QString logMsg = "Found ";
-		logMsg.append(device.hardware_id.c_str()).append(" on port ").append(device.port.c_str());
+        logMsg.append(device.hardware_id.c_str()).append(" on ").append(device.port.c_str());
 
         if (device.description.length()) {
             logMsg.append(" - ").append(device.description.c_str());
@@ -99,6 +104,7 @@ void QcdmWindow::ConnectToPort()
 
     std::vector<serial::PortInfo> devices = serial::list_ports();
     std::vector<serial::PortInfo>::iterator iter = devices.begin();
+
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
         if (selected.compare(device.port.c_str(), Qt::CaseInsensitive) == 0) {
@@ -122,6 +128,11 @@ void QcdmWindow::ConnectToPort()
         if (!port.isOpen()){
             port.open();
 
+            ui->portConnectButton->setEnabled(false);
+            ui->portDisconnectButton->setEnabled(true);
+            ui->portListRefreshButton->setEnabled(false);
+            ui->portList->setEnabled(false);
+
 			QString connectedText = "Connected to ";
 			connectedText.append(currentPort.port.c_str());
 			log(LOGTYPE_INFO, connectedText);
@@ -144,9 +155,12 @@ void QcdmWindow::DisconnectPort()
 		log(LOGTYPE_INFO, closeText);
 
         port.close();
-    }
 
-    //ui->portDisconnectButton->setEnabled(false);
+        ui->portConnectButton->setEnabled(true);
+        ui->portDisconnectButton->setEnabled(false);
+        ui->portListRefreshButton->setEnabled(true);
+        ui->portList->setEnabled(true);
+    }
 }
 
 
