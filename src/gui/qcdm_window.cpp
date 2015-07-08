@@ -163,8 +163,6 @@ void QcdmWindow::DisconnectPort()
     }
 }
 
-
-
 /**
  * @brief QcdmWindow::SecuritySendSpc
  */
@@ -188,11 +186,11 @@ void QcdmWindow::SecuritySendSpc()
     }
 	
 	if (result == DIAG_SPC_REJECT) {
-        log(LOGTYPE_ERROR, "SPC Not Accepted");
+        log(LOGTYPE_ERROR, "SPC Not Accepted: " + ui->securitySpcValue->text());
         return;
     }
 
-    log(LOGTYPE_INFO, "SPC Accepted");
+    log(LOGTYPE_INFO, "SPC Accepted: " + ui->securitySpcValue->text());
 }
 
 /**
@@ -213,16 +211,16 @@ void QcdmWindow::SecuritySend16Password()
 	int result = port.send16Password(ui->security16PasswordValue->text().toStdString().c_str());
 
 	if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
-		log(LOGTYPE_ERROR, "Error Sending SPC");
+        log(LOGTYPE_ERROR, "Error Sending Password");
 		return;
 	}
 
 	if (result == DIAG_PASSWORD_REJECT) {
-		log(LOGTYPE_ERROR, "16 Digit Password Not Accepted");
+        log(LOGTYPE_ERROR, "Password Not Accepted: " + ui->security16PasswordValue->text());
 		return;
 	}
 
-	log(LOGTYPE_INFO, "16 Digit Password Accepted");
+    log(LOGTYPE_INFO, "Password Accepted: " + ui->security16PasswordValue->text());
 }
 
 /**
@@ -242,9 +240,9 @@ void QcdmWindow::sendQcdmPhoneMode()
     }
 
     if (result == (uint8_t)ui->qcdmPhoneModeValue->currentIndex()){
-        log(LOGTYPE_INFO, "Send QCDM Phone Mode Success");
+        log(LOGTYPE_INFO, "Send QCDM Phone Mode Success: " + ui->qcdmPhoneModeValue->currentText());
     } else {
-        log(LOGTYPE_INFO, "Send QCDM Phone Mode Failure");
+        log(LOGTYPE_INFO, "Send QCDM Phone Mode Failure: " + ui->qcdmPhoneModeValue->currentText());
     }
 }
 
@@ -266,13 +264,12 @@ void QcdmWindow::nvReadGetMeid()
 
 	int result = port.getNvItem(NV_MEID_I, &response);
 
-	if (result == DIAG_NV_READ_F){
-		int p;
+    if (result == DIAG_NV_READ_F){
 		QString meidValue, tmp;
 
 		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-		for (p = 6; p >= 0; p--) {
+        for (int p = 6; p >= 0; p--) {
 			tmp.sprintf("%02x", rxPacket->data[p]);
 			meidValue.append(tmp);
 		}
@@ -331,13 +328,12 @@ void QcdmWindow::nvReadGetImei()
 
 	int result = port.getNvItem(NV_UE_IMEI_I, &response);
 
-	if (result == DIAG_NV_READ_F) {
-		int p;
+    if (result == DIAG_NV_READ_F) {
 		QString imeiValue, tmp;
 
 		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-		for (p = 1; p <= 8; p++) {
+        for (int p = 1; p <= 8; p++) {
 			tmp.sprintf("%02x", rxPacket->data[p]);
 			imeiValue.append(tmp);
 		}
@@ -366,7 +362,7 @@ void QcdmWindow::nvReadGetSpc()
 		return;
 	}
 
-	if (ui->hexSpcValue->text().length() != 0 || ui->readSpcValue->text().length() != 0) {
+    if (ui->hexSpcValue->text().length() != 0 || ui->readSpcValue->text().length() != 0) {
 		ui->hexSpcValue->setText("");
 		ui->readSpcValue->setText("");
 	}
@@ -397,20 +393,11 @@ void QcdmWindow::nvReadGetSpc()
 		break;
 	}
 
-	if (result == DIAG_NV_READ_F){
-		int p;
-		QString hexSpcValue, tmp;
-
+    if (result == DIAG_NV_READ_F){
 		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
-
-		for (p = 0; p <= 5; p++) {
-			tmp.sprintf("%02x", rxPacket->data[p]);
-			hexSpcValue.append(tmp);
-		}
 
 		QString readSpcValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 5));
 
-		ui->hexSpcValue->setText(hexSpcValue);
 		ui->readSpcValue->setText(readSpcValue);
 
 		log(LOGTYPE_INFO, "Read Success - SPC: " + readSpcValue);
@@ -529,10 +516,9 @@ void QcdmWindow::nvWriteSetSubscription()
 void QcdmWindow::decSpcTextChanged(QString value)
 {
 	if (value.length() == 6) {
-		QString result, tmp;
-		int i;
+        QString result, tmp;
 
-		for (i = 0; i < value.length(); i++) {
+        for (int i = 0; i < value.length(); i++) {
 			tmp.sprintf("%02x", value.toStdString().c_str()[i]);
 			result.append(tmp);
 		}
@@ -541,14 +527,12 @@ void QcdmWindow::decSpcTextChanged(QString value)
 	}
 }
 
-
 /**
  * @brief QcdmWindow::log
  * @param message
  */
 void QcdmWindow::log(int type, const char* message)
 {
-	//ui->log->appendPlainText(message);
 	QString newMessage = message;
 	log(type, newMessage);
 }
@@ -558,7 +542,6 @@ void QcdmWindow::log(int type, const char* message)
  */
 void QcdmWindow::log(int type, std::string message)
 {
-    //ui->log->appendPlainText(message.c_str());
 	QString newMessage = message.c_str();
 	log(type, newMessage);
 }
@@ -570,24 +553,24 @@ void QcdmWindow::log(int type, std::string message)
  */
 void QcdmWindow::log(int type, QString message)
 {
-	QString logColorDebug = "<font color=\"gray\">";
-	QString logColorError = "<font color=\"red\">";
-	QString logColorInfo = "<font color=\"green\">";
-	QString logColorWarning = "<font color=\"orange\">";
-	QString logColorSuffix = "</font>";
+    QString suffix = "</font>";
 
 	switch (type) {
 	case 0:
-		message = logColorDebug.append(message).append(logColorSuffix);
+        message = message.prepend("<font color=\"gray\">");
+        message = message.append(suffix);
 		break;
 	case -1:
-		message = logColorError.append(message).append(logColorSuffix);
+        message = message.prepend("<font color=\"red\">");
+        message = message.append(suffix);
 		break;
 	case 1:
-		message = logColorInfo.append(message).append(logColorSuffix);
+        message = message.prepend("<font color=\"green\">");
+        message = message.append(suffix);
 		break;
 	case 2:
-		message = logColorWarning.append(message).append(logColorSuffix);
+        message = message.prepend("<font color=\"orange\">");
+        message = message.append(suffix);
 		break;
 	}
 
