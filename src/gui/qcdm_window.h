@@ -37,6 +37,8 @@ public slots:
     void UpdatePortList();
     void ConnectToPort();
     void DisconnectPort();
+    void DisableUiButtons();
+    void EnableUiButtons();
     void SecuritySendSpc();
 	void SecuritySend16Password();
 	void nvReadGetMeid();

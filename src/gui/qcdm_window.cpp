@@ -19,6 +19,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    DisableUiButtons();
     UpdatePortList();
 
     ui->readSpcValue->setInputMask("999999");
@@ -132,6 +133,7 @@ void QcdmWindow::ConnectToPort()
             ui->portDisconnectButton->setEnabled(true);
             ui->portListRefreshButton->setEnabled(false);
             ui->portList->setEnabled(false);
+            EnableUiButtons();
 
 			QString connectedText = "Connected to ";
 			connectedText.append(currentPort.port.c_str());
@@ -160,6 +162,7 @@ void QcdmWindow::DisconnectPort()
         ui->portDisconnectButton->setEnabled(false);
         ui->portListRefreshButton->setEnabled(true);
         ui->portList->setEnabled(true);
+        DisableUiButtons();
     }
 }
 
@@ -525,6 +528,34 @@ void QcdmWindow::decSpcTextChanged(QString value)
 
 		ui->hexSpcValue->setText(result);
 	}
+}
+
+void QcdmWindow::DisableUiButtons() {
+    ui->readSpcButton->setEnabled(false);
+    ui->readMeidButton->setEnabled(false);
+    ui->readImeiButton->setEnabled(false);
+    ui->writeSpcButton->setEnabled(false);
+    ui->writeMeidButton->setEnabled(false);
+    ui->writeImeiButton->setEnabled(false);
+    ui->readSubscriptionButton->setEnabled(false);
+    ui->writeSubscriptionButton->setEnabled(false);
+    ui->sendQcdmPhoneModeButton->setEnabled(false);
+    ui->securitySendSpcButton->setEnabled(false);
+    ui->securitySend16PasswordButton->setEnabled(false);
+}
+
+void QcdmWindow::EnableUiButtons() {
+    ui->readSpcButton->setEnabled(true);
+    ui->readMeidButton->setEnabled(true);
+    ui->readImeiButton->setEnabled(true);
+    ui->writeSpcButton->setEnabled(true);
+    ui->writeMeidButton->setEnabled(true);
+    ui->writeImeiButton->setEnabled(true);
+    ui->readSubscriptionButton->setEnabled(true);
+    ui->writeSubscriptionButton->setEnabled(true);
+    ui->sendQcdmPhoneModeButton->setEnabled(true);
+    ui->securitySendSpcButton->setEnabled(true);
+    ui->securitySend16PasswordButton->setEnabled(true);
 }
 
 /**
