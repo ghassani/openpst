@@ -15,7 +15,10 @@
 #include "include/definitions.h"
 #include <iostream>
 #include <stdio.h>
+
+#ifdef QT_CORE_LIB
 #include <QVariant>
+#endif
 
 #define hexdump_tx(data, amount) \
    printf("Dumping %lu bytes written\n", amount); \
@@ -34,6 +37,8 @@ const char hex_trans[] =
 
 void hexdump(unsigned char *data, unsigned int amount);
 
+#ifdef QT_CORE_LIB
 void hexdump(unsigned char *data, unsigned int amount, QString& out);
+#endif
 
 #endif

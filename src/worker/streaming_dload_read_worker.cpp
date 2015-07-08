@@ -25,6 +25,7 @@ StreamingDloadReadWorker::~StreamingDloadReadWorker()
 {
 
 }
+
 void StreamingDloadReadWorker::cancel()
 {
 	cancelled = true;
