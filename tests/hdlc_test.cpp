@@ -1,9 +1,7 @@
 #include "include/definitions.h"
 #include "qc/hdlc.h"
 #include "util/hexdump.h"
-#include <vector>
-#include <iostream>
-#include <stdio.h>
+
 
 using namespace std;
 
@@ -250,13 +248,13 @@ int main() {
 	test_basic();
 	test_escape();
 	test_unescape(); 
-	/*
+	
 	printf("\n\n------------\nStarting Vector Tests\n------------\n\n");
 	test_vector_basic();
 	test_vector_escape();
 	test_vector_unescape();
 
-	*/
+	
 	cout << "\n\nPress Enter To Exit" << endl;
 	int pause = getchar();
 	return 0;
