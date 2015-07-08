@@ -31,20 +31,20 @@
 #endif
 
 enum DIAG_PASSWORD_STATUS {
-	DIAG_PASSWORD_REJECT = 0x0,
-	DIAG_PASSWORD_ACCEPT = 0x1
+    DIAG_PASSWORD_REJECT = 0x0,
+    DIAG_PASSWORD_ACCEPT = 0x1
 };
 
 enum DIAG_SPC_STATUS {
-	DIAG_SPC_REJECT = 0x0,
-	DIAG_SPC_ACCEPT = 0x1
+    DIAG_SPC_REJECT = 0x0,
+    DIAG_SPC_ACCEPT = 0x1
 };
 
 enum DIAG_CMD_STATUS {
-	DIAG_CMD_GENERAL_FAIL = -1,
-	DIAG_CMD_PORT_CLOSED = -2,
-	DIAG_CMD_RX_FAIL = -3,
-	DIAG_CMD_TX_FAIL = -4
+    DIAG_CMD_GENERAL_FAIL = -1,
+    DIAG_CMD_PORT_CLOSED = -2,
+    DIAG_CMD_RX_FAIL = -3,
+    DIAG_CMD_TX_FAIL = -4
 };
 
 enum DIAG_COMMAND {
@@ -66,11 +66,11 @@ enum DIAG_COMMAND {
     DIAG_LOG_F = 0x10,
     DIAG_NV_PEEK_F = 0x11,
     DIAG_NV_POKE_F = 0x12,
-	DIAG_BAD_CMD_F = 0x13,
+    DIAG_BAD_CMD_F = 0x13,
     DIAG_BAD_PARM_F = 0x14,
-	DIAG_BAD_LEN_F = 0x15,
+    DIAG_BAD_LEN_F = 0x15,
     DIAG_BAD_DEV_F = 0x16,
-	DIAG_BAD_MODE_F = 0x18,
+    DIAG_BAD_MODE_F = 0x18,
     DIAG_TAGRAPH_F = 0x19,
     DIAG_MARKOV_F = 0x1A,
     DIAG_MARKOV_RESET_F = 0x1B,
@@ -84,7 +84,7 @@ enum DIAG_COMMAND {
     DIAG_PARM_SET_F = 0x24,
     DIAG_NV_READ_F = 0x26,
     DIAG_NV_WRITE_F = 0x27,
-	DIAG_CONTROL_F = 0x29,
+    DIAG_CONTROL_F = 0x29,
     DIAG_ERR_READ_F = 0x2A,
     DIAG_ERR_CLEAR_F = 0x2B,
     DIAG_SER_RESET_F = 0x2C,
@@ -157,7 +157,7 @@ enum DIAG_COMMAND {
     DIAG_EXT_MSG_CONFIG_F = 0x7D,
     DIAG_EXT_MSG_TERSE_F = 0x7E,
     DIAG_SUBSYS_CMD_VER_2_F = 0x80,
-	DIAG_EVENT_MASK_GET_F = 0x81,
+    DIAG_EVENT_MASK_GET_F = 0x81,
     DIAG_EVENT_MASK_SET_F = 0x82,
     DIAG_CHANGE_PORT_SETTINGS = 0x8C,
     DIAG_CNTRY_INFO_F = 0x8D,
@@ -209,10 +209,10 @@ enum DIAG_PHONE_MODE {
 };
 
 enum DIAG_RTRE_MODE {
-	RTRE_MODE_RUIM_ONLY = 0x0,
-	RTRE_MODE_NV_ONLY = 0x1,
-	RTRE_MODE_RUIM_PREF = 0x2,
-	RTRE_MODE_GSM_1X = 0x3
+    RTRE_MODE_RUIM_ONLY = 0x0,
+    RTRE_MODE_NV_ONLY = 0x1,
+    RTRE_MODE_RUIM_PREF = 0x2,
+    RTRE_MODE_GSM_1X = 0x3
 };
 
 PACKED(typedef struct qcdm_phone_mode_tx_t{
@@ -237,19 +237,19 @@ PACKED(typedef struct qcdm_spc_rx_t{
 }) qcdm_spc_rx_t;
 
 PACKED(typedef struct{
-	uint8_t command;
+    uint8_t command;
     uint8_t password[8];
 }) qcdm_16pw_tx_t;
 
 PACKED(typedef struct {
-	uint8_t command;
-	uint8_t status;
+    uint8_t command;
+    uint8_t status;
 }) qcdm_16pw_rx_t;
 
 PACKED(typedef struct {
-	uint8_t cmd;
-	uint16_t nvItem;
-	uint8_t data[DIAG_NV_ITEM_SIZE];
+    uint8_t cmd;
+    uint16_t nvItem;
+    uint8_t data[DIAG_NV_ITEM_SIZE];
 }) qcdm_nv_tx_t;
 
 PACKED(typedef struct {
