@@ -64,7 +64,7 @@ namespace openpst {
 			* @param response -
 			* @return
 			*/
-			int setNvItem(int itemId, const char *data, int length, uint8_t** response);
+            int setNvItem(int itemId, const char* data, int length, uint8_t** response);
 
 			/**
 			* @brief sendHtcNvUnlock
@@ -87,7 +87,7 @@ namespace openpst {
 			*/
 			int getLgSpc(uint8_t** response);
 
-			std::string transformHexToString(const char *input, int length);
+            std::string transformHexToString(const char* input, int length);
 
             uint8_t buffer[DIAG_MAX_RX_PKT_SIZ];
             size_t lastRxSize,
