@@ -425,9 +425,7 @@ void QcdmWindow::nvWriteSetSpc()
 	int result = port.setNvItem(NV_SEC_CODE_I, ui->readSpcValue->text().toStdString().c_str(), 6, &response);
 
 	if (result == DIAG_NV_WRITE_F) {
-		log(LOGTYPE_INFO, "Write Success - SPC: " + ui->readSpcValue->text());
-
-		nvReadGetSpc(); // Remove after hooking onTextChanged
+        log(LOGTYPE_INFO, "Write Success - SPC: " + ui->readSpcValue->text());
 	} else {
 		log(LOGTYPE_ERROR, "Write Failure - SPC");
 	}
