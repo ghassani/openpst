@@ -27,7 +27,7 @@ class QcdmWindow;
 
 class QcdmWindow : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     explicit QcdmWindow(QWidget *parent = 0);
@@ -40,32 +40,32 @@ public slots:
     void DisableUiButtons();
     void EnableUiButtons();
     void SecuritySendSpc();
-	void SecuritySend16Password();
-	void nvReadGetMeid();
+    void SecuritySend16Password();
+    void nvReadGetMeid();
     void nvWriteSetMeid();
-	void nvReadGetImei();
-	void nvReadGetSpc();
-	void nvWriteSetSpc();
-	void nvReadGetSubscription();
-	void nvWriteSetSubscription();
+    void nvReadGetImei();
+    void nvReadGetSpc();
+    void nvWriteSetSpc();
+    void nvReadGetSubscription();
+    void nvWriteSetSubscription();
 
     void sendQcdmPhoneMode();
 
-	void decSpcTextChanged(QString value);
+    void decSpcTextChanged(QString value);
 
 private:
-	void log(int type, const char* message);
-	void log(int type, std::string message);
+    void log(int type, const char* message);
+    void log(int type, std::string message);
     void log(int type, QString message);
 
     Ui::QcdmWindow *ui;
     openpst::QcdmSerial port;
     serial::PortInfo currentPort;
 
-	int LOGTYPE_DEBUG = 0;
-	int LOGTYPE_ERROR = -1;
-	int LOGTYPE_INFO = 1;
-	int LOGTYPE_WARNING = 2;
+    int LOGTYPE_DEBUG = 0;
+    int LOGTYPE_ERROR = -1;
+    int LOGTYPE_INFO = 1;
+    int LOGTYPE_WARNING = 2;
 
 };
 
