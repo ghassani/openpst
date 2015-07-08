@@ -31,17 +31,17 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
     QObject::connect(ui->securitySendSpcButton,        SIGNAL(clicked()), this, SLOT(SecuritySendSpc()));
     QObject::connect(ui->securitySend16PasswordButton, SIGNAL(clicked()), this, SLOT(SecuritySend16Password()));
-	QObject::connect(ui->readMeidButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetMeid()));
+    QObject::connect(ui->readMeidButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetMeid()));
     QObject::connect(ui->writeMeidButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetMeid()));
-	QObject::connect(ui->readImeiButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetImei()));
-	QObject::connect(ui->readSpcButton,				   SIGNAL(clicked()), this, SLOT(nvReadGetSpc()));
-	QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
-	QObject::connect(ui->readSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvReadGetSubscription()));
-	QObject::connect(ui->writeSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvWriteSetSubscription()));
+    QObject::connect(ui->readImeiButton,			   SIGNAL(clicked()), this, SLOT(nvReadGetImei()));
+    QObject::connect(ui->readSpcButton,				   SIGNAL(clicked()), this, SLOT(nvReadGetSpc()));
+    QObject::connect(ui->writeSpcButton,			   SIGNAL(clicked()), this, SLOT(nvWriteSetSpc()));
+    QObject::connect(ui->readSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvReadGetSubscription()));
+    QObject::connect(ui->writeSubscriptionButton,	   SIGNAL(clicked()), this, SLOT(nvWriteSetSubscription()));
 
     QObject::connect(ui->sendQcdmPhoneModeButton, SIGNAL(clicked()), this, SLOT(sendQcdmPhoneMode()));
 
-	QObject::connect(ui->readSpcValue, SIGNAL(textChanged(QString)), this, SLOT(decSpcTextChanged(QString)));
+    QObject::connect(ui->readSpcValue, SIGNAL(textChanged(QString)), this, SLOT(decSpcTextChanged(QString)));
 }
 
 /**
@@ -80,7 +80,7 @@ void QcdmWindow::UpdatePortList()
 
         ui->portList->addItem(item, device.port.c_str());
 
-		QString logMsg = "Found ";
+        QString logMsg = "Found ";
         logMsg.append(device.hardware_id.c_str()).append(" on ").append(device.port.c_str());
 
         if (device.description.length()) {
@@ -135,13 +135,13 @@ void QcdmWindow::ConnectToPort()
             ui->portList->setEnabled(false);
             EnableUiButtons();
 
-			QString connectedText = "Connected to ";
-			connectedText.append(currentPort.port.c_str());
-			log(LOGTYPE_INFO, connectedText);
+            QString connectedText = "Connected to ";
+            connectedText.append(currentPort.port.c_str());
+            log(LOGTYPE_INFO, connectedText);
         }
     } catch(serial::IOException e) {
         log(LOGTYPE_ERROR, "Error Connecting To Serial Port");
-		log(LOGTYPE_ERROR, e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
+        log(LOGTYPE_ERROR, e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
         return;
     }
 }
@@ -152,9 +152,9 @@ void QcdmWindow::ConnectToPort()
 void QcdmWindow::DisconnectPort()
 {
     if (port.isOpen()) {
-		QString closeText = "Disconnected from ";
-		closeText.append(currentPort.port.c_str());
-		log(LOGTYPE_INFO, closeText);
+        QString closeText = "Disconnected from ";
+        closeText.append(currentPort.port.c_str());
+        log(LOGTYPE_INFO, closeText);
 
         port.close();
 
@@ -183,12 +183,12 @@ void QcdmWindow::SecuritySendSpc()
 
     int result = port.sendSpc(ui->securitySpcValue->text().toStdString().c_str());
 
-	if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
+    if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
         log(LOGTYPE_ERROR, "Error Sending SPC");
         return;
     }
-	
-	if (result == DIAG_SPC_REJECT) {
+
+    if (result == DIAG_SPC_REJECT) {
         log(LOGTYPE_ERROR, "SPC Not Accepted: " + ui->securitySpcValue->text());
         return;
     }
@@ -201,27 +201,27 @@ void QcdmWindow::SecuritySendSpc()
 */
 void QcdmWindow::SecuritySend16Password()
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
-	if (ui->security16PasswordValue->text().length() != 16) {
-		log(LOGTYPE_WARNING, "Enter a Valid 16 Digit Password");
-		return;
-	}
+    if (ui->security16PasswordValue->text().length() != 16) {
+        log(LOGTYPE_WARNING, "Enter a Valid 16 Digit Password");
+        return;
+    }
 
-	int result = port.send16Password(ui->security16PasswordValue->text().toStdString().c_str());
+    int result = port.send16Password(ui->security16PasswordValue->text().toStdString().c_str());
 
-	if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
+    if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
         log(LOGTYPE_ERROR, "Error Sending Password");
-		return;
-	}
+        return;
+    }
 
-	if (result == DIAG_PASSWORD_REJECT) {
+    if (result == DIAG_PASSWORD_REJECT) {
         log(LOGTYPE_ERROR, "Password Not Accepted: " + ui->security16PasswordValue->text());
-		return;
-	}
+        return;
+    }
 
     log(LOGTYPE_INFO, "Password Accepted: " + ui->security16PasswordValue->text());
 }
@@ -252,39 +252,39 @@ void QcdmWindow::sendQcdmPhoneMode()
 /**
 * @brief QcdmWindow::nvReadGetMeid
 */
-void QcdmWindow::nvReadGetMeid() 
+void QcdmWindow::nvReadGetMeid()
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
-	if (ui->hexMeidValue->text().length() != 0) {
-		ui->hexMeidValue->setText("");
-	}
+    if (ui->hexMeidValue->text().length() != 0) {
+        ui->hexMeidValue->setText("");
+    }
 
-	uint8_t* response = NULL;
+    uint8_t* response = NULL;
 
-	int result = port.getNvItem(NV_MEID_I, &response);
+    int result = port.getNvItem(NV_MEID_I, &response);
 
     if (result == DIAG_NV_READ_F){
-		QString meidValue, tmp;
+        QString meidValue, tmp;
 
-		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
         for (int p = 6; p >= 0; p--) {
-			tmp.sprintf("%02x", rxPacket->data[p]);
-			meidValue.append(tmp);
-		}
+            tmp.sprintf("%02x", rxPacket->data[p]);
+            meidValue.append(tmp);
+        }
 
-		meidValue = meidValue.toUpper();
+        meidValue = meidValue.toUpper();
 
-		ui->hexMeidValue->setText(meidValue);
+        ui->hexMeidValue->setText(meidValue);
 
-		log(LOGTYPE_INFO, "Read Success - MEID: " + meidValue);
-	} else {
-		log(LOGTYPE_ERROR, "Read Failure - MEID");
-	}
+        log(LOGTYPE_INFO, "Read Success - MEID: " + meidValue);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - MEID");
+    }
 }
 
 /**
@@ -315,44 +315,44 @@ void QcdmWindow::nvWriteSetMeid()
 /**
 * @brief QcdmWindow::nvReadGetImei
 */
-void QcdmWindow::nvReadGetImei() 
+void QcdmWindow::nvReadGetImei()
 
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
-	if (ui->imeiValue->text().length() != 0) {
-		ui->imeiValue->setText("");
-	}
+    if (ui->imeiValue->text().length() != 0) {
+        ui->imeiValue->setText("");
+    }
 
-	uint8_t* response = NULL;
+    uint8_t* response = NULL;
 
-	int result = port.getNvItem(NV_UE_IMEI_I, &response);
+    int result = port.getNvItem(NV_UE_IMEI_I, &response);
 
     if (result == DIAG_NV_READ_F) {
-		QString imeiValue, tmp;
+        QString imeiValue, tmp;
 
-		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
         for (int p = 1; p <= 8; p++) {
-			tmp.sprintf("%02x", rxPacket->data[p]);
-			imeiValue.append(tmp);
-		}
+            tmp.sprintf("%02x", rxPacket->data[p]);
+            imeiValue.append(tmp);
+        }
 
-		imeiValue = imeiValue.remove("a");
+        imeiValue = imeiValue.remove("a");
 
-		if (imeiValue != "0000000000000000") {
-			ui->imeiValue->setText(imeiValue);
+        if (imeiValue != "0000000000000000") {
+            ui->imeiValue->setText(imeiValue);
 
-			log(LOGTYPE_INFO, "Read Success - IMEI: " + imeiValue);
-		} else {
-			log(LOGTYPE_ERROR, "Read Failure - IMEI");
-		}
-	} else {
-		log(LOGTYPE_ERROR, "Read Failure - IMEI");
-	}
+            log(LOGTYPE_INFO, "Read Success - IMEI: " + imeiValue);
+        } else {
+            log(LOGTYPE_ERROR, "Read Failure - IMEI");
+        }
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - IMEI");
+    }
 }
 
 /**
@@ -360,53 +360,53 @@ void QcdmWindow::nvReadGetImei()
 */
 void QcdmWindow::nvReadGetSpc()
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
     if (ui->hexSpcValue->text().length() != 0 || ui->readSpcValue->text().length() != 0) {
-		ui->hexSpcValue->setText("");
-		ui->readSpcValue->setText("");
-	}
+        ui->hexSpcValue->setText("");
+        ui->readSpcValue->setText("");
+    }
 
-	uint8_t* response = NULL;
+    uint8_t* response = NULL;
 
-	int result = 0;
+    int result = 0;
 
-	switch (ui->readSpcMethod->currentData().toInt()) {
-	case 0:
-		result = port.getNvItem(NV_SEC_CODE_I, &response);
-		break;
-	case 1:
-		// EFS Method
+    switch (ui->readSpcMethod->currentData().toInt()) {
+    case 0:
+        result = port.getNvItem(NV_SEC_CODE_I, &response);
+        break;
+    case 1:
+        // EFS Method
 
-		break;
-	case 2:
-		port.sendHtcNvUnlock(&response); // HTC Method
-		result = port.getNvItem(NV_SEC_CODE_I, &response);
-		break;
-	case 3:
-		port.sendLgNvUnlock(&response); // LG Method
-		result = port.getLgSpc(&response);
-		break;
-	case 4:
-		// Samsung Method
+        break;
+    case 2:
+        port.sendHtcNvUnlock(&response); // HTC Method
+        result = port.getNvItem(NV_SEC_CODE_I, &response);
+        break;
+    case 3:
+        port.sendLgNvUnlock(&response); // LG Method
+        result = port.getLgSpc(&response);
+        break;
+    case 4:
+        // Samsung Method
 
-		break;
-	}
+        break;
+    }
 
     if (result == DIAG_NV_READ_F){
-		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-		QString readSpcValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 5));
+        QString readSpcValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 5));
 
-		ui->readSpcValue->setText(readSpcValue);
+        ui->readSpcValue->setText(readSpcValue);
 
-		log(LOGTYPE_INFO, "Read Success - SPC: " + readSpcValue);
-	} else {
-		log(LOGTYPE_ERROR, "Read Failure - SPC");
-	}
+        log(LOGTYPE_INFO, "Read Success - SPC: " + readSpcValue);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - SPC");
+    }
 }
 
 /**
@@ -414,120 +414,120 @@ void QcdmWindow::nvReadGetSpc()
 */
 void QcdmWindow::nvWriteSetSpc()
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
-	if (ui->readSpcValue->text().length() != 6) {
-		log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
-		return;
-	}
+    if (ui->readSpcValue->text().length() != 6) {
+        log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
+        return;
+    }
 
-	uint8_t* response = NULL;
+    uint8_t* response = NULL;
 
-	int result = port.setNvItem(NV_SEC_CODE_I, ui->readSpcValue->text().toStdString().c_str(), 6, &response);
+    int result = port.setNvItem(NV_SEC_CODE_I, ui->readSpcValue->text().toStdString().c_str(), 6, &response);
 
-	if (result == DIAG_NV_WRITE_F) {
+    if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - SPC: " + ui->readSpcValue->text());
-	} else {
-		log(LOGTYPE_ERROR, "Write Failure - SPC");
-	}
+    } else {
+        log(LOGTYPE_ERROR, "Write Failure - SPC");
+    }
 }
 
 void QcdmWindow::nvReadGetSubscription()
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
-	uint8_t* response = NULL;
+    uint8_t* response = NULL;
 
-	int result = port.getNvItem(NV_RTRE_CONFIG_I, &response);
+    int result = port.getNvItem(NV_RTRE_CONFIG_I, &response);
 
-	if (result == DIAG_NV_READ_F) {
-		QString result;
+    if (result == DIAG_NV_READ_F) {
+        QString result;
 
-		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-		ui->SubscriptionValue->setCurrentIndex(rxPacket->data[0]);
+        ui->SubscriptionValue->setCurrentIndex(rxPacket->data[0]);
 
-		switch (rxPacket->data[0]) {
-		case RTRE_MODE_RUIM_ONLY:
-			result = "RUIM_ONLY";
-			break;
-		case RTRE_MODE_NV_ONLY:
-			result = "NV_ONLY";
-			break;
-		case RTRE_MODE_RUIM_PREF:
-			result = "RUIM_PREF";
-			break;
-		case RTRE_MODE_GSM_1X:
-			result = "GSM_1X";
-			break;
-		}
+        switch (rxPacket->data[0]) {
+        case RTRE_MODE_RUIM_ONLY:
+            result = "RUIM_ONLY";
+            break;
+        case RTRE_MODE_NV_ONLY:
+            result = "NV_ONLY";
+            break;
+        case RTRE_MODE_RUIM_PREF:
+            result = "RUIM_PREF";
+            break;
+        case RTRE_MODE_GSM_1X:
+            result = "GSM_1X";
+            break;
+        }
 
-		log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + result);
-	} else {
-		log(LOGTYPE_ERROR, "Read Failure - Subscription Mode");
-	}
+        log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - Subscription Mode");
+    }
 }
 
 void QcdmWindow::nvWriteSetSubscription()
 {
-	if (!port.isOpen()) {
-		log(LOGTYPE_WARNING, "Connect to a Port First");
-		return;
-	}
+    if (!port.isOpen()) {
+        log(LOGTYPE_WARNING, "Connect to a Port First");
+        return;
+    }
 
-	uint8_t* response = NULL;
+    uint8_t* response = NULL;
 
-	int index = ui->SubscriptionValue->currentIndex();
+    int index = ui->SubscriptionValue->currentIndex();
 
-	int result = port.setNvItem(NV_RTRE_CONFIG_I, static_cast<const char *>(static_cast<void*>(&index)), 1, &response);
+    int result = port.setNvItem(NV_RTRE_CONFIG_I, static_cast<const char *>(static_cast<void*>(&index)), 1, &response);
 
-	if (result == DIAG_NV_WRITE_F) {
-		QString result;
+    if (result == DIAG_NV_WRITE_F) {
+        QString result;
 
-		qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-		ui->SubscriptionValue->setCurrentIndex(rxPacket->data[0]);
+        ui->SubscriptionValue->setCurrentIndex(rxPacket->data[0]);
 
-		switch (rxPacket->data[0]) {
-		case RTRE_MODE_RUIM_ONLY:
-			result = "RUIM_ONLY";
-			break;
-		case RTRE_MODE_NV_ONLY:
-			result = "NV_ONLY";
-			break;
-		case RTRE_MODE_RUIM_PREF:
-			result = "RUIM_PREF";
-			break;
-		case RTRE_MODE_GSM_1X:
-			result = "GSM_1X";
-			break;
-		}
+        switch (rxPacket->data[0]) {
+        case RTRE_MODE_RUIM_ONLY:
+            result = "RUIM_ONLY";
+            break;
+        case RTRE_MODE_NV_ONLY:
+            result = "NV_ONLY";
+            break;
+        case RTRE_MODE_RUIM_PREF:
+            result = "RUIM_PREF";
+            break;
+        case RTRE_MODE_GSM_1X:
+            result = "GSM_1X";
+            break;
+        }
 
-		log(LOGTYPE_INFO, "Write Success - Subscription Mode: " + result);
-	}
-	else {
-		log(LOGTYPE_ERROR, "Write Failure - Subscription Mode");
-	}
+        log(LOGTYPE_INFO, "Write Success - Subscription Mode: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Write Failure - Subscription Mode");
+    }
 }
 
 void QcdmWindow::decSpcTextChanged(QString value)
 {
-	if (value.length() == 6) {
+    if (value.length() == 6) {
         QString result, tmp;
 
         for (int i = 0; i < value.length(); i++) {
-			tmp.sprintf("%02x", value.toStdString().c_str()[i]);
-			result.append(tmp);
-		}
+            tmp.sprintf("%02x", value.toStdString().c_str()[i]);
+            result.append(tmp);
+        }
 
-		ui->hexSpcValue->setText(result);
-	}
+        ui->hexSpcValue->setText(result);
+    }
 }
 
 void QcdmWindow::DisableUiButtons() {
@@ -564,8 +564,8 @@ void QcdmWindow::EnableUiButtons() {
  */
 void QcdmWindow::log(int type, const char* message)
 {
-	QString newMessage = message;
-	log(type, newMessage);
+    QString newMessage = message;
+    log(type, newMessage);
 }
 /**
  * @brief QcdmWindow::log
@@ -573,8 +573,8 @@ void QcdmWindow::log(int type, const char* message)
  */
 void QcdmWindow::log(int type, std::string message)
 {
-	QString newMessage = message.c_str();
-	log(type, newMessage);
+    QString newMessage = message.c_str();
+    log(type, newMessage);
 }
 
 /**
@@ -586,25 +586,25 @@ void QcdmWindow::log(int type, QString message)
 {
     QString suffix = "</font>";
 
-	switch (type) {
-	case 0:
+    switch (type) {
+    case 0:
         message = message.prepend("<font color=\"gray\">");
         message = message.append(suffix);
-		break;
-	case -1:
+        break;
+    case -1:
         message = message.prepend("<font color=\"red\">");
         message = message.append(suffix);
-		break;
-	case 1:
+        break;
+    case 1:
         message = message.prepend("<font color=\"green\">");
         message = message.append(suffix);
-		break;
-	case 2:
+        break;
+    case 2:
         message = message.prepend("<font color=\"orange\">");
         message = message.append(suffix);
-		break;
-	}
+        break;
+    }
 
-	ui->log->appendHtml(message);
+    ui->log->appendHtml(message);
 }
 
