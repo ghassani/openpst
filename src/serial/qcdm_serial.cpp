@@ -80,7 +80,11 @@ int QcdmSerial::sendPassword(const char* password)
 
     long data = std::stoul(password, nullptr, 16);
 
-    data = __builtin_bswap64(data);
+    #ifdef _WIN32
+        data = _byteswap_uint64(data);
+    #else
+        data = __builtin_bswap64(data);
+    #endif
 
     qcdm_16pw_tx_t packet;
     packet.command = DIAG_PASSWORD_F;
