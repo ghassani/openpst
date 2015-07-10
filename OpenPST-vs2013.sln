@@ -22,8 +22,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qcdm", "vs2013\qcdm.vcxproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mbn_tool", "vs2013\mbn_tool.vcxproj", "{7A431BDB-0D33-4D68-B56F-B5E264FEB633}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenPST", "vs2013\OpenPST.vcxproj", "{BF3898CE-F571-334F-A632-55A7E68CB7F0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -96,18 +94,6 @@ Global
 		{7A431BDB-0D33-4D68-B56F-B5E264FEB633}.Release|Win32.Build.0 = Release|Win32
 		{7A431BDB-0D33-4D68-B56F-B5E264FEB633}.Release|x64.ActiveCfg = Release|x64
 		{7A431BDB-0D33-4D68-B56F-B5E264FEB633}.Release|x64.Build.0 = Release|x64
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Debug|Win32.Build.0 = Debug|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Debug|x64.ActiveCfg = Debug|x64
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Debug|x64.Build.0 = Debug|x64
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Release|Win32.ActiveCfg = Release|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Release|Win32.Build.0 = Release|Win32
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Release|x64.ActiveCfg = Release|x64
-		{BF3898CE-F571-334F-A632-55A7E68CB7F0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
