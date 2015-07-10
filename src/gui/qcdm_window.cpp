@@ -392,10 +392,6 @@ void QcdmWindow::readNam() {
 
         min1c = (iMin1 & 0x3FF);
         min1c = ((min1c + 1) % 10) + (((((min1c % 100) / 10) + 1) % 10) * 10) + ((((min1c / 100) + 1) % 10) * 100);
-
-        log(LOGTYPE_INFO, "Read Success - MIN1");
-    } else {
-        log(LOGTYPE_ERROR, "Read Failure - MIN1");
     }
 
     response = NULL;
@@ -413,18 +409,18 @@ void QcdmWindow::readNam() {
         iMin2 = strtoul(sMin2.c_str(), nullptr, 16);
 
         min2 = ((iMin2+1) % 10) + (((((iMin2 % 100) / 10) + 1) % 10) * 10) + ((((iMin2 / 100) + 1) % 10) * 100);
-
-        log(LOGTYPE_INFO, "Read Success - MIN2");
-    } else {
-        log(LOGTYPE_ERROR, "Read Failure - MIN2");
     }
 
     tmp.sprintf("%03i%03i%i%i", min2, min1a, min1b, min1c);
     decodedMin.append(tmp);
 
-    ui->minValue->setText(decodedMin);
+    if (decodedMin.length() == 10) {
+        ui->minValue->setText(decodedMin);
 
-    log(LOGTYPE_INFO, "Read Success - MIN: " + decodedMin);
+        log(LOGTYPE_INFO, "Read Success - MIN: " + decodedMin);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - MIN");
+    }
 }
 
 /**
