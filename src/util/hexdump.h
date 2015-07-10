@@ -21,12 +21,10 @@
 #endif
 
 #define hexdump_tx(data, amount) \
-   printf("Dumping %lu bytes written\n", amount); \
-   hexdump(data, amount);
-
+            do { if (DEBUG_ENABLED) printf("Dumping %lu bytes written\n", amount); hexdump(data, amount); } while (0)
+   
 #define hexdump_rx(data, amount) \
-   printf("Dumping %lu bytes read\n", amount); \
-   hexdump(data, amount);
+            do { if (DEBUG_ENABLED) printf("Dumping %lu bytes read\n", amount); hexdump(data, amount); } while (0)
 
 const char hex_trans[] =
     "................................ !\"#$%&'()*+,-./0123456789"

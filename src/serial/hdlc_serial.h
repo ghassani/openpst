@@ -14,8 +14,8 @@
 
 #include "include/definitions.h"
 #include "serial/serial.h"
-#include "qc/hdlc.h"
 #include "util/hexdump.h"
+#include "qc/hdlc.h"
 
 namespace openpst {
     class HdlcSerial : public serial::Serial {

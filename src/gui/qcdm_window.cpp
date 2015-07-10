@@ -12,6 +12,8 @@
 
 #include "qcdm_window.h"
 
+using namespace openpst;
+
 QcdmWindow::QcdmWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QcdmWindow),
@@ -26,19 +28,19 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     ui->hexMeidValue->setInputMask("HHHHHHHHHHHHHH");
     ui->imeiValue->setInputMask("999999999999999");
 
-    QObject::connect(ui->portListRefreshButton,        SIGNAL(clicked()), this, SLOT(UpdatePortList()));
-    QObject::connect(ui->portDisconnectButton,         SIGNAL(clicked()), this, SLOT(DisconnectPort()));
-    QObject::connect(ui->portConnectButton,            SIGNAL(clicked()), this, SLOT(ConnectToPort()));
-    QObject::connect(ui->sendSpcButton,                SIGNAL(clicked()), this, SLOT(sendSpc()));
-    QObject::connect(ui->sendPasswordButton,           SIGNAL(clicked()), this, SLOT(sendPassword()));
-    QObject::connect(ui->readMeidButton,               SIGNAL(clicked()), this, SLOT(readMeid()));
-    QObject::connect(ui->writeMeidButton,              SIGNAL(clicked()), this, SLOT(writeMeid()));
-    QObject::connect(ui->readImeiButton,               SIGNAL(clicked()), this, SLOT(readImei()));
-    QObject::connect(ui->readNamButton,                SIGNAL(clicked()), this, SLOT(readNam()));
-    QObject::connect(ui->readSpcButton,                SIGNAL(clicked()), this, SLOT(readSpc()));
-    QObject::connect(ui->writeSpcButton,               SIGNAL(clicked()), this, SLOT(writeSpc()));
-    QObject::connect(ui->readSubscriptionButton,       SIGNAL(clicked()), this, SLOT(readSubscription()));
-    QObject::connect(ui->writeSubscriptionButton,      SIGNAL(clicked()), this, SLOT(writeSubscription()));
+    QObject::connect(ui->portListRefreshButton, SIGNAL(clicked()), this, SLOT(UpdatePortList()));
+    QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(DisconnectPort()));
+    QObject::connect(ui->portConnectButton, SIGNAL(clicked()), this, SLOT(ConnectToPort()));
+    QObject::connect(ui->sendSpcButton, SIGNAL(clicked()), this, SLOT(sendSpc()));
+    QObject::connect(ui->sendPasswordButton, SIGNAL(clicked()), this, SLOT(sendPassword()));
+    QObject::connect(ui->readMeidButton, SIGNAL(clicked()), this, SLOT(readMeid()));
+    QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(writeMeid()));
+    QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(readImei()));
+    QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(readNam()));
+    QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(readSpc()));
+    QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(writeSpc()));
+    QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(readSubscription()));
+    QObject::connect(ui->writeSubscriptionButton, SIGNAL(clicked()), this, SLOT(writeSubscription()));
 
     QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(sendPhoneMode()));
 
@@ -46,8 +48,8 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 }
 
 /**
- * @brief QcdmWindow::~QcdmWindow
- */
+* @brief QcdmWindow::~QcdmWindow
+*/
 QcdmWindow::~QcdmWindow()
 {
     this->close();
@@ -56,8 +58,8 @@ QcdmWindow::~QcdmWindow()
 
 
 /**
- * @brief QcdmWindow::UpdatePortList
- */
+* @brief QcdmWindow::UpdatePortList
+*/
 void QcdmWindow::UpdatePortList()
 {
     std::vector<serial::PortInfo> devices = serial::list_ports();
@@ -88,8 +90,8 @@ void QcdmWindow::UpdatePortList()
 }
 
 /**
- * @brief QcdmWindow::ConnectToPort
- */
+* @brief QcdmWindow::ConnectToPort
+*/
 void QcdmWindow::ConnectToPort()
 {
     QString selected = ui->portListComboBox->currentData().toString();
@@ -135,7 +137,8 @@ void QcdmWindow::ConnectToPort()
             connectedText.append(currentPort.port.c_str());
             log(LOGTYPE_INFO, connectedText);
         }
-    } catch(serial::IOException e) {
+    }
+    catch (serial::IOException e) {
         log(LOGTYPE_ERROR, "Error Connecting To Serial Port");
         log(LOGTYPE_ERROR, e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
         return;
@@ -143,8 +146,8 @@ void QcdmWindow::ConnectToPort()
 }
 
 /**
- * @brief QcdmWindow::DisconnectPort
- */
+* @brief QcdmWindow::DisconnectPort
+*/
 void QcdmWindow::DisconnectPort()
 {
     if (port.isOpen()) {
@@ -163,8 +166,8 @@ void QcdmWindow::DisconnectPort()
 }
 
 /**
- * @brief QcdmWindow::SecuritySendSpc
- */
+* @brief QcdmWindow::SecuritySendSpc
+*/
 void QcdmWindow::sendSpc()
 {
     if (ui->sendSpcValue->text().length() != 6) {
@@ -226,7 +229,8 @@ void QcdmWindow::sendPhoneMode()
 
     if (result == (uint8_t)ui->phoneModeValue->currentIndex()){
         log(LOGTYPE_INFO, "Send Phone Mode Success: " + ui->phoneModeValue->currentText());
-    } else {
+    }
+    else {
         log(LOGTYPE_INFO, "Send Phone Mode Failure: " + ui->phoneModeValue->currentText());
     }
 }
@@ -259,7 +263,8 @@ void QcdmWindow::readMeid()
         ui->hexMeidValue->setText(meidValue);
 
         log(LOGTYPE_INFO, "Read Success - MEID: " + meidValue);
-    } else {
+    }
+    else {
         log(LOGTYPE_ERROR, "Read Failure - MEID");
     }
 }
@@ -279,7 +284,8 @@ void QcdmWindow::writeMeid()
 
     if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - MEID: " + ui->hexMeidValue->text());
-    } else {
+    }
+    else {
         log(LOGTYPE_ERROR, "Write Failure - MEID");
     }
 }
@@ -314,10 +320,12 @@ void QcdmWindow::readImei()
             ui->imeiValue->setText(imeiValue);
 
             log(LOGTYPE_INFO, "Read Success - IMEI: " + imeiValue);
-        } else {
+        }
+        else {
             log(LOGTYPE_ERROR, "Read Failure - IMEI");
         }
-    } else {
+    }
+    else {
         log(LOGTYPE_ERROR, "Read Failure - IMEI");
     }
 }
@@ -336,7 +344,6 @@ void QcdmWindow::readNam() {
     int result = port.getNvItem(NV_DIR_NUMBER_I, &response);
 
     if (result == DIAG_NV_READ_F){
-
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
         QString mdnValue = QString::fromStdString(port.hexToString((char *)rxPacket->data, 9));
@@ -347,8 +354,6 @@ void QcdmWindow::readNam() {
     } else {
         log(LOGTYPE_ERROR, "Read Failure - MDN");
     }
-
-
 
     if (ui->minValue->text().length() != 0) {
         ui->minValue->setText("");
@@ -487,7 +492,8 @@ void QcdmWindow::writeSpc()
 
     if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - SPC: " + ui->decSpcValue->text());
-    } else {
+    }
+    else {
         log(LOGTYPE_ERROR, "Write Failure - SPC");
     }
 }
@@ -521,7 +527,8 @@ void QcdmWindow::readSubscription()
         }
 
         log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + result);
-    } else {
+    }
+    else {
         log(LOGTYPE_ERROR, "Read Failure - Subscription Mode");
     }
 }
@@ -606,18 +613,18 @@ void QcdmWindow::EnableUiButtons() {
 }
 
 /**
- * @brief QcdmWindow::log
- * @param message
- */
+* @brief QcdmWindow::log
+* @param message
+*/
 void QcdmWindow::log(int type, const char* message)
 {
     QString newMessage = message;
     log(type, newMessage);
 }
 /**
- * @brief QcdmWindow::log
- * @param message
- */
+* @brief QcdmWindow::log
+* @param message
+*/
 void QcdmWindow::log(int type, std::string message)
 {
     QString newMessage = message.c_str();
@@ -625,10 +632,10 @@ void QcdmWindow::log(int type, std::string message)
 }
 
 /**
- * @brief QcdmWindow::log
- * @param type
- * @param message
- */
+* @brief QcdmWindow::log
+* @param type
+* @param message
+*/
 void QcdmWindow::log(int type, QString message)
 {
     QString suffix = "</font>";

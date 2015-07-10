@@ -32,80 +32,26 @@
    <string>Streaming DLOAD - OpenPST</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QComboBox" name="portList">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>10</y>
-      <width>591</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="editable">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="portListLabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>6</y>
-      <width>64</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Device</string>
-    </property>
-   </widget>
    <widget class="QPlainTextEdit" name="log">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>450</y>
+      <y>490</y>
       <width>861</width>
-      <height>111</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <pointsize>10</pointsize>
      </font>
-    </property>
-   </widget>
-   <widget class="QLabel" name="logLabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>420</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Operation Log</string>
     </property>
    </widget>
    <widget class="QPushButton" name="saveLogButton">
     <property name="geometry">
      <rect>
       <x>780</x>
-      <y>570</y>
+      <y>580</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -117,45 +63,6 @@
     </property>
     <property name="text">
      <string>Save Log</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portRefreshButton">
-    <property name="geometry">
-     <rect>
-      <x>680</x>
-      <y>40</y>
-      <width>81</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Refresh</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portDisconnectButton">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>10</y>
-      <width>101</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Disconnect</string>
     </property>
    </widget>
    <widget class="QTabWidget" name="tabSet">
@@ -1267,6 +1174,9 @@
       <string>QFPROM</string>
      </attribute>
      <widget class="QGroupBox" name="qfpromReadGroupBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -1384,6 +1294,9 @@
       </widget>
      </widget>
      <widget class="QGroupBox" name="qfpromWriteGroupBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>280</x>
@@ -1549,7 +1462,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>570</y>
+      <y>580</y>
       <width>91</width>
       <height>27</height>
      </rect>
@@ -1563,13 +1476,64 @@
      <string>Clear Log</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="portConnectButton">
+   <widget class="QLabel" name="progressBarTextLabel2">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>10</y>
-      <width>81</width>
-      <height>29</height>
+      <x>10</x>
+      <y>465</y>
+      <width>851</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="progressBarTextLabel">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>440</y>
+      <width>301</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>440</y>
+      <width>481</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+    <property name="format">
+     <string>%p% </string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cancelOperationButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>440</y>
+      <width>61</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="font">
@@ -1578,9 +1542,121 @@
      </font>
     </property>
     <property name="text">
-     <string>Connect</string>
+     <string>Cancel</string>
     </property>
    </widget>
+   <widget class="QWidget" name="deviceContainer" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>861</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <widget class="QPushButton" name="portDisconnectButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>760</x>
+       <y>0</y>
+       <width>101</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Disconnect</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="portRefreshButton">
+     <property name="geometry">
+      <rect>
+       <x>670</x>
+       <y>30</y>
+       <width>81</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Refresh</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="portList">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>0</y>
+       <width>591</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="portConnectButton">
+     <property name="geometry">
+      <rect>
+       <x>670</x>
+       <y>0</y>
+       <width>81</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Connect</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="portListLabel">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>-4</y>
+       <width>64</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Device</string>
+     </property>
+    </widget>
+   </widget>
+   <zorder>deviceContainer</zorder>
+   <zorder>log</zorder>
+   <zorder>saveLogButton</zorder>
+   <zorder>tabSet</zorder>
+   <zorder>clearLogButton</zorder>
+   <zorder>progressBarTextLabel2</zorder>
+   <zorder>progressBarTextLabel</zorder>
+   <zorder>progressBar</zorder>
+   <zorder>cancelOperationButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

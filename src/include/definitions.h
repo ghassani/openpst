@@ -23,4 +23,12 @@
     #define PACKED( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
 
+#ifdef DEBUG
+#define DEBUG_ENABLED 1
+#else
+#define DEBUG_ENABLED 0
+#endif
+
+#define LOGD(...) \ do { if (DEBUG_ENABLED) fprintf(stderr, __VA_ARGS__); } while (0)
+
 #endif //_INCLUDE_DEFINITIONS_H

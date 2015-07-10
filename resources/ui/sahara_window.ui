@@ -32,42 +32,6 @@
    <string>Sahara - OpenPST</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QComboBox" name="portList">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>10</y>
-      <width>751</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="editable">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="portListLabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>6</y>
-      <width>64</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Device</string>
-    </property>
-   </widget>
    <widget class="QPlainTextEdit" name="log">
     <property name="geometry">
      <rect>
@@ -99,45 +63,6 @@
     </property>
     <property name="text">
      <string>Save Log</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portRefreshButton">
-    <property name="geometry">
-     <rect>
-      <x>840</x>
-      <y>40</y>
-      <width>91</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Refresh</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portDisconnectButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>930</x>
-      <y>10</y>
-      <width>101</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Disconnect</string>
     </property>
    </widget>
    <widget class="QTabWidget" name="mainTabSet">
@@ -773,24 +698,6 @@
      <string>Clear Log</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="portConnectButton">
-    <property name="geometry">
-     <rect>
-      <x>840</x>
-      <y>10</y>
-      <width>91</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Connect</string>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="deviceStatePreferredMaxSizeValue">
     <property name="enabled">
      <bool>false</bool>
@@ -1133,6 +1040,132 @@
      <string>Cancel</string>
     </property>
    </widget>
+   <widget class="QWidget" name="deviceContainer" native="true">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>1061</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <widget class="QPushButton" name="portDisconnectButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>940</x>
+       <y>10</y>
+       <width>101</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Disconnect</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="portRefreshButton">
+     <property name="geometry">
+      <rect>
+       <x>850</x>
+       <y>40</y>
+       <width>91</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Refresh</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="portConnectButton">
+     <property name="geometry">
+      <rect>
+       <x>850</x>
+       <y>10</y>
+       <width>91</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Connect</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="portList">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>10</y>
+       <width>751</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="portListLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>6</y>
+       <width>64</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Device</string>
+     </property>
+    </widget>
+   </widget>
+   <zorder>deviceContainer</zorder>
+   <zorder>log</zorder>
+   <zorder>saveLogButton</zorder>
+   <zorder>mainTabSet</zorder>
+   <zorder>clearLogButton</zorder>
+   <zorder>deviceStatePreferredMaxSizeValue</zorder>
+   <zorder>deviceStateModeLabel</zorder>
+   <zorder>deviceStatePreferredMaxSizeLabel</zorder>
+   <zorder>deviceStateModeValue</zorder>
+   <zorder>deviceStateMinVersionValue</zorder>
+   <zorder>deviceStateMinVersionLabel</zorder>
+   <zorder>deviceStateVersionLabel</zorder>
+   <zorder>deviceStateVersionValue</zorder>
+   <zorder>requestedImageLabel</zorder>
+   <zorder>deviceStateRequestedImageValue</zorder>
+   <zorder>memoryTableAddressLabel</zorder>
+   <zorder>memoryTableAddressValue</zorder>
+   <zorder>memoryTableSizeLabel</zorder>
+   <zorder>memoryTableSizeValue</zorder>
+   <zorder>progressBarTextLabel</zorder>
+   <zorder>progressBar</zorder>
+   <zorder>progressBarTextLabel2</zorder>
+   <zorder>cancelOperationButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
