@@ -14,12 +14,5 @@ before_build:
   - git submodule init lib/serial
   - git submodule update lib/serial
 
-platform:
-  - Win32
-  - x64
-configuration:
-  - Debug
-  - Release
-
 build:
   project: OpenPST-vs2013.sln
