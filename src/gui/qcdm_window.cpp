@@ -634,23 +634,27 @@ void QcdmWindow::log(int type, std::string message)
 */
 void QcdmWindow::log(int type, QString message)
 {
-    QString suffix = "</font>";
+    QString suffix = "</font></pre>";
 
     switch (type) {
     case 0:
         message = message.prepend("<font color=\"gray\">");
+        message = message.prepend("<pre>");
         message = message.append(suffix);
         break;
     case -1:
         message = message.prepend("<font color=\"red\">");
+        message = message.prepend("<pre>");
         message = message.append(suffix);
         break;
     case 1:
         message = message.prepend("<font color=\"green\">");
+        message = message.prepend("<pre>");
         message = message.append(suffix);
         break;
     case 2:
         message = message.prepend("<font color=\"orange\">");
+        message = message.prepend("<pre>");
         message = message.append(suffix);
         break;
     }
