@@ -87,7 +87,8 @@ namespace openpst {
             */
             int getLgSpc(uint8_t** response);
 
-            std::string transformHexToString(const char* input, int length);
+            std::string hexToString(char* input, int length);
+            std::string bytesToHex(char* input, int length);
 
             uint8_t buffer[DIAG_MAX_RX_PKT_SIZ];
             size_t lastRxSize,

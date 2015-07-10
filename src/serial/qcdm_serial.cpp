@@ -324,11 +324,11 @@ int QcdmSerial::getLgSpc(uint8_t** response)
 }
 
 /**
-* transformHexToString
+* hexToString
 * @param input
 * @param length
 */
-std::string QcdmSerial::transformHexToString(const char *input, int length)
+std::string QcdmSerial::hexToString(char *input, int length)
 {
     char outputBuffer[128];
     std::string result;
@@ -344,4 +344,20 @@ std::string QcdmSerial::transformHexToString(const char *input, int length)
     }
 
     return result;
+}
+
+/**
+* bytesToHex
+* @param input
+* @param length
+*/
+std::string QcdmSerial::bytesToHex(char* input, int size) {
+  char const hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A','B','C','D','E','F'};
+  std::string str;
+  for (int i = 0; i < size; ++i) {
+    const char ch = input[i];
+    str.append(&hex[(ch  & 0xF0) >> 4], 1);
+    str.append(&hex[ch & 0xF], 1);
+  }
+  return str;
 }
