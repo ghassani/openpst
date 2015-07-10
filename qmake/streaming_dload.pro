@@ -12,7 +12,11 @@ TARGET = streaming_dload
 
 TEMPLATE = app
 
-INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
+INCLUDEPATH += $$PWD/../src $$PWD/../lib/serial/include
+
+DEPENDPATH += $$PWD/../
+
+VPATH += $$PWD/../
 
 SOURCES += \
     src/util/hexdump.cpp \
@@ -33,11 +37,14 @@ HEADERS  += \
     src/qc/hdlc.h \
     src/util/hexdump.h \
     src/util/endian.h \
-    src/util/sleep.h \  
+    src/util/sleep.h \
     src/gui/streaming_dload_window.h \
     src/serial/streaming_dload_serial.h \
-    src/serial/hdlc_serial.h 
-  
+    src/serial/hdlc_serial.h
 
-FORMS  += resources/ui/streaming_dload_window.ui 
 
+FORMS  += resources/ui/streaming_dload_window.ui
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/release/ -lserial
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/debug/ -lserial
+else:unix: LIBS += -L$$OUT_PWD/ -lserial

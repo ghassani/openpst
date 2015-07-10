@@ -12,7 +12,11 @@ TARGET = mbn_tool
 
 TEMPLATE = app
 
-INCLUDEPATH += $$PWD/src
+INCLUDEPATH += $$PWD/../src
+
+DEPENDPATH += $$PWD/../
+
+VPATH += $$PWD/../
 
 SOURCES += \
     src/util/hexdump.cpp \
@@ -25,8 +29,8 @@ HEADERS  += \
     src/qc/mbn.h \
     src/util/hexdump.h \
     src/util/endian.h \
-    src/gui/mbn_tool_window.h 
-  
+    src/gui/mbn_tool_window.h
 
-FORMS  += resources/ui/mbn_tool_window.ui 
+
+FORMS  += resources/ui/mbn_tool_window.ui
 

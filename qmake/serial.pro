@@ -8,16 +8,18 @@ TARGET = serial
 
 TEMPLATE = lib
 
-CONFIG = staticlib
+INCLUDEPATH += $$PWD/../src $$PWD/../lib/serial/include
 
-INCLUDEPATH += $$PWD/src
+DEPENDPATH += $$PWD/../
+
+VPATH += $$PWD/../
 
 SOURCES += \
     lib/serial/src/serial.cc
 
 HEADERS  += \
     lib/serial/include/serial/serial.h \
-    lib/serial/include/serial/v8stdint.h 
+    lib/serial/include/serial/v8stdint.h
 
 linux:unix:!macx {
     SOURCES += \
@@ -34,9 +36,9 @@ win32 {
         lib/serial/src/impl/list_ports/list_ports_win.cc
 
     HEADERS += \
-        lib/serial/include/serial/impl/win.h \ 
-        src/include/win_inttypes.h \ 
-        src/include/win_stdint.h 
+        lib/serial/include/serial/impl/win.h \
+        src/include/win_inttypes.h \
+        src/include/win_stdint.h
 }
 
 macx {

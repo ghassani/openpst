@@ -12,7 +12,11 @@ TARGET = sahara
 
 TEMPLATE = app
 
-INCLUDEPATH += $$PWD/lib/serial/include $$PWD/src
+INCLUDEPATH += $$PWD/../src $$PWD/../lib/serial/include
+
+DEPENDPATH += $$PWD/../
+
+VPATH += $$PWD/../
 
 SOURCES += \
     lib/serial/src/serial.cc \
@@ -37,5 +41,8 @@ HEADERS  += \
     src/worker/sahara_image_transfer_worker.h
 
 
-FORMS  += resources/ui/sahara_window.ui 
+FORMS  += resources/ui/sahara_window.ui
 
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/release/ -lserial
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/debug/ -lserial
+else:unix: LIBS += -L$$OUT_PWD/ -lserial

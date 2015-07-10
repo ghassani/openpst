@@ -3,6 +3,9 @@
 #-------------------------------------------------
 
 TEMPLATE = subdirs
+
+CONFIG += ordered
+
 SUBDIRS = serial sahara streaming_dload qcdm mbn_tool
 
 serial.file = qmake/serial.pro
