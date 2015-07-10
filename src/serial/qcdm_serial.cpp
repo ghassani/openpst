@@ -335,9 +335,9 @@ std::string QcdmSerial::hexToString(char *input, int length)
 
     for (int i = 0; i <= length; i++) {
     #ifdef _WIN32
-        sprintf_s(outputBuffer, "%c", hex_trans[input[i]]);
+        sprintf_s(outputBuffer, "%c", hex_trans_display[input[i]]);
     #else
-        sprintf(outputBuffer, "%c", hex_trans[input[i]]);
+        sprintf(outputBuffer, "%c", hex_trans_display[input[i]]);
     #endif
 
     result.append(outputBuffer);
