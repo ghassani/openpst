@@ -9,9 +9,7 @@
 * @author https://github.com/posixninja/DLOADTool
 */
 
-
 #include "hexdump.h"
-
 
 void hexdump(unsigned char *data, unsigned int amount) {
 	unsigned int    dp, p;  /* data pointer */
@@ -47,6 +45,7 @@ void hexdump(unsigned char *data, unsigned int amount) {
 
 	return;
 }
+
 #ifdef QT_CORE_LIB
 void hexdump(unsigned char *data, unsigned int amount, QString& out)
 {

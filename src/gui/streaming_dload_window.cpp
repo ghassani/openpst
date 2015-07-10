@@ -175,8 +175,7 @@ void StreamingDloadWindow::connectToPort()
 		if (!port.isOpen()){
 			port.open();
 		}
-	}
-	catch (serial::IOException e) {
+	} catch (serial::IOException e) {
 		log(tmp.sprintf("Error Connecting To Port %s", currentPort.port.c_str()));
 		log(e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
 		return;
@@ -589,16 +588,12 @@ void StreamingDloadWindow::writePartitionTable()
 
 void StreamingDloadWindow::eraseFlash()
 {
-	/*
-	QMessageBox::StandardButton confirmation = QMessageBox::question(this, "Test", "Quit?",
-		QMessageBox::Yes | QMessageBox::No);
-	if (reply == QMessageBox::Yes) {
-		qDebug() << "Yes was clicked";
-		QApplication::quit();
+	QMessageBox::StandardButton confirmation = QMessageBox::question(this, "DANGEROUS OPERATION", "If this operation fails, it can make the device inoperable and only able to be restored by JTAG. Continue?");
+
+	if (confirmation == QMessageBox::Yes) {
+
 	}
-	else {
-		qDebug() << "Yes was *not* clicked";
-	}*/
+
 }
 
 
@@ -608,7 +603,7 @@ void StreamingDloadWindow::eraseFlash()
 void StreamingDloadWindow::browseForWriteFile()
 {
 
-	QString fileName = QFileDialog::getOpenFileName(this, "Browse For File", "", "Image Files (*.bin, 8.mbn)");
+	QString fileName = QFileDialog::getOpenFileName(this, "Browse For File", "", "Image Files (*.bin, *.mbn)");
 
 	if (fileName.length()) {
 		ui->writeFileValue->setText(fileName);

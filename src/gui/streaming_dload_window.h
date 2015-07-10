@@ -13,6 +13,7 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QMessageBox>
 #include "ui_streaming_dload_window.h"
 #include "qc/streaming_dload.h"
 #include "serial/streaming_dload_serial.h"

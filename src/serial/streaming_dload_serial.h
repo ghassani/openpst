@@ -15,10 +15,10 @@
 #include "include/definitions.h"
 #include "serial/serial.h"
 #include "serial/hdlc_serial.h"
-#include "qc/streaming_dload.h"
-#include "qc/hdlc.h"
 #include "util/hexdump.h"
 #include "util/endian.h"
+#include "qc/streaming_dload.h"
+#include "qc/hdlc.h"
 
 namespace openpst {
 

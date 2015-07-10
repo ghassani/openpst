@@ -23,8 +23,6 @@
 #include "ui_sahara_window.h"
 #include "serial/sahara_serial.h"
 #include "qc/sahara.h"
-#include "qc/streaming_dload.h"
-#include "qc/hdlc.h"
 #include "util/hexdump.h"
 #include "util/sleep.h"
 #include "util/endian.h"

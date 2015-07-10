@@ -22,52 +22,53 @@
 
 
 namespace Ui {
-class QcdmWindow;
+	class QcdmWindow;
 }
 
-class QcdmWindow : public QMainWindow
-{
-    Q_OBJECT
+namespace openpst {
+	class QcdmWindow : public QMainWindow
+	{
+		Q_OBJECT
 
-public:
-    explicit QcdmWindow(QWidget *parent = 0);
-    ~QcdmWindow();
+	public:
+		explicit QcdmWindow(QWidget *parent = 0);
+		~QcdmWindow();
 
-public slots:
-    void UpdatePortList();
-    void ConnectToPort();
-    void DisconnectPort();
-    void DisableUiButtons();
-    void EnableUiButtons();
-    void sendSpc();
-    void sendPassword();
-    void readImei();
-    void readMeid();
-    void writeMeid();
-    void readNam();
-    void readSpc();
-    void writeSpc();
-    void readSubscription();
-    void writeSubscription();
+		public slots:
+		void UpdatePortList();
+		void ConnectToPort();
+		void DisconnectPort();
+		void DisableUiButtons();
+		void EnableUiButtons();
+		void sendSpc();
+		void sendPassword();
+		void readImei();
+		void readMeid();
+		void writeMeid();
+		void readNam();
+		void readSpc();
+		void writeSpc();
+		void readSubscription();
+		void writeSubscription();
 
-    void sendPhoneMode();
+		void sendPhoneMode();
 
-    void spcTextChanged(QString value);
+		void spcTextChanged(QString value);
 
-private:
-    void log(int type, const char* message);
-    void log(int type, std::string message);
-    void log(int type, QString message);
+	private:
+		void log(int type, const char* message);
+		void log(int type, std::string message);
+		void log(int type, QString message);
 
-    Ui::QcdmWindow *ui;
-    openpst::QcdmSerial port;
-    serial::PortInfo currentPort;
+		Ui::QcdmWindow *ui;
+		openpst::QcdmSerial port;
+		serial::PortInfo currentPort;
 
-    int LOGTYPE_DEBUG = 0;
-    int LOGTYPE_ERROR = -1;
-    int LOGTYPE_INFO = 1;
-    int LOGTYPE_WARNING = 2;
+		int LOGTYPE_DEBUG = 0;
+		int LOGTYPE_ERROR = -1;
+		int LOGTYPE_INFO = 1;
+		int LOGTYPE_WARNING = 2;
 
-};
-
+	};
+}
 #endif // _GUI_QCDM_WINDOW_H
