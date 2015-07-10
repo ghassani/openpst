@@ -1,14 +1,15 @@
 clone_depth: 1
 
 environment: 
-  matrix: 
-    - platform: Win32 
-      configuration: Debug
-      QTDIR: C:\Qt\5.4\msvc2013
-    
-    - platform: Win32 
-      configuration: Release
-      QTDIR: C:\Qt\5.4\msvc2013
+  QTDIR: C:\Qt\5.4\msvc2013
+
+platform:
+  - Win32
+  - x64
+
+configuration:
+  - Debug
+  - Release
 
 before_build:
   - git submodule init lib/serial
