@@ -337,16 +337,89 @@ void QcdmWindow::readNam() {
 
     if (result == DIAG_NV_READ_F){
 
-        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
-        QString mdnValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 10));
+        QString mdnValue = QString::fromStdString(port.hexToString((char *)rxPacket->data, 9));
 
-        ui->mdnValue->setText(mdnValue.mid(1));
+        ui->mdnValue->setText(mdnValue);
 
-        log(LOGTYPE_INFO, "Read Success - MDN: " + mdnValue.mid(1));
+        log(LOGTYPE_INFO, "Read Success - MDN: " + mdnValue);
     } else {
         log(LOGTYPE_ERROR, "Read Failure - MDN");
     }
+
+
+
+    if (ui->minValue->text().length() != 0) {
+        ui->minValue->setText("");
+    }
+
+    char minChunk1[3];
+    char minChunk2[1];
+
+    int32_t iMin1, iMin2, min1a, min1b, min1c, min2;
+
+    QString decodedMin, tmp;
+
+    std::string sMin1;
+    std::string sMin2;
+
+    response = NULL;
+
+    result = port.getNvItem(NV_MIN1_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        minChunk1[0] = rxPacket->data[3];
+        minChunk1[1] = rxPacket->data[6];
+        minChunk1[2] = rxPacket->data[5];
+        minChunk1[3] = rxPacket->data[4];
+
+        sMin1 = port.bytesToHex(minChunk1, 4);
+
+        iMin1 = strtoul(sMin1.c_str(), nullptr, 16);
+
+        min1a = (iMin1 & 0xFFC000) >> 14;
+        min1a = ((min1a + 1) % 10) + (((((min1a % 100) / 10) + 1) % 10) * 10) + ((((min1a / 100) + 1) % 10) * 100);
+
+        min1b = ((iMin1 & 0x3C00) >> 10) % 10;
+
+        min1c = (iMin1 & 0x3FF);
+        min1c = ((min1c + 1) % 10) + (((((min1c % 100) / 10) + 1) % 10) * 10) + ((((min1c / 100) + 1) % 10) * 100);
+
+        log(LOGTYPE_INFO, "Read Success - MIN1");
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - MIN1");
+    }
+
+    response = NULL;
+
+    result = port.getNvItem(NV_MIN2_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        minChunk2[0] = rxPacket->data[3];
+        minChunk2[1] = rxPacket->data[2];
+
+        sMin2 = port.bytesToHex(minChunk2, 2);
+
+        iMin2 = strtoul(sMin2.c_str(), nullptr, 16);
+
+        min2 = ((iMin2+1) % 10) + (((((iMin2 % 100) / 10) + 1) % 10) * 10) + ((((iMin2 / 100) + 1) % 10) * 100);
+
+        log(LOGTYPE_INFO, "Read Success - MIN2");
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - MIN2");
+    }
+
+    tmp.sprintf("%03i%03i%i%i", min2, min1a, min1b, min1c);
+    decodedMin.append(tmp);
+
+    ui->minValue->setText(decodedMin);
+
+    log(LOGTYPE_INFO, "Read Success - MIN: " + decodedMin);
 }
 
 /**
@@ -388,7 +461,7 @@ void QcdmWindow::readSpc()
     if (result == DIAG_NV_READ_F){
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        QString rxSpcValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 5));
+        QString rxSpcValue = QString::fromStdString(port.hexToString((char *)rxPacket->data, 5));
 
         ui->decSpcValue->setText(rxSpcValue);
 

@@ -36,14 +36,14 @@ namespace openpst {
             int sendSpc(const char* spc);
 
             /**
-            * @brief send16Password
+            * @brief sendPassword
             * @param password - a 16 digit password to unlock secure operations
             * @return
             */
             int sendPassword(const char* password);
 
             /**
-            * @brief sendQcdmPhoneMode
+            * @brief sendPhoneMode
             * @param mode - DIAG_PHONE_MODE
             * @return
             */
