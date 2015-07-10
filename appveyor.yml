@@ -2,10 +2,12 @@ clone_depth: 1
 
 environment:    
   
-  matrix:
-  - QTDIR: C:\Qt\5.4\msvc2013_x64_opengl
-  - QTDIR: C:\Qt\5.4\msvc2013_opengl
-
+matrix:
+  - platform: Win32 
+      QTDIR: C:\Qt\5.4\msvc2013_opengl
+  - platform: x64 
+      QTDIR: C:\Qt\5.4\msvc2013_x64_opengl
+    
 before_build:
   - git submodule init lib/serial
   - git submodule update lib/serial
