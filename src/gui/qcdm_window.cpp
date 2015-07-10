@@ -34,6 +34,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->readMeidButton,               SIGNAL(clicked()), this, SLOT(readMeid()));
     QObject::connect(ui->writeMeidButton,              SIGNAL(clicked()), this, SLOT(writeMeid()));
     QObject::connect(ui->readImeiButton,               SIGNAL(clicked()), this, SLOT(readImei()));
+    QObject::connect(ui->readNamButton,                SIGNAL(clicked()), this, SLOT(readNam()));
     QObject::connect(ui->readSpcButton,                SIGNAL(clicked()), this, SLOT(readSpc()));
     QObject::connect(ui->writeSpcButton,               SIGNAL(clicked()), this, SLOT(writeSpc()));
     QObject::connect(ui->readSubscriptionButton,       SIGNAL(clicked()), this, SLOT(readSubscription()));
@@ -220,6 +221,7 @@ void QcdmWindow::sendPhoneMode()
 
     if (result == MODE_RESET_F) {
         DisconnectPort();
+        UpdatePortList();
     }
 
     if (result == (uint8_t)ui->phoneModeValue->currentIndex()){
@@ -317,6 +319,33 @@ void QcdmWindow::readImei()
         }
     } else {
         log(LOGTYPE_ERROR, "Read Failure - IMEI");
+    }
+}
+
+/**
+* @brief QcdmWindow::readNam
+*/
+void QcdmWindow::readNam() {
+    // Move to readMdn() function...
+    if (ui->mdnValue->text().length() != 0) {
+        ui->mdnValue->setText("");
+    }
+
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_DIR_NUMBER_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+
+        QString mdnValue = QString::fromStdString(port.transformHexToString((const char *)rxPacket->data, 10));
+
+        ui->mdnValue->setText(mdnValue.mid(1));
+
+        log(LOGTYPE_INFO, "Read Success - MDN: " + mdnValue.mid(1));
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - MDN");
     }
 }
 

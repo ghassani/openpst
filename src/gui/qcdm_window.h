@@ -41,9 +41,10 @@ public slots:
     void EnableUiButtons();
     void sendSpc();
     void sendPassword();
+    void readImei();
     void readMeid();
     void writeMeid();
-    void readImei();
+    void readNam();
     void readSpc();
     void writeSpc();
     void readSubscription();
