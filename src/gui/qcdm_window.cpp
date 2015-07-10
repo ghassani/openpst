@@ -27,6 +27,8 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     ui->decSpcValue->setInputMask("999999");
     ui->hexMeidValue->setInputMask("HHHHHHHHHHHHHH");
     ui->imeiValue->setInputMask("999999999999999");
+    ui->mdnValue->setInputMask("9999999999");
+    ui->minValue->setInputMask("9999999999");
 
     QObject::connect(ui->portListRefreshButton, SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(DisconnectPort()));
