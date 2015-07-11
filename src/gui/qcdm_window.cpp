@@ -39,6 +39,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(writeMeid()));
     QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(readImei()));
     QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(readNam()));
+    QObject::connect(ui->readNvItemButton, SIGNAL(clicked()), this, SLOT(readNvItem()));
     QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(readSpc()));
     QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(writeSpc()));
     QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(readSubscription()));
@@ -333,10 +334,39 @@ void QcdmWindow::readImei()
 }
 
 /**
+* @brief QcdmWindow::readNvItem
+*/
+void QcdmWindow::readNvItem() {
+    if (ui->nvItemValue->text().length() == 0) {
+        log(LOGTYPE_WARNING, "Input a Valid NV Item Number");
+        return;
+    }
+
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(ui->nvItemValue->text().toInt(), &response);
+
+    if (result == DIAG_NV_READ_F){
+        QString result;
+
+        hexdump(response, sizeof(response) * 16, result, true);
+
+        log(LOGTYPE_INFO, "Read Success - Item Number: " + ui->nvItemValue->text() + "<br>" + result);
+    }
+}
+
+/**
 * @brief QcdmWindow::readNam
 */
 void QcdmWindow::readNam() {
-    // Move to readMdn() function...
+    readMdn();
+    readMin();
+}
+
+/**
+* @brief QcdmWindow::readMdn
+*/
+void QcdmWindow::readMdn() {
     if (ui->mdnValue->text().length() != 0) {
         ui->mdnValue->setText("");
     }
@@ -356,7 +386,12 @@ void QcdmWindow::readNam() {
     } else {
         log(LOGTYPE_ERROR, "Read Failure - MDN");
     }
+}
 
+/**
+* @brief QcdmWindow::readMin
+*/
+void QcdmWindow::readMin() {
     if (ui->minValue->text().length() != 0) {
         ui->minValue->setText("");
     }
@@ -371,9 +406,9 @@ void QcdmWindow::readNam() {
     std::string sMin1;
     std::string sMin2;
 
-    response = NULL;
+    uint8_t* response = NULL;
 
-    result = port.getNvItem(NV_MIN1_I, &response);
+    int result = port.getNvItem(NV_MIN1_I, &response);
 
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
@@ -439,7 +474,7 @@ void QcdmWindow::readSpc()
 
     int result = 0;
 
-    switch (ui->readSpcMethod->currentData().toInt()) {
+    switch (ui->readSpcMethod->currentIndex()) {
     case 0:
         result = port.getNvItem(NV_SEC_CODE_I, &response);
         break;
@@ -591,6 +626,12 @@ void QcdmWindow::DisableUiButtons() {
     ui->writeImeiButton->setEnabled(false);
     ui->readSubscriptionButton->setEnabled(false);
     ui->writeSubscriptionButton->setEnabled(false);
+    ui->readNvItemButton->setEnabled(false);
+    ui->readNamButton->setEnabled(false);
+    ui->writeNamButton->setEnabled(false);
+    ui->readPrlButton->setEnabled(false);
+    ui->writePrlButton->setEnabled(false);
+
     ui->sendPhoneModeButton->setEnabled(false);
     ui->sendSpcButton->setEnabled(false);
     ui->sendPasswordButton->setEnabled(false);
@@ -605,6 +646,12 @@ void QcdmWindow::EnableUiButtons() {
     ui->writeImeiButton->setEnabled(true);
     ui->readSubscriptionButton->setEnabled(true);
     ui->writeSubscriptionButton->setEnabled(true);
+    ui->readNvItemButton->setEnabled(true);
+    ui->readNamButton->setEnabled(true);
+    ui->writeNamButton->setEnabled(true);
+    ui->readPrlButton->setEnabled(true);
+    ui->writePrlButton->setEnabled(true);
+
     ui->sendPhoneModeButton->setEnabled(true);
     ui->sendSpcButton->setEnabled(true);
     ui->sendPasswordButton->setEnabled(true);
