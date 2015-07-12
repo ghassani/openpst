@@ -2027,6 +2027,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="portDisconnectButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>510</x>
