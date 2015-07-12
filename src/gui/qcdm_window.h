@@ -56,9 +56,25 @@ namespace openpst {
 
         void spcTextChanged(QString value);
 
+        void clearLog();
+        void saveLog();
+
     private:
         void readMdn();
         void readMin();
+        void readSid();
+        void readSystemPref();
+        void readPrefMode();
+        void readPrefServ();
+        void readRoamPref();
+
+        void readPapUserId();
+        void readPppUserId();
+        void readHdrAnUserId();
+        void readHdrAnLongUserId();
+        void readHdrAnPppUserId();
+
+        QString fixedTrim(QString input);
 
         void log(int type, const char* message);
         void log(int type, std::string message);

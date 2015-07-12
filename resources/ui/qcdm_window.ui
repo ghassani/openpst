@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>841</width>
-    <height>681</height>
+    <height>690</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tabGeneral">
      <attribute name="title">
@@ -495,6 +495,11 @@
        </property>
        <item>
         <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>RUIM_ONLY</string>
         </property>
        </item>
@@ -739,7 +744,7 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>191</width>
+        <width>431</width>
         <height>181</height>
        </rect>
       </property>
@@ -768,7 +773,7 @@
         <number>15</number>
        </property>
       </widget>
-      <widget class="QLabel" name="MinValueLabel">
+      <widget class="QLabel" name="sidValueLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -784,7 +789,7 @@
         </font>
        </property>
        <property name="text">
-        <string>MIN</string>
+        <string>SID</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -793,12 +798,12 @@
         <number>-1</number>
        </property>
       </widget>
-      <widget class="QLineEdit" name="minValue">
+      <widget class="QLineEdit" name="sidValue">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>90</x>
          <y>102</y>
-         <width>131</width>
+         <width>91</width>
          <height>27</height>
         </rect>
        </property>
@@ -880,7 +885,7 @@
         <string>Read</string>
        </property>
       </widget>
-      <widget class="QLabel" name="pcsValueLabel">
+      <widget class="QLabel" name="minValueLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -896,7 +901,7 @@
         </font>
        </property>
        <property name="text">
-        <string>PCS</string>
+        <string>MIN</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -905,7 +910,7 @@
         <number>-1</number>
        </property>
       </widget>
-      <widget class="QLineEdit" name="pcsValue">
+      <widget class="QLineEdit" name="minValue">
        <property name="geometry">
         <rect>
          <x>50</x>
@@ -927,36 +932,382 @@
         <number>15</number>
        </property>
       </widget>
+      <widget class="QComboBox" name="systemPrefValue">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>32</y>
+         <width>151</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SYSTEM_A</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SYSTEM_B</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HOME_ONLY</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HOME_PREF</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QComboBox" name="prefModeValue">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>60</y>
+         <width>151</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>AUTOMATIC</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CDMA_GSM_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CDMA_HDR</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CDMA_HDR_GSM_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CDMA_IS2000</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CDMA_IS95</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GSM_GPRS_EDGE</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GSM_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HDR</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_CDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_CDMA_GSM</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_CDMA_HDR</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_CDMA_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_GSM</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_GSM_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_HDR</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_HDR_GSM</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_HDR_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LTE_WCDMA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>WCDMA_HSDPA</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QComboBox" name="prefServValue">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>88</y>
+         <width>151</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SYSTEM_A</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SYSTEM_AB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SYSTEM_B</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SYSTEM_BA</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HOME_ONLY</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HOME_PREF</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QComboBox" name="roamPrefValue">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>116</y>
+         <width>151</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HOME</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>AFFILIATED</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>AUTOMATIC</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>STATIC</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="MdnValueLabel_2">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>35</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>System Pref</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="indent">
+        <number>-1</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="MdnValueLabel_3">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>62</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Pref Mode</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="indent">
+        <number>-1</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="MdnValueLabel_4">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>92</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Pref Serv</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="indent">
+        <number>-1</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="MdnValueLabel_5">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>120</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Roam Pref</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="indent">
+        <number>-1</number>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="prlGroupBox">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>470</x>
         <y>10</y>
-        <width>331</width>
+        <width>281</width>
         <height>71</height>
        </rect>
       </property>
       <property name="title">
        <string>PRL</string>
       </property>
-      <widget class="QToolButton" name="prlFileSelectButton">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>30</y>
-         <width>31</width>
-         <height>29</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="writePrlButton">
        <property name="geometry">
         <rect>
-         <x>270</x>
+         <x>220</x>
          <y>30</y>
          <width>51</width>
          <height>29</height>
@@ -977,7 +1328,7 @@
       <widget class="QPushButton" name="readPrlButton">
        <property name="geometry">
         <rect>
-         <x>220</x>
+         <x>170</x>
          <y>30</y>
          <width>51</width>
          <height>29</height>
@@ -999,8 +1350,8 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>32</y>
+         <x>59</x>
+         <y>31</y>
          <width>111</width>
          <height>27</height>
         </rect>
@@ -1629,7 +1980,7 @@
       <x>10</x>
       <y>440</y>
       <width>821</width>
-      <height>231</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="font">
@@ -1983,6 +2334,44 @@
       <string>MAX</string>
      </property>
     </item>
+   </widget>
+   <widget class="QPushButton" name="clearLogButton">
+    <property name="geometry">
+     <rect>
+      <x>679</x>
+      <y>650</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Clear Log</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveLogButton">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>650</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save Log</string>
+    </property>
    </widget>
   </widget>
  </widget>

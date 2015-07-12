@@ -45,6 +45,9 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(readSubscription()));
     QObject::connect(ui->writeSubscriptionButton, SIGNAL(clicked()), this, SLOT(writeSubscription()));
 
+    QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
+    QObject::connect(ui->saveLogButton, SIGNAL(clicked()), this, SLOT(saveLog()));
+
     QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(sendPhoneMode()));
 
     QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(spcTextChanged(QString)));
@@ -283,7 +286,7 @@ void QcdmWindow::writeMeid()
 
     uint8_t* response = NULL;
 
-    int result = port.setNvItem(NV_MEID_I, ui->hexMeidValue->text().toStdString().c_str(), 6, &response);
+    int result = port.setNvItem(NV_MEID_I, ui->hexMeidValue->text().toStdString().c_str(), &response);
 
     if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - MEID: " + ui->hexMeidValue->text());
@@ -296,13 +299,7 @@ void QcdmWindow::writeMeid()
 /**
 * @brief QcdmWindow::nvReadGetImei
 */
-void QcdmWindow::readImei()
-
-{
-    if (ui->imeiValue->text().length() != 0) {
-        ui->imeiValue->setText("");
-    }
-
+void QcdmWindow::readImei() {
     uint8_t* response = NULL;
 
     int result = port.getNvItem(NV_UE_IMEI_I, &response);
@@ -361,16 +358,21 @@ void QcdmWindow::readNvItem() {
 void QcdmWindow::readNam() {
     readMdn();
     readMin();
+    readSystemPref();
+    readPrefMode();
+    readPrefServ();
+    readRoamPref();
+    readPapUserId();
+    readPppUserId();
+    readHdrAnUserId();
+    readHdrAnLongUserId();
+    readHdrAnPppUserId();
 }
 
 /**
 * @brief QcdmWindow::readMdn
 */
 void QcdmWindow::readMdn() {
-    if (ui->mdnValue->text().length() != 0) {
-        ui->mdnValue->setText("");
-    }
-
     uint8_t* response = NULL;
 
     int result = port.getNvItem(NV_DIR_NUMBER_I, &response);
@@ -392,10 +394,6 @@ void QcdmWindow::readMdn() {
 * @brief QcdmWindow::readMin
 */
 void QcdmWindow::readMin() {
-    if (ui->minValue->text().length() != 0) {
-        ui->minValue->setText("");
-    }
-
     char minChunk1[3];
     char minChunk2[1];
 
@@ -461,15 +459,270 @@ void QcdmWindow::readMin() {
 }
 
 /**
+* @brief QcdmWindow::readSid
+*/
+void QcdmWindow::readSid() {
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_SID_NID_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        std::string sidValue = port.hexToString((char *)rxPacket->data, 9);
+
+        ui->sidValue->setText(QString::fromStdString(sidValue));
+
+        log(LOGTYPE_INFO, "Read Success - MDN: " + sidValue);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - MDN");
+    }
+}
+
+/**
+* @brief QcdmWindow::readSystemPref
+*/
+void QcdmWindow::readSystemPref()
+{
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_SYSTEM_PREF_I, &response);
+
+    if (result == DIAG_NV_READ_F) {
+        QString result;
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        ui->systemPrefValue->setCurrentIndex(rxPacket->data[0] + 1);
+
+        switch (rxPacket->data[0]) {
+        case SYSTEM_PREF_SYSTEM_A:
+            result = "SYSTEM_A";
+            break;
+        case SYSTEM_PREF_SYSTEM_B:
+            result = "SYSTEM_B";
+            break;
+        case SYSTEM_PREF_HOME_ONLY:
+            result = "HOME_ONLY";
+            break;
+        case SYSTEM_PREF_HOME_PREF:
+            result = "HOME_PREF";
+            break;
+        }
+
+        log(LOGTYPE_INFO, "Read Success - System Pref: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Read Failure - System Pref");
+    }
+}
+
+/**
+* @brief QcdmWindow::readPrefMode
+*/
+void QcdmWindow::readPrefMode()
+{
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_PREF_MODE_I, &response);
+
+    if (result == DIAG_NV_READ_F) {
+        QString result = "NOT_IMPLEMENTED";
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        int newIndex = 0;
+
+        switch (rxPacket->data[0]) {
+
+        case PREF_MODE_AUTOMATIC:
+            result = "AUTOMATIC";
+            newIndex = 1;
+            break;
+        case PREF_MODE_CDMA_GSM_WCDMA:
+            result = "CDMA_GSM_WCDMA";
+            newIndex = 2;
+            break;
+        case PREF_MODE_CDMA_HDR:
+            result = "CDMA_HDR";
+            newIndex = 3;
+            break;
+        case PREF_MODE_CDMA_HDR_GSM_WCDMA:
+            result = "CDMA_HDR_GSM_WCDMA";
+            newIndex = 4;
+            break;
+        case PREF_MODE_CDMA_IS2000:
+            result = "CDMA_IS2000";
+            newIndex = 5;
+            break;
+        case PREF_MODE_CDMA_IS95:
+            result = "CDMA_IS95";
+            newIndex = 6;
+            break;
+        case PREF_MODE_GSM_GPRS_EDGE:
+            result = "GSM_GPRS_EDGE";
+            newIndex = 7;
+            break;
+        case PREF_MODE_GSM_WCDMA:
+            result = "GSM_WCDMA";
+            newIndex = 8;
+            break;
+        case PREF_MODE_HDR:
+            result = "HDR";
+            newIndex = 9;
+            break;
+        case PREF_MODE_LTE:
+            result = "LTE";
+            newIndex = 10;
+            break;
+        case PREF_MODE_LTE_CDMA:
+            result = "LTE_CDMA";
+            newIndex = 11;
+            break;
+        case PREF_MODE_LTE_CDMA_GSM:
+            result = "LTE_CDMA_GSM";
+            newIndex = 12;
+            break;
+        case PREF_MODE_LTE_CDMA_HDR:
+            result = "LTE_CDMA_HDR";
+            newIndex = 13;
+            break;
+        case PREF_MODE_LTE_CDMA_WCDMA:
+            result = "LTE_CDMA_WCDMA";
+            newIndex = 14;
+            break;
+        case PREF_MODE_LTE_GSM:
+            result = "LTE_GSM";
+            newIndex = 15;
+            break;
+        case PREF_MODE_LTE_GSM_WCDMA:
+            result = "LTE_GSM_WCDMA";
+            newIndex = 16;
+            break;
+        case PREF_MODE_LTE_HDR:
+            result = "LTE_HDR";
+            newIndex = 17;
+            break;
+        case PREF_MODE_LTE_HDR_GSM:
+            result = "LTE_HDR_GSM";
+            newIndex = 18;
+            break;
+        case PREF_MODE_LTE_HDR_WCDMA:
+            result = "LTE_HDR_WCDMA";
+            newIndex = 19;
+            break;
+        case PREF_MODE_LTE_WCDMA:
+            result = "LTE_WCDMA";
+            newIndex = 20;
+            break;
+        case PREF_MODE_WCDMA_HSDPA:
+            result = "WCDMA_HSPDA";
+            newIndex = 20;
+            break;
+        }
+
+        ui->prefModeValue->setCurrentIndex(newIndex);
+
+        log(LOGTYPE_INFO, "Read Success - Pref Mode: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Read Failure - Pref Mode");
+    }
+}
+
+/**
+* @brief QcdmWindow::readPrefServ
+*/
+void QcdmWindow::readPrefServ()
+{
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_CDMA_PREF_SERV_I, &response);
+
+    if (result == DIAG_NV_READ_F) {
+        QString result;
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        ui->prefServValue->setCurrentIndex(rxPacket->data[0] + 1);
+
+        switch (rxPacket->data[0]) {
+        case PREF_SERV_SYSTEM_A:
+            result = "SYSTEM_A";
+            break;
+        case PREF_SERV_SYSTEM_AB:
+            result = "SYSTEM_AB";
+            break;
+        case PREF_SERV_SYSTEM_B:
+            result = "SYSTEM_B";
+            break;
+        case PREF_SERV_SYSTEM_BA:
+            result = "SYSTEM_BA";
+            break;
+        case PREF_SERV_HOME_ONLY:
+            result = "HOME_ONLY";
+            break;
+        case PREF_SERV_HOME_PREF:
+            result = "HOME_PREF";
+            break;
+        }
+
+        log(LOGTYPE_INFO, "Read Success - Pref Serv: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Read Failure - Pref Serv");
+    }
+}
+
+/**
+* @brief QcdmWindow::readRoamPref
+*/
+void QcdmWindow::readRoamPref()
+{
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_ROAM_PREF_I, &response);
+
+    if (result == DIAG_NV_READ_F) {
+        QString result;
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        int newIndex = 0;
+
+        switch (rxPacket->data[0]) {
+        case ROAM_PREF_HOME:
+            result = "HOME";
+            newIndex = 1;
+            break;
+        case ROAM_PREF_AFFILIATED:
+            result = "AFFILIATED";
+            newIndex = 2;
+            break;
+        case ROAM_PREF_AUTOMATIC:
+            result = "AUTOMATIC";
+            newIndex = 3;
+            break;
+        case ROAM_PREF_STATIC: // Work on this...
+            result = "STATIC";
+            newIndex = 4;
+            break;
+        }
+
+        ui->roamPrefValue->setCurrentIndex(newIndex);
+
+        log(LOGTYPE_INFO, "Read Success - Roam Pref: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Read Failure - Roam Pref");
+    }
+}
+
+/**
 * @brief QcdmWindow::nvReadGetSpc
 */
 void QcdmWindow::readSpc()
 {
-    if (ui->hexSpcValue->text().length() != 0 || ui->decSpcValue->text().length() != 0) {
-        ui->hexSpcValue->setText("");
-        ui->decSpcValue->setText("");
-    }
-
     uint8_t* response = NULL;
 
     int result = 0;
@@ -499,9 +752,9 @@ void QcdmWindow::readSpc()
     if (result == DIAG_NV_READ_F){
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        QString rxSpcValue = QString::fromStdString(port.hexToString((char *)rxPacket->data, 5));
+        std::string rxSpcValue = port.hexToString((char *)rxPacket->data, 5);
 
-        ui->decSpcValue->setText(rxSpcValue);
+        ui->decSpcValue->setText(QString::fromStdString(rxSpcValue));
 
         log(LOGTYPE_INFO, "Read Success - SPC: " + rxSpcValue);
     } else {
@@ -521,7 +774,7 @@ void QcdmWindow::writeSpc()
 
     uint8_t* response = NULL;
 
-    int result = port.setNvItem(NV_SEC_CODE_I, ui->decSpcValue->text().toStdString().c_str(), 6, &response);
+    int result = port.setNvItem(NV_SEC_CODE_I, ui->decSpcValue->text().toStdString().c_str(), &response);
 
     if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - SPC: " + ui->decSpcValue->text());
@@ -531,8 +784,7 @@ void QcdmWindow::writeSpc()
     }
 }
 
-void QcdmWindow::readSubscription()
-{
+void QcdmWindow::readSubscription() {
     uint8_t* response = NULL;
 
     int result = port.getNvItem(NV_RTRE_CONFIG_I, &response);
@@ -542,7 +794,7 @@ void QcdmWindow::readSubscription()
 
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        ui->subscriptionValue->setCurrentIndex(rxPacket->data[0]);
+        ui->subscriptionValue->setCurrentIndex(rxPacket->data[0] + 1);
 
         switch (rxPacket->data[0]) {
         case RTRE_MODE_RUIM_ONLY:
@@ -570,16 +822,23 @@ void QcdmWindow::writeSubscription()
 {
     uint8_t* response = NULL;
 
-    int index = ui->subscriptionValue->currentIndex();
+    int mode = ui->subscriptionValue->currentIndex() - 1;
 
-    int result = port.setNvItem(NV_RTRE_CONFIG_I, static_cast<const char *>(static_cast<void*>(&index)), 1, &response);
+    if (mode < 0) {
+        log(LOGTYPE_WARNING, "Select a Subsciption Mode to Write");
+        return;
+    }
+
+    const char* data = static_cast<const char *>(static_cast<void*>(&mode));
+
+    int result = port.setNvItem(NV_RTRE_CONFIG_I, data, &response);
 
     if (result == DIAG_NV_WRITE_F) {
         QString result;
 
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        ui->subscriptionValue->setCurrentIndex(rxPacket->data[0]);
+        ui->subscriptionValue->setCurrentIndex(rxPacket->data[0] + 1);
 
         switch (rxPacket->data[0]) {
         case RTRE_MODE_RUIM_ONLY:
@@ -603,8 +862,107 @@ void QcdmWindow::writeSubscription()
     }
 }
 
-void QcdmWindow::spcTextChanged(QString value)
-{
+void QcdmWindow::readPapUserId() {
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_PAP_USER_ID_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+
+        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        QString result = QString::fromStdString(tmp);
+        result = fixedTrim(result);
+
+        ui->papUserIdValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - PAP User ID: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - PAP User ID");
+    }
+}
+
+void QcdmWindow::readPppUserId() {
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_PPP_USER_ID_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+
+        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        QString result = QString::fromStdString(tmp);
+        result = fixedTrim(result);
+
+        ui->pppUserIdValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - PPP User ID: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - PPP User ID");
+    }
+}
+
+void QcdmWindow::readHdrAnUserId() {
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_HDR_AN_AUTH_NAI_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+
+        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        QString result = QString::fromStdString(tmp);
+        result = fixedTrim(result);
+
+        ui->hdrAnUserIdValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - HDR AN User ID: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - HDR AN User ID");
+    }
+}
+
+void QcdmWindow::readHdrAnLongUserId() {
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_LONG_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+
+        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        QString result = QString::fromStdString(tmp);
+        result = fixedTrim(result);
+
+        ui->hdrAnLongUserIdValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - HDR AN LONG User ID: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - HDR AN LONG User ID");
+    }
+}
+
+void QcdmWindow::readHdrAnPppUserId() {
+    uint8_t* response = NULL;
+
+    int result = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_PPP_I, &response);
+
+    if (result == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+
+        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        QString result = QString::fromStdString(tmp);
+        result = fixedTrim(result);
+
+        ui->hdrAnPppUserIdValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - HDR AN PPP User ID: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - HDR AN PPP User ID");
+    }
+}
+
+void QcdmWindow::spcTextChanged(QString value) {
     if (value.length() == 6) {
         QString result, tmp;
 
@@ -615,6 +973,11 @@ void QcdmWindow::spcTextChanged(QString value)
 
         ui->hexSpcValue->setText(result);
     }
+}
+
+// Fix odd QString::trimmed() behavior
+QString QcdmWindow::fixedTrim(QString input) {
+    return input.trimmed() == "." ? "" : input.trimmed();
 }
 
 void QcdmWindow::DisableUiButtons() {
@@ -659,19 +1022,32 @@ void QcdmWindow::EnableUiButtons() {
 
 /**
 * @brief QcdmWindow::log
-* @param message
 */
-void QcdmWindow::log(int type, const char* message)
-{
-    QString newMessage = message;
-    log(type, newMessage);
+void QcdmWindow::clearLog() {
+    ui->log->clear();
 }
+
+/**
+* @brief QcdmWindow::saveLog
+*/
+void QcdmWindow::saveLog() {
+    log(LOGTYPE_WARNING, "Not Implemented Yet");
+}
+
 /**
 * @brief QcdmWindow::log
 * @param message
 */
-void QcdmWindow::log(int type, std::string message)
-{
+void QcdmWindow::log(int type, const char* message) {
+    QString newMessage = message;
+    log(type, newMessage);
+}
+
+/**
+* @brief QcdmWindow::log
+* @param message
+*/
+void QcdmWindow::log(int type, std::string message) {
     QString newMessage = message.c_str();
     log(type, newMessage);
 }
@@ -681,8 +1057,7 @@ void QcdmWindow::log(int type, std::string message)
 * @param type
 * @param message
 */
-void QcdmWindow::log(int type, QString message)
-{
+void QcdmWindow::log(int type, QString message) {
     QString suffix = "</font></pre>";
 
     switch (type) {
