@@ -372,14 +372,14 @@ PACKED(typedef struct {
     uint8_t cmd;
     uint16_t nvItem;
     uint8_t padding;
-    uint8_t data[DIAG_NV_ITEM_SIZE];
+    uint8_t data[DIAG_NV_ITEM_SIZE - 1];
 }) qcdm_nv_alt_rx_t;
 PACKED(typedef struct {
     uint8_t cmd;
     uint16_t nvItem;
     uint8_t padding;
     uint8_t firstByte;
-    uint8_t data[DIAG_NV_ITEM_SIZE];
+    uint8_t data[DIAG_NV_ITEM_SIZE - 2];
 }) qcdm_nv_alt2_rx_t;
 
 #endif // _QC_DIAG_H
