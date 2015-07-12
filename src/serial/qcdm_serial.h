@@ -64,7 +64,7 @@ namespace openpst {
             * @param response -
             * @return
             */
-            int setNvItem(int itemId, const char* data, int length, uint8_t** response);
+            int setNvItem(int itemId, const char* data, uint8_t** response);
 
             /**
             * @brief sendHtcNvUnlock

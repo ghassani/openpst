@@ -188,7 +188,7 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
 * @param response = Full QCDM response
 * @return QCDM command response status
 */
-int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** response)
+int QcdmSerial::setNvItem(int itemId, const char *data, uint8_t** response)
 {
     if (!isOpen()) {
         return DIAG_CMD_PORT_CLOSED;
@@ -200,7 +200,7 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
     packet.nvItem = itemId;
 
     if (itemId != NV_MEID_I) {
-        memcpy(&packet.data, data, length);
+        memcpy(&packet.data, data, sizeof(data));
     } else {
         long newData = std::stoul(data, nullptr, 16);
         memcpy(&packet.data, &newData, sizeof(newData));
@@ -302,7 +302,7 @@ int QcdmSerial::getLgSpc(uint8_t** response)
         return DIAG_CMD_PORT_CLOSED;
     }
 
-    unsigned char data[] = { 0x11, 0x17, 0x00, 0x08 };
+    unsigned char data[] = { 0x11, 0x17, 0x0, 0x08 };
 
     lastTxSize = write((uint8_t*)data, sizeof(data));
 
