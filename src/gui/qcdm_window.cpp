@@ -74,8 +74,6 @@ void QcdmWindow::UpdatePortList()
     ui->portListComboBox->clear();
     ui->portListComboBox->addItem("- Select a Port -", 0);
 
-    log(LOGTYPE_INFO, "Scanning for Available Devices");
-
     while (iter != devices.end()) {
         serial::PortInfo device = *iter++;
 
@@ -122,10 +120,6 @@ void QcdmWindow::ConnectToPort()
         log(LOGTYPE_ERROR, "Invalid Port Type");
         return;
     }
-
-    QString connectionText = "Connecting to ";
-    connectionText.append(currentPort.port.c_str()).append("...");
-    log(LOGTYPE_INFO, connectionText);
 
     try {
         port.setPort(currentPort.port);
@@ -358,15 +352,16 @@ void QcdmWindow::readNvItem() {
 void QcdmWindow::readNam() {
     readMdn();
     readMin();
+    readSid();
     readSystemPref();
     readPrefMode();
     readPrefServ();
     readRoamPref();
-    readPapUserId();
-    readPppUserId();
-    readHdrAnUserId();
-    readHdrAnLongUserId();
-    readHdrAnPppUserId();
+    //readPapUserId();
+    //readPppUserId();
+    //readHdrAnUserId();
+    //readHdrAnLongUserId();
+    //readHdrAnPppUserId();
 }
 
 /**
@@ -464,18 +459,32 @@ void QcdmWindow::readMin() {
 void QcdmWindow::readSid() {
     uint8_t* response = NULL;
 
-    int result = port.getNvItem(NV_SID_NID_I, &response);
+    std::string strValue;
+
+    QString sidValue, tmp;
+
+    int result = port.getNvItem(NV_HOME_SID_NID_I, &response);
 
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
-        std::string sidValue = port.hexToString((char *)rxPacket->data, 9);
+        char result[2];
 
-        ui->sidValue->setText(QString::fromStdString(sidValue));
+        result[0] = rxPacket->data[1];
+        result[1] = rxPacket->data[0];
 
-        log(LOGTYPE_INFO, "Read Success - MDN: " + sidValue);
+        strValue = port.bytesToHex(result, 2);
+
+        uint16_t value = std::strtoul(strValue.c_str(), nullptr, 16);
+
+        tmp.sprintf("%5i", value);
+        sidValue.append(tmp);
+
+        ui->sidValue->setText(sidValue);
+
+        log(LOGTYPE_INFO, "Read Success - SID: " + sidValue);
     } else {
-        log(LOGTYPE_ERROR, "Read Failure - MDN");
+        log(LOGTYPE_ERROR, "Read Failure - SID");
     }
 }
 
