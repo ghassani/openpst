@@ -46,6 +46,7 @@ namespace openpst {
         void readMeid();
         void writeMeid();
         void readNam();
+        void writeNam();
         void readNvItem();
         void readSpc();
         void writeSpc();

@@ -39,6 +39,7 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(writeMeid()));
     QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(readImei()));
     QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(readNam()));
+    QObject::connect(ui->writeNamButton, SIGNAL(clicked()), this, SLOT(writeNam()));
     QObject::connect(ui->readNvItemButton, SIGNAL(clicked()), this, SLOT(readNvItem()));
     QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(readSpc()));
     QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(writeSpc()));
@@ -362,6 +363,16 @@ void QcdmWindow::readNam() {
     //readHdrAnUserId();
     //readHdrAnLongUserId();
     //readHdrAnPppUserId();
+}
+
+/**
+* @brief QcdmWindow::writeNam
+*/
+void QcdmWindow::writeNam() {
+    writeMdn();
+    writeSystemPref();
+    writePrefServ();
+    writeRoamPref();
 }
 
 /**
