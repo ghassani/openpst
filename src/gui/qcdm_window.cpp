@@ -418,60 +418,40 @@ void QcdmWindow::writeMdn()
 * @brief QcdmWindow::readMin
 */
 void QcdmWindow::readMin() {
-    unsigned char minChunk1[3];
-    unsigned char minChunk2[1];
+    unsigned char min1Chunk[3], min2Chunk[1];
+    std::string min1, min2;
 
-    int32_t iMin1, iMin2, min1a, min1b, min1c, min2;
+    uint8_t* resp = nullptr;
 
-    QString decodedMin, tmp;
+    int rx = port.getNvItem(NV_MIN1_I, &resp);
 
-    std::string sMin1;
-    std::string sMin2;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
-    uint8_t* response = NULL;
+        min1Chunk[0] = rxPacket->data[3];
+        min1Chunk[1] = rxPacket->data[2];
+        min1Chunk[2] = rxPacket->data[1];
+        min1Chunk[3] = rxPacket->data[0];
 
-    int result = port.getNvItem(NV_MIN1_I, &response);
-
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
-
-        minChunk1[0] = rxPacket->data[0];
-        minChunk1[1] = rxPacket->data[1];
-        minChunk1[2] = rxPacket->data[2];
-        minChunk1[3] = rxPacket->data[3];
-
-        sMin1 = bytesToHex(minChunk1, 4, true);
-
-        iMin1 = strtoul(sMin1.c_str(), nullptr, 16);
-
-        min1a = (iMin1 & 0xFFC000) >> 14;
-        min1a = ((min1a + 1) % 10) + (((((min1a % 100) / 10) + 1) % 10) * 10) + ((((min1a / 100) + 1) % 10) * 100);
-
-        min1b = ((iMin1 & 0x3C00) >> 10) % 10;
-
-        min1c = (iMin1 & 0x3FF);
-        min1c = ((min1c + 1) % 10) + (((((min1c % 100) / 10) + 1) % 10) * 10) + ((((min1c / 100) + 1) % 10) * 100);
+        min1 = min1Decode(min1Chunk);
     }
 
-    response = NULL;
+    resp = nullptr;
 
-    result = port.getNvItem(NV_MIN2_I, &response);
+    rx = port.getNvItem(NV_MIN2_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
-        minChunk2[0] = rxPacket->data[2];
-        minChunk2[1] = rxPacket->data[3];
+        min2Chunk[0] = rxPacket->data[3];
+        min2Chunk[1] = rxPacket->data[2];
 
-        sMin2 = bytesToHex(minChunk2, 2, true);
-
-        iMin2 = strtoul(sMin2.c_str(), nullptr, 16);
-
-        min2 = ((iMin2+1) % 10) + (((((iMin2 % 100) / 10) + 1) % 10) * 10) + ((((iMin2 / 100) + 1) % 10) * 100);
+        min2 = min2Decode(min2Chunk);
     }
 
-    tmp.sprintf("%03i%03i%i%i", min2, min1a, min1b, min1c);
-    decodedMin.append(tmp);
+    QString decodedMin;
+    decodedMin.append(QString::fromStdString(min2));
+    decodedMin.append(QString::fromStdString(min1));
 
     if (decodedMin.length() == 10) {
         ui->minValue->setText(decodedMin);
@@ -486,32 +466,26 @@ void QcdmWindow::readMin() {
 * @brief QcdmWindow::readSid
 */
 void QcdmWindow::readSid() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    std::string strValue;
+    int rx = port.getNvItem(NV_HOME_SID_NID_I, &resp);
 
-    QString sidValue, tmp;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
-    int result = port.getNvItem(NV_HOME_SID_NID_I, &response);
+        unsigned char data[2];
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+        data[0] = rxPacket->data[1];
+        data[1] = rxPacket->data[0];
 
-        unsigned char result[2];
+        QString result;
+        std::string tmp = sidDecode(data);
+        result.append(QString::fromStdString(tmp));
+        result = fixedTrim(result);
 
-        result[0] = rxPacket->data[0];
-        result[1] = rxPacket->data[1];
+        ui->sidValue->setText(result);
 
-        strValue = bytesToHex(result, 2, true);
-
-        uint16_t value = std::strtoul(strValue.c_str(), nullptr, 16);
-
-        tmp.sprintf("%5i", value);
-        sidValue.append(tmp);
-
-        ui->sidValue->setText(sidValue);
-
-        log(LOGTYPE_INFO, "Read Success - SID: " + sidValue);
+        log(LOGTYPE_INFO, "Read Success - SID: " + result);
     } else {
         log(LOGTYPE_ERROR, "Read Failure - SID");
     }
