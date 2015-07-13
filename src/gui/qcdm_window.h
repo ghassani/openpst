@@ -61,12 +61,16 @@ namespace openpst {
 
     private:
         void readMdn();
+        void writeMdn();
         void readMin();
         void readSid();
         void readSystemPref();
+        void writeSystemPref();
         void readPrefMode();
         void readPrefServ();
+        void writePrefServ();
         void readRoamPref();
+        void writeRoamPref();
 
         void readPapUserId();
         void readPppUserId();

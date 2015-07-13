@@ -386,6 +386,32 @@ void QcdmWindow::readMdn() {
 }
 
 /**
+* @brief QcdmWindow::writeMdn
+*/
+void QcdmWindow::writeMdn()
+{
+    if (ui->mdnValue->text().length() != 10) {
+        log(LOGTYPE_WARNING, "Enter a Valid 10 Digit MDN");
+        return;
+    }
+
+    uint8_t* response = NULL;
+
+    qcdm_nv_alt_tx_t packet;
+    memset(&packet, 0, sizeof(packet));
+    memcpy(&packet.data, ui->mdnValue->text().toStdString().c_str(), 10);
+
+    int result = port.setNvItem(NV_DIR_NUMBER_I, (const char *)&packet, 11, &response);
+
+    if (result == DIAG_NV_WRITE_F) {
+        log(LOGTYPE_INFO, "Write Success - MDN: " + ui->mdnValue->text());
+    }
+    else {
+        log(LOGTYPE_ERROR, "Write Failure - MDN");
+    }
+}
+
+/**
 * @brief QcdmWindow::readMin
 */
 void QcdmWindow::readMin() {
@@ -523,6 +549,52 @@ void QcdmWindow::readSystemPref()
     }
     else {
         log(LOGTYPE_ERROR, "Read Failure - System Pref");
+    }
+}
+
+void QcdmWindow::writeSystemPref()
+{
+    uint8_t* response = NULL;
+
+    int mode = ui->systemPrefValue->currentIndex() - 1;
+
+    if (mode < 0) {
+        log(LOGTYPE_WARNING, "Select a System Pref to Write");
+        return;
+    }
+
+    qcdm_nv_alt_tx_t packet;
+    memset(&packet, 0, sizeof(packet));
+    memcpy(&packet.data, static_cast<const char *>(static_cast<void*>(&mode)), 1);
+
+    int result = port.setNvItem(NV_SYSTEM_PREF_I, (const char *)&packet, 2, &response);
+
+    if (result == DIAG_NV_WRITE_F) {
+        QString result;
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        ui->systemPrefValue->setCurrentIndex(rxPacket->data[0] + 1);
+
+        switch (rxPacket->data[0]) {
+        case SYSTEM_PREF_SYSTEM_A:
+            result = "SYSTEM_A";
+            break;
+        case SYSTEM_PREF_SYSTEM_B:
+            result = "SYSTEM_B";
+            break;
+        case SYSTEM_PREF_HOME_ONLY:
+            result = "HOME_ONLY";
+            break;
+        case SYSTEM_PREF_HOME_PREF:
+            result = "HOME_PREF";
+            break;
+        }
+
+        log(LOGTYPE_INFO, "Write Success - System Pref: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Write Failure - System Pref");
     }
 }
 
@@ -683,6 +755,58 @@ void QcdmWindow::readPrefServ()
     }
 }
 
+void QcdmWindow::writePrefServ()
+{
+    uint8_t* response = NULL;
+
+    int mode = ui->prefServValue->currentIndex() - 1;
+
+    if (mode < 0) {
+        log(LOGTYPE_WARNING, "Select a System Pref to Write");
+        return;
+    }
+
+    qcdm_nv_alt_tx_t packet;
+    memset(&packet, 0, sizeof(packet));
+    memcpy(&packet.data, static_cast<const char *>(static_cast<void*>(&mode)), 1);
+
+    int result = port.setNvItem(NV_CDMA_PREF_SERV_I, (const char *)&packet, 2, &response);
+
+    if (result == DIAG_NV_WRITE_F) {
+        QString result;
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        ui->prefServValue->setCurrentIndex(rxPacket->data[0] + 1);
+
+        switch (rxPacket->data[0]) {
+        case PREF_SERV_SYSTEM_A:
+            result = "SYSTEM_A";
+            break;
+        case PREF_SERV_SYSTEM_AB:
+            result = "SYSTEM_AB";
+            break;
+        case PREF_SERV_SYSTEM_B:
+            result = "SYSTEM_B";
+            break;
+        case PREF_SERV_SYSTEM_BA:
+            result = "SYSTEM_BA";
+            break;
+        case PREF_SERV_HOME_ONLY:
+            result = "HOME_ONLY";
+            break;
+        case PREF_SERV_HOME_PREF:
+            result = "HOME_PREF";
+            break;
+        }
+
+        log(LOGTYPE_INFO, "Write Success - System Pref: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Write Failure - System Pref");
+    }
+}
+
 /**
 * @brief QcdmWindow::readRoamPref
 */
@@ -724,6 +848,65 @@ void QcdmWindow::readRoamPref()
     }
     else {
         log(LOGTYPE_ERROR, "Read Failure - Roam Pref");
+    }
+}
+
+void QcdmWindow::writeRoamPref()
+{
+    uint8_t* response = NULL;
+
+    int mode = ui->roamPrefValue->currentIndex() - 1;
+
+    if (mode < 0) {
+        log(LOGTYPE_WARNING, "Select a Roam Pref to Write");
+        return;
+    }
+
+    qcdm_nv_alt_tx_t packet;
+    memset(&packet, 0, sizeof(packet));
+
+    switch(mode) {
+    case 0:
+        packet.data[0] = ROAM_PREF_HOME;
+        break;
+    case 1:
+        packet.data[0] = ROAM_PREF_AFFILIATED;
+        break;
+    case 2:
+        packet.data[0] = ROAM_PREF_AUTOMATIC;
+        break;
+    }
+
+    int result = port.setNvItem(NV_ROAM_PREF_I, (const char *)&packet, 2, &response);
+
+    if (result == DIAG_NV_WRITE_F) {
+        QString result;
+
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+
+        int newIndex = 0;
+
+        switch (rxPacket->data[0]) {
+        case ROAM_PREF_HOME:
+            result = "HOME";
+            newIndex = 1;
+            break;
+        case ROAM_PREF_AFFILIATED:
+            result = "AFFILIATED";
+            newIndex = 2;
+            break;
+        case ROAM_PREF_AUTOMATIC:
+            result = "AUTOMATIC";
+            newIndex = 3;
+            break;
+        }
+
+        ui->roamPrefValue->setCurrentIndex(newIndex);
+
+        log(LOGTYPE_INFO, "Write Success - Roam Pref: " + result);
+    }
+    else {
+        log(LOGTYPE_ERROR, "Write Failure - Roam Pref");
     }
 }
 
