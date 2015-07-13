@@ -19,13 +19,11 @@ using namespace serial;
 
 namespace openpst {
 
-
 	struct streaming_dload_read_worker_request {
 		uint32_t		address;
-		uint32_t		lastAddress;
 		size_t			size;
+		size_t			chunkSize;
 		size_t			outSize;
-		size_t			lastChunkSize;
 		std::string		outFilePath;		
 	};
 	

@@ -38,33 +38,206 @@ namespace openpst {
 	
 	class StreamingDloadSerial : public HdlcSerial {
 		public:
-            StreamingDloadSerial(std::string port, int baudrate = 115200);
-            ~StreamingDloadSerial();
+			/**
+			* @brief holds the current device state data
+			*/
+			streaming_dload_device_state state;
 
+			/**
+			* @brief StreamingDloadSerial() - Constructor
+			*
+			* @param std::string port - The device to connect to
+			* @param int baudrate - Defaults to 115200
+			*/
+			StreamingDloadSerial(std::string port, int baudrate = 115200);
+            
+			/**
+			* @brief ~StreamingDloadSerial() - Deconstructor
+			*/
+			~StreamingDloadSerial();
+
+			/**
+			* @brief sendHello - sends the initial handshake for the session
+			*
+			* @param std::string magic - The magic handhsake word. Should be QCOM FAST DOWNLOAD HOST
+			* @param uint8_t version - The max version to be compatible with
+			* @param uint8_t compatibleVersion - The lowest version to be compatible with
+			* @param uint8_t a set of feature bits of what features to enable. 
+			*	@see qc/streaming_dload.h
+			*
+			* @return int
+			*/
 			int sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits);
+			
+			/**
+			* @brief sendUnlock - send the unlock command for implementations that require it
+			*
+			* @param std::string code - The unlock code
+			*
+			* @return int
+			*/
 			int sendUnlock(std::string code);
+			
+			/**
+			* @brief setSecurityMode - set the session security mode
+			*
+			* @param uint8_t mode - The security mode to set to
+			*
+			* @return int
+			*/
 			int setSecurityMode(uint8_t mode);
-			int sendNop(); 
+			
+			/**
+			* @brief sendNop - send a NOP
+			*
+			* @return int
+			*/			
+			int sendNop();
+
+			/**
+			* @brief sendReset - send a reset command
+			*
+			* @return int
+			*/
 			int sendReset();
+
+			/**
+			* @brief sendNop - send a power down command
+			*
+			* @return int
+			*/
 			int sendPowerOff();
+
+			/**
+			* @brief readEcc - read the current ECC state
+			*
+			* @param uint8_t& status - Will be set with the current status
+			* @return int
+			*/
 			int readEcc(uint8_t& statusOut);
+
+			/**
+			* @brief setEcc - set the current ECC state
+			*
+			* @param uint8_t status - The status to set it to
+			*
+			* @return int
+			*/
 			int setEcc(uint8_t status);
+			
+			/**
+			* @brief openMode - Open mode
+			*
+			* @param uint8_t mode - The mode to open
+			*	@see qc/streaming_dload.h
+			* @return int
+			*/
 			int openMode(uint8_t mode);
+
+			/**
+			* @brief closeMode - Close the current opened mode
+			*
+			* @return int
+			*/
 			int closeMode();
+
+			/**
+			* @brief openMultiImage - open mode for multi image devices
+			*
+			* @param uint8_t imageType - The image type to open
+			*	@see qc/streaming_dload.h
+			*
+			* @return int
+			*/
 			int openMultiImage(uint8_t imageType);
-			int readAddress(uint32_t address, size_t length, uint8_t** out, size_t& outSize);
-			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out);
-			int readQfprom(uint32_t rowAddress, uint32_t addressType);
+			
+			/**
+			* @brief readAddress - Read x bytes from starting address 
+			*					   into a memory allocated array
+			*
+			* @param uint32_t address - The starting address
+			* @param size_t length - The length to read from address
+			* @param uint8_t** - The memory allocated array containing the read data until success or error encountered.
+			* @param size_t& - The size of the memory allocated data
+			* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+			*
+			* @return int
+			*/
+			int readAddress(uint32_t address, size_t length, uint8_t** out, size_t& outSize, size_t chunkSize);
+
+			/**
+			* @brief readAddress - Read x bytes from starting address
+			*					   into a std::vector<uint8_t> container
+			*
+			* @param uint32_t address - The starting address
+			* @param size_t length - The length to read from address
+			* @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
+			* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+			*
+			* @return int
+			*/
+			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize);
+			
+			/**
+			* @brief readAddress - Read x bytes from starting address
+			*					   into a file pointer
+			*
+			* @param uint32_t address - The starting address
+			* @param size_t length - The length to read from address
+			* @param FILE* out - The file pointer to write the data to
+			* @param size_t& outSize - The amount of bytes written to the file until success or error encountered.
+			* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+			*
+			* @return int
+			*/
+			int readAddress(uint32_t address, size_t length, FILE* out, size_t &outSize, size_t chunkSize);
+			
+			/**
+			* @brief writePartitionTable - Writes partition table for sessions that require it.
+			*		
+			* You should send this request with overwrite set to false first and check the outStatus
+			* If it is ok the write will take place. If it is not ok then to write the file you will
+			* need to force it with overwrite set to true.
+			* 
+			* @param std::string filePath - The path to the partition table (max 512 bytes)
+			* @param uint8_t& - The status reported back by the device.
+			*	@see qc/streaming_dload.h
+			* @param bool overwritte - Defaults to false. If true will overwrite even if error is reported.
+			*/
 			int writePartitionTable(std::string filePath, uint8_t& outStatus, bool overwrite = false);
 
-			streaming_dload_hello_rx_t deviceState;
-			streaming_dload_error_rx_t lastError;
-			streaming_dload_log_rx_t   lastLog;
+			/**
+			* @brief readQfprom - Havent found a device or mode to use this in
+			*/
+			int readQfprom(uint32_t rowAddress, uint32_t addressType);
 
+			/**
+			* @brief getNamedError - Get a named error from an error code
+			* 
+			* @param uint8_t code - The error code
+			*
+			* @return const char* msg
+			*/
 			const char* getNamedError(uint8_t code);
+
+			/**
+			* @brief getNamedOpenMode - Get a named mode from an open mode integer
+			*
+			* @param uint8_t mode - The mode
+			*
+			* @return const char* mode
+			*/
 			const char* getNamedOpenMode(uint8_t mode);
+
+			/**
+			* @brief getNamedMultiImage - Get a named image from an open multi image type 
+			*
+			* @param uint8_t imageType - The image type id
+			*
+			* @return const char* name
+			*/
 			const char* getNamedMultiImage(uint8_t imageType);
-			streaming_dload_device_state state;
+
 	private:
 		bool isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize);
 		bool isValidResponse(uint8_t expectedCommand, std::vector<uint8_t> &response);
