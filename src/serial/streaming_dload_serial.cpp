@@ -40,7 +40,7 @@ StreamingDloadSerial::~StreamingDloadSerial()
 int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -57,14 +57,14 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	txSize = write((uint8_t*)&hello, sizeof(hello));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n"); 
+		LOGD("Wrote 0 bytes\n"); 
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 	
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -95,7 +95,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 int StreamingDloadSerial::sendUnlock(std::string code)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -109,14 +109,14 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -130,7 +130,7 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -143,14 +143,14 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -164,7 +164,7 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 int StreamingDloadSerial::sendReset()
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -177,14 +177,14 @@ int StreamingDloadSerial::sendReset()
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -198,7 +198,7 @@ int StreamingDloadSerial::sendReset()
 int StreamingDloadSerial::sendPowerOff()
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -210,14 +210,14 @@ int StreamingDloadSerial::sendPowerOff()
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -232,7 +232,7 @@ int StreamingDloadSerial::sendPowerOff()
 int StreamingDloadSerial::sendNop()
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -245,14 +245,14 @@ int StreamingDloadSerial::sendNop()
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -263,7 +263,7 @@ int StreamingDloadSerial::sendNop()
 	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)&buffer[0];
 
 	if (resp->identifier  != packet.identifier) {
-		printf("Received NOP response but identifier did not match\n");
+		LOGD("Received NOP response but identifier did not match\n");
 	}
 
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
@@ -272,7 +272,7 @@ int StreamingDloadSerial::sendNop()
 int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -284,14 +284,14 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -309,7 +309,7 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 int StreamingDloadSerial::setEcc(uint8_t status)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -322,14 +322,14 @@ int StreamingDloadSerial::setEcc(uint8_t status)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -343,7 +343,7 @@ int StreamingDloadSerial::setEcc(uint8_t status)
 int StreamingDloadSerial::openMode(uint8_t mode)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -356,14 +356,14 @@ int StreamingDloadSerial::openMode(uint8_t mode)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -377,7 +377,7 @@ int StreamingDloadSerial::openMode(uint8_t mode)
 int StreamingDloadSerial::closeMode()
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -389,14 +389,14 @@ int StreamingDloadSerial::closeMode()
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -412,7 +412,7 @@ int StreamingDloadSerial::closeMode()
 int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -425,14 +425,14 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -443,55 +443,61 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	size_t txSize, rxSize;
-	uint8_t buffer[STREAMING_DLOAD_MAX_PACKET_SIZE];
-
-	uint32_t lastAddress = 0;
 
 	uint8_t* out = new uint8_t[length];
 	size_t outSize = length;
+
+	uint8_t buffer[STREAMING_DLOAD_MAX_PACKET_SIZE * 2];
+
 	dataSize = 0;
 
 	streaming_dload_read_tx_t packet;
 	packet.command = STREAMING_DLOAD_READ;
 
 	streaming_dload_read_rx_t* readRx;
-	int overhead;
+
+	if (chunkSize > state.hello.maxPreferredBlockSize) {
+		chunkSize = state.hello.maxPreferredBlockSize;
+	}
+
 	do {
 		packet.address = address + dataSize;
-		packet.length = length <= state.hello.maxPreferredBlockSize ? length : state.hello.maxPreferredBlockSize;
+		packet.length = length <= chunkSize ? length : chunkSize;
+
+		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 
 		txSize = write((uint8_t*)&packet, sizeof(packet));
 
 		if (!txSize) {
-			printf("Wrote 0 bytes\n");
-			free(out); 
+			LOGD("Wrote 0 bytes requesting to read %lu bytes from 0x%08X\n", packet.length, packet.address);
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+		// read accounting for additional room for the data to be read
+		// and the extra packet data in the header of the response
+		// and possibly escaped content
+		rxSize = read(buffer, STREAMING_DLOAD_MAX_PACKET_SIZE * 2);
 
 		if (!rxSize) {
-			printf("Device did not respond\n");
+			LOGD("Device did not respond\n");
 			free(out);
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
 		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, buffer, rxSize)) {
-			printf("Invalid Response\n");
+			LOGD("Invalid Response\n");
 			free(out);
 			return STREAMING_DLOAD_OPERATION_ERROR;
 		}
 		
-		lastAddress = packet.address;
-
 		size_t newSize = dataSize + rxSize;
 		if (newSize > outSize) {			 
 			out = (uint8_t*)realloc(out, newSize);
@@ -500,10 +506,13 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 
 		readRx = (streaming_dload_read_rx_t*)&buffer[0];
 
-		overhead = (sizeof(readRx->address) + sizeof(readRx->command));
-
-		memcpy(&out[dataSize], readRx->data, rxSize - overhead);
-		dataSize += (rxSize - overhead);
+		if (readRx->address != packet.address) {
+			LOGD("Packet address and response address differ\n");
+			return STREAMING_DLOAD_OPERATION_ERROR;
+		}
+		
+		memcpy(&out[dataSize], readRx->data, rxSize - sizeof(packet));
+		dataSize += (rxSize - sizeof(packet));
 
 		if (length <= dataSize) {
 			break; //done
@@ -513,16 +522,16 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 
 	*data = out;
 	
-	printf("\n\n\nFinal Data Size: %lu bytes\n", dataSize);
+	LOGI("\n\n\nFinal Data Size: %lu bytes\n", dataSize);
 	hexdump(out, dataSize);
 
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -531,36 +540,159 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 	streaming_dload_read_tx_t packet;
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
+
 	streaming_dload_read_rx_t* readRx;
 
-	out.clear();
+	if (out.size()) {
+		out.clear();
+	}
+
+	out.reserve(length);
+
+	std::vector<uint8_t> tmp;
+	tmp.reserve(packet.length + sizeof(packet));
+
+	if (chunkSize > state.hello.maxPreferredBlockSize) {
+		chunkSize = state.hello.maxPreferredBlockSize;
+	}
 
 	do {
-		packet.address = packet.address + out.size();
-		packet.length = length <= state.hello.maxPreferredBlockSize ? length : state.hello.maxPreferredBlockSize;
+		packet.address = packet.address + out.size();		
+		packet.length = length <= chunkSize ? length : chunkSize;
+		
+		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
+
+		txSize = write((uint8_t*)&packet, sizeof(packet));
+		
+		if (!txSize) {
+			LOGD("Wrote 0 bytes requesting to read %lu bytes from 0x%08X\n", packet.length, packet.address);
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		}
+
+		// read accounting for additional room for the data to be read
+		// and the extra packet data in the header of the response
+		// and possibly escaped content
+		rxSize = read(tmp, (packet.length + sizeof(packet)) * 2);
+
+		if (!rxSize) {
+			LOGD("Device did not respond to request to read %lu bytes from 0x%08X\n", packet.length, packet.address);
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		}
+		
+		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, tmp)) {
+			LOGD("Invalid response in request to read %lu bytes from 0x%08X. Data read so far is %lu bytes.\n", packet.length, packet.address, out.size());
+			return STREAMING_DLOAD_OPERATION_ERROR;
+		}
+
+		readRx = (streaming_dload_read_rx_t*)&tmp[0];
+
+		if (readRx->address != packet.address) {
+			LOGD("Packet address and response address differ\n");
+			return STREAMING_DLOAD_OPERATION_ERROR;
+		}
+
+		// remove the command code, address, and length to only
+		// keep the real data
+		tmp.erase(tmp.end() - rxSize, (tmp.end() - rxSize) + sizeof(packet));
+
+		out.reserve(out.size() + tmp.size());
+		std::copy(tmp.begin(), tmp.end(), std::back_inserter(out));
+
+		if (length <= out.size()) {
+			LOGD("Final read size is %lu bytes\n", out.size());
+			break; //done
+		}
+
+		// clear out the tmp buffer
+		// for a possible next read
+		tmp.clear();
+
+	} while (true);
+
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
+}
+
+
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out, size_t &outSize, size_t chunkSize)
+{
+	if (!isOpen()) {
+		LOGD("Port Not Open\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	size_t txSize, rxSize;
+
+	streaming_dload_read_tx_t packet;
+	packet.command = STREAMING_DLOAD_READ;
+	packet.address = address;
+
+	streaming_dload_read_rx_t* readRx;
+
+	outSize = 0;
+
+	std::vector<uint8_t> tmp;
+	tmp.reserve(packet.length + sizeof(packet));
+
+	if (chunkSize > state.hello.maxPreferredBlockSize) {
+		chunkSize = state.hello.maxPreferredBlockSize;
+	}
+
+	do {
+		packet.address = packet.address + outSize;
+		packet.length = length <= chunkSize ? length : chunkSize;
+
+		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 
 		txSize = write((uint8_t*)&packet, sizeof(packet));
 
 		if (!txSize) {
-			printf("Wrote 0 bytes\n");
+			LOGD("Wrote 0 bytes requesting to read %lu bytes from 0x%08X\n", packet.length, packet.address);
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		rxSize = read(out, state.hello.maxPreferredBlockSize);
+		// read accounting for additional room for the data to be read
+		// and the extra packet data in the header of the response
+		// and possibly escaped content
+		rxSize = read(tmp, (packet.length + sizeof(packet)) * 2);
 
 		if (!rxSize) {
-			printf("Device did not respond\n");
+			LOGD("Device did not respond to request to read %lu bytes from 0x%08X\n", packet.length, packet.address);
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, out)) {
-			printf("Invalid Response\n");
+		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, tmp)) {
+			LOGD("Invalid response in request to read %lu bytes from 0x%08X. Data read so far is %lu bytes.\n", packet.length, packet.address, outSize);
 			return STREAMING_DLOAD_OPERATION_ERROR;
 		}
-		
-		if (length <= out.size()) {
+
+		readRx = (streaming_dload_read_rx_t*)&tmp[0];
+
+		if (readRx->address != packet.address) {
+			LOGD("Packet address and response address differ\n");
+			return STREAMING_DLOAD_OPERATION_ERROR;
+		}
+
+		// remove the command code, address, and length to only
+		// keep the real data
+		tmp.erase(tmp.end() - rxSize, (tmp.end() - rxSize) + sizeof(packet));
+
+		size_t bytesWritten = fwrite(&tmp[0], sizeof(uint8_t), tmp.size(), out);
+
+		if (bytesWritten != tmp.size()) {
+			LOGD("Error writting to file. Attempted to write %lu bytes but only wrote %lu. Check for sufficient disk space.\n", tmp.size(), bytesWritten);
+			return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		}
+
+		outSize += bytesWritten;
+
+		if (length <= outSize) {
+			LOGD("Final read size is %lu bytes\n", outSize);
 			break; //done
 		}
+
+		// clear out the tmp buffer
+		// for a possible next read
+		tmp.clear();
 
 	} while (true);
 
@@ -570,7 +702,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& outStatus, bool overwrite)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
@@ -582,7 +714,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 #endif
 
 	if (!fp) {
-		printf("Could Not Open File %s\n", fileName.c_str());
+		LOGD("Could Not Open File %s\n", fileName.c_str());
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -591,9 +723,9 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 	rewind(fp);
 
 	if (fileSize > 512) {
-		printf("File can\'t exceed 512 bytes");
+		LOGD("File can\'t exceed 512 bytes");
 		fclose(fp);
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
 	size_t txSize, rxSize;
@@ -607,14 +739,14 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 	
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -627,7 +759,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 	outStatus = resp->status;
 
 	if (resp->status > 1) {
-		printf("Received Error Response %02X\n", resp->status);
+		LOGD("Received Error Response %02X\n", resp->status);
 		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
@@ -638,7 +770,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 {
 	if (!isOpen()) {
-		printf("Port Not Open\n");
+		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -652,14 +784,14 @@ int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 
 	if (!txSize) {
-		printf("Wrote 0 bytes\n");
+		LOGD("Wrote 0 bytes\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
 	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
 
 	if (!rxSize) {
-		printf("Device did not respond\n");
+		LOGD("Device did not respond\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
@@ -675,14 +807,14 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 	if (response[0] != expectedCommand) {
 		if (response[0] == STREAMING_DLOAD_LOG) {
 			streaming_dload_log_rx_t* packet = (streaming_dload_log_rx_t*)response;
-			printf("Received Log Response\n");
-			memcpy((uint8_t*)&lastLog, packet, responseSize);
+			LOGD("Received Log Response\n");
+			memcpy((uint8_t*)&state.lastLog, packet, responseSize);
 		} else if (response[0] == STREAMING_DLOAD_ERROR) {
 			streaming_dload_error_rx_t* packet = (streaming_dload_error_rx_t*)response;
-			printf("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code));
-			memcpy((uint8_t*)&lastError, packet, responseSize);
+			LOGD("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code));
+			memcpy((uint8_t*)&state.lastError, packet, responseSize);
 		} else {
-			printf("Unexpected Response\n");
+			LOGD("Unexpected Response\n");
 		}
 		return false;
 	}

@@ -52,7 +52,7 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->openMultiValue->addItem("0x0A - AMSS applications boot loader", STREAMING_DLOAD_OPEN_MULTI_MODE_APPS_CEFS);
 	ui->openMultiValue->addItem("0x0B - Apps CEFS", STREAMING_DLOAD_OPEN_MULTI_MODE_FLASH_BIN);
 	ui->openMultiValue->addItem("0x0C - Flash.bin for Windows Mobile", STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1);
-	ui->openMultiValue->addItem("0x0D  -DSP1 runtime image", STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1);
+	ui->openMultiValue->addItem("0x0D - DSP1 runtime image", STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1);
 	ui->openMultiValue->addItem("0x0E - User defined partition", STREAMING_DLOAD_OPEN_MULTI_MODE_CUSTOM);
 	ui->openMultiValue->addItem("0x0F - DBL - Secure Boot 2.0", STREAMING_DLOAD_OPEN_MULTI_MODE_DBL);
 	ui->openMultiValue->addItem("0x10 - OSBL - Secure Boot 2.0", STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL);
@@ -71,8 +71,6 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->openMultiValue->addItem("0x27 - EMMC GPP3", STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP3);
 	ui->openMultiValue->addItem("0x28 - EMMC GPP4", STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP4);
 	ui->openMultiValue->setCurrentIndex(0);
-	
-	updatePortList();
 
 	QObject::connect(ui->portRefreshButton, SIGNAL(clicked()), this, SLOT(updatePortList()));
 	QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(disconnectPort()));
@@ -92,11 +90,17 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->readButton, SIGNAL(clicked()), this, SLOT(read()));
 	QObject::connect(ui->qfpromReadButton, SIGNAL(clicked()), this, SLOT(readQfprom()));
 	QObject::connect(ui->writePartitionTableButton, SIGNAL(clicked()), this, SLOT(writePartitionTable()));
+	QObject::connect(ui->cancelOperationButton, SIGNAL(clicked()), this, SLOT(cancelOperation()));
 
 	
 	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
 	QObject::connect(ui->writePartitionTableFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForParitionTable()));
 	QObject::connect(ui->writeFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForWriteFile()));
+
+	qRegisterMetaType<streaming_dload_read_worker_request>("streaming_dload_read_worker_request");
+
+
+	updatePortList();
 }
 
 StreamingDloadWindow::~StreamingDloadWindow()
@@ -469,30 +473,77 @@ void StreamingDloadWindow::read()
 	}
 
 	uint32_t address = std::stoul(ui->readAddressValue->text().toStdString().c_str(), nullptr, 16);
-	size_t length = std::stoi(ui->readSizeValue->text().toStdString().c_str(), nullptr, 10);
-	size_t chunkSize = std::stoi(ui->readChunkSizeValue->currentText().toStdString().c_str(), nullptr, 10);
+	size_t	 size = std::stoi(ui->readSizeValue->text().toStdString().c_str(), nullptr, 10);
+	size_t	 chunkSize = std::stoi(ui->readChunkSizeValue->currentText().toStdString().c_str(), nullptr, 10);
 
-	QString tmp;
-	std::vector<uint8_t> data;
-
-	log(tmp.sprintf("Attempting Read %lu bytes starting from address %08X", length, address));
-
-	if (!port.readAddress(address, length, data)) {
-		log(tmp.sprintf("Error reading data from address %08X with size %lu", address, length));
+	if (size <= 0) {
+		log("Enter a valid size to read");
 		return;
 	}
-	
-	log(tmp.sprintf("Read %lu bytes starting from address %08X", data.size(), address));
 
+	QString tmp;
+	
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Read Data"), "", tr("Binary Files (*.bin)"));
 
-	if (fileName.length()) {
-		FILE* outFile = fopen(fileName.toStdString().c_str(), "a+b");
-		if (outFile) {
-			fwrite(&data[0], sizeof(uint8_t), data.size(), outFile);
-			fclose(outFile);
-		}
+
+	if (!fileName.length()) {
+		log("Read operation cancelled");
+		return;
 	}
+
+	log(tmp.sprintf("Attempting Read %lu bytes starting from address 0x%08X to file %s", size, address, fileName.toStdString().c_str()));
+
+	streaming_dload_read_worker_request request;	
+	request.address = address;
+	request.size = size;
+	request.chunkSize = chunkSize;
+	request.outFilePath = fileName.toStdString();
+
+	// setup progress bar
+	ui->progressBar->reset();
+	ui->progressBar->setMaximum(request.size);
+	ui->progressBar->setMinimum(0);
+	ui->progressBar->setValue(0);
+
+	ui->progressBarTextLabel2->setText(tmp.sprintf("%s", request.outFilePath.c_str()));
+	ui->progressBarTextLabel->setText(tmp.sprintf("0 / %lu bytes", request.size));
+
+	disableControls();
+
+	readWorker = new StreamingDloadReadWorker(port, request, this);
+	connect(readWorker, &StreamingDloadReadWorker::chunkReady, this, &StreamingDloadWindow::readChunkReadyHandler, Qt::QueuedConnection);
+	connect(readWorker, &StreamingDloadReadWorker::complete, this, &StreamingDloadWindow::readCompleteHandler);
+	connect(readWorker, &StreamingDloadReadWorker::error, this, &StreamingDloadWindow::readChunkErrorHandler);
+	connect(readWorker, &StreamingDloadReadWorker::finished, readWorker, &QObject::deleteLater);
+
+	readWorker->start();
+}
+
+
+void StreamingDloadWindow::readChunkReadyHandler(streaming_dload_read_worker_request request)
+{
+	// update progress bar
+	QString tmp;
+	ui->progressBar->setValue(request.outSize);
+	ui->progressBarTextLabel->setText(tmp.sprintf("%lu / %lu bytes", ui->progressBar->value(), request.size));
+}
+
+void StreamingDloadWindow::readCompleteHandler(streaming_dload_read_worker_request request)
+{
+	QString tmp;
+
+	log(tmp.sprintf("Read complete. Contents dumped to %s. Final size is %lu bytes", request.outFilePath.c_str(), request.outSize));
+
+	readWorker = NULL;
+}
+
+void StreamingDloadWindow::readChunkErrorHandler(streaming_dload_read_worker_request request, QString msg)
+{
+	log(msg);
+
+	enableControls();
+
+	readWorker = NULL;
 }
 
 
@@ -610,6 +661,45 @@ void StreamingDloadWindow::browseForWriteFile()
 	}
 }
 
+
+void StreamingDloadWindow::disableControls()
+{
+	ui->tabSet->setEnabled(false);
+	ui->deviceContainer->setEnabled(false);
+	ui->cancelOperationButton->setEnabled(true);
+}
+
+void StreamingDloadWindow::enableControls()
+{
+	ui->tabSet->setEnabled(true);
+	ui->deviceContainer->setEnabled(true);
+	ui->progressBarTextLabel2->setText("");
+	ui->progressBarTextLabel->setText("");
+	ui->progressBar->setValue(0);
+	ui->cancelOperationButton->setEnabled(false);
+}
+
+void StreamingDloadWindow::cancelOperation()
+{
+
+	if (nullptr != readWorker && readWorker->isRunning()) {
+		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
+
+		if (userResponse == QMessageBox::Yes) {
+			readWorker->cancel();
+			if (!readWorker->wait(5000)) {
+				readWorker->terminate();
+				readWorker->wait();
+			}
+
+			log("Read cancelled");
+		}
+	} else {
+		log("No operation currently running");
+	}
+
+	enableControls();
+}
 /**
 * @brief StreamingDloadWindow::clearLog
 */

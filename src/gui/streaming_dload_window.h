@@ -17,6 +17,7 @@
 #include "ui_streaming_dload_window.h"
 #include "qc/streaming_dload.h"
 #include "serial/streaming_dload_serial.h"
+#include "worker/streaming_dload_read_worker.h"
 #include <iostream>
 #include <fstream>
 
@@ -35,7 +36,7 @@ namespace openpst{
 			~StreamingDloadWindow();
 
 
-			public slots:
+		public slots:
 			/**
 			 * @brief updatePortList
 			 */
@@ -146,6 +147,37 @@ namespace openpst{
 			*/
 			void browseForWriteFile();
 
+
+			/**
+			* @brief readChunkReadyHandler
+			*/
+			void readChunkReadyHandler(streaming_dload_read_worker_request request);
+
+			/**
+			* @brief readCompleteHandler
+			*/
+			void readCompleteHandler(streaming_dload_read_worker_request request);
+
+			/**
+			* @brief readChunkErrorHandler
+			*/
+			void readChunkErrorHandler(streaming_dload_read_worker_request request, QString msg);
+			
+			/**
+			* @brief cancelOperation
+			*/			
+			void cancelOperation();
+
+			/**
+			* @brief enableControls
+			*/
+			void enableControls();
+
+			/**
+			* @brief disableControls
+			*/
+			void disableControls();
+
 			/**
 			* @brief log
 			*/
@@ -160,6 +192,7 @@ namespace openpst{
 			Ui::StreamingDloadWindow *ui;
 			openpst::StreamingDloadSerial port;
 			serial::PortInfo currentPort;
+			StreamingDloadReadWorker* readWorker;
 		};
 }
 #endif // _GUI_STREAMING_DLOAD_WINDOW_H

@@ -49,9 +49,10 @@ namespace openpst {
              * @param bool unescape
              * @return
              */
-            size_t read (uint8_t *buf, size_t size, bool unescape = true);
-			
+			size_t read(uint8_t *buf, size_t size, bool unescape = true);
+
 			size_t write(std::vector<uint8_t> &data, bool encapsulate = true);
+
 			size_t read(std::vector<uint8_t> &buffer, size_t size, bool unescape = true);
 
             uint8_t buffer[2048 * 2];

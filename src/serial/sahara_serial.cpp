@@ -38,7 +38,7 @@ size_t SaharaSerial::sendPacket(sahara_packet_t* packet)
     lastTxSize = write((uint8_t*)packet, packet->header.size);
 
     if (!lastTxSize) {
-        printf("Attempted to write to port but 0 bytes were written\n");
+        LOGD("Attempted to write to port but 0 bytes were written\n");
         return 0;
     }
 
@@ -56,14 +56,14 @@ int SaharaSerial::readHello()
     lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-        printf("Did not receive hello. Not in sahara mode or requires restart\n");
+        LOGD("Did not receive hello. Not in sahara mode or requires restart\n");
         return 0;
     }
 
 	hexdump_rx(buffer, lastRxSize);
 
 	if (!isValidResponse(SAHARA_HELLO, buffer, lastRxSize)) {
-		printf("Did Not Receive Hello Request From Device\n");
+		LOGD("Did Not Receive Hello Request From Device\n");
 		return 0;
 	}
 
@@ -100,7 +100,7 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
     if (!lastTxSize) {
-        printf("Attempted to write to port but 0 bytes were written\n");
+        LOGD("Attempted to write to port but 0 bytes were written\n");
 		return SAHARA_OPERATION_ERROR;
     }
 	
@@ -125,7 +125,7 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet)); // resend the hello response
 
 		if (!lastTxSize) {
-			printf("Attempted to write to port but 0 bytes were written\n");
+			LOGD("Attempted to write to port but 0 bytes were written\n");
 			return SAHARA_OPERATION_IO_ERROR;
 		}
 
@@ -135,7 +135,7 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 	}
 	
     if (!lastRxSize) {
-        printf("Expected response but 0 bytes received from device\n");
+        LOGD("Expected response but 0 bytes received from device\n");
 		return SAHARA_OPERATION_IO_ERROR;
     }
 
@@ -163,14 +163,14 @@ int SaharaSerial::switchMode(uint32_t mode)
     }
 
 	if (deviceState.mode == mode) {
-		printf("Device already in mode 0x%02X - %s\n",
+		LOGD("Device already in mode 0x%02X - %s\n",
 			mode,
 			getNamedMode(mode)
 		);
 		return 1;
 	}
 
-    printf("Requesting Mode Switch From 0x%02x - %s  to 0x%02x - %s\n",
+    LOGD("Requesting Mode Switch From 0x%02x - %s  to 0x%02x - %s\n",
         deviceState.mode,
         getNamedMode(deviceState.mode),
         mode,
@@ -185,7 +185,7 @@ int SaharaSerial::switchMode(uint32_t mode)
     lastTxSize = write((uint8_t*)&packet, packet.header.size);
 
 	if (!lastTxSize) {
-        printf("Attempted to write to port but 0 bytes were written\n");
+        LOGD("Attempted to write to port but 0 bytes were written\n");
     }
 
 	hexdump_tx((uint8_t*)&packet, lastTxSize);
@@ -193,7 +193,7 @@ int SaharaSerial::switchMode(uint32_t mode)
     lastRxSize = read(buffer, bufferSize);
 
     if (!lastRxSize) {
-        printf("Device Did Not Respond\n");
+        LOGD("Device Did Not Respond\n");
         return 0;
     }
 
@@ -224,13 +224,13 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 
     if (deviceState.mode != SAHARA_MODE_COMMAND) {
         // try to switch to client command mode
-        printf("Not In Client Command Mode. Attempting To Switch.\n");
+        LOGD("Not In Client Command Mode. Attempting To Switch.\n");
         if (!switchMode(SAHARA_MODE_COMMAND)) {
             return 0;
         }
     }
 
-    printf("Sending Client Command: 0x%02x - %s\n",
+    LOGD("Sending Client Command: 0x%02x - %s\n",
         command, getNamedClientCommand(command)
     );
 
@@ -242,7 +242,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
     if (!lastTxSize) {
-        printf("Attempted to write to port but 0 bytes were written\n");
+        LOGD("Attempted to write to port but 0 bytes were written\n");
         return 0;
     }
 
@@ -251,7 +251,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
     lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-        printf("Expected response but 0 bytes received from device\n");
+        LOGD("Expected response but 0 bytes received from device\n");
         return 0;
     }
 
@@ -279,7 +279,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 			cmdResponseData = (uint8_t*)realloc(cmdResponseData, newSize);
 
 			if (cmdResponseData == NULL) {
-				printf("Could Not Allocate %u More Bytes For Data\n", execResponse->size);
+				LOGD("Could Not Allocate %u More Bytes For Data\n", execResponse->size);
 				free(cmdResponseData);
 				return 0;
 			}
@@ -290,7 +290,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 		lastTxSize = write((uint8_t*)&execData, sizeof(execData));
 
 		if (!lastTxSize) {
-			printf("Attempted to write to port but 0 bytes were written\n");
+			LOGD("Attempted to write to port but 0 bytes were written\n");
 			free(cmdResponseData);
 			return 0;
 		}
@@ -300,7 +300,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 		lastRxSize = read(buffer, bufferSize);
 
 		if (!lastRxSize) {
-			printf("Expected response but 0 bytes received from device\n");
+			LOGD("Expected response but 0 bytes received from device\n");
 			free(cmdResponseData);
 			return 0;
 		}
@@ -308,7 +308,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 		hexdump_rx(buffer, lastRxSize);
 		
 		if (!isValidResponse(NULL, buffer, lastRxSize)) {
-			printf("Error Encountered\n");
+			LOGD("Error Encountered\n");
 			free(cmdResponseData);
 			return 0;
 		}
@@ -325,14 +325,14 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 		lastTxSize = write((uint8_t*)&execData, sizeof(execData));
 
 		if (!lastTxSize) {
-			printf("Attempted to write to port but 0 bytes were written\n");
+			LOGD("Attempted to write to port but 0 bytes were written\n");
 			free(cmdResponseData);
 			return 0;
 		}
 
 	} while (1);
 
-	printf("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
+	LOGI("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
 		command, getNamedClientCommand(command), totalReadSize
 	);
 
@@ -352,7 +352,7 @@ int SaharaSerial::sendImage(std::string file)
     }
 
     if (readState.imageId == MBN_IMAGE_NONE) {
-        printf("Device has not requested an image\n");
+        LOGD("Device has not requested an image\n");
         return 0;
     }
 
@@ -364,7 +364,7 @@ int SaharaSerial::sendImage(std::string file)
 #endif	
 
     if (!fp) {
-        printf("Could Not Open File %s\n", file.c_str());
+        LOGD("Could Not Open File %s\n", file.c_str());
         return 0;
     }
 
@@ -379,7 +379,7 @@ int SaharaSerial::sendImage(std::string file)
     fileSize = ftell(fp);
     rewind(fp);
 
-    printf("Loaded File %s With Size %lu\n", file.c_str(), fileSize);
+    LOGD("Loaded File %s With Size %lu\n", file.c_str(), fileSize);
 
     uint8_t* fileBuffer = new uint8_t[readState.size];
     size_t fileBufferSize = readState.size;
@@ -388,7 +388,7 @@ int SaharaSerial::sendImage(std::string file)
         if (readState.size > fileBufferSize) {
             fileBuffer = (uint8_t*) realloc(fileBuffer, readState.size);
             if (fileBuffer == NULL) {
-                printf("Could Not Allocate %lu Bytes For File Buffer\n", readState.size);
+                LOGD("Could Not Allocate %lu Bytes For File Buffer\n", readState.size);
                 free(fileBuffer);
                 return 0;
             }
@@ -414,7 +414,7 @@ int SaharaSerial::sendImage(std::string file)
 		size_t nextSize;
 
 		if (!readNextImageOffset(nextOffset, nextSize)) {
-			printf("Error getting next image offset and size\n");
+			LOGD("Error getting next image offset and size\n");
 			free(fileBuffer);
 			fclose(fp);
 			return 0;
@@ -438,7 +438,7 @@ int SaharaSerial::readNextImageOffset(uint32_t& offset, size_t& size)
 	lastRxSize = read(buffer, bufferSize);
 
 	if (!lastRxSize) {
-		printf("Expected response but 0 bytes received from device\n");
+		LOGD("Expected response but 0 bytes received from device\n");
 		return 0;
 	}
 
@@ -470,7 +470,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 	}
 
 	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {
-		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
+		LOGD("Not In Memory Debug Mode. Attempting To Switch.\n");
 		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
 			return 0;
 		}
@@ -505,7 +505,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
 		if (!lastTxSize) {
-			printf("Attempted to write to port but 0 bytes were written\n");
+			LOGD("Attempted to write to port but 0 bytes were written\n");
 			free(outBuffer);
 			return 0;
 		}
@@ -549,7 +549,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, FILE* out, size_t& o
 	}
 
 	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {
-		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
+		LOGD("Not In Memory Debug Mode. Attempting To Switch.\n");
 		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
 			return 0;
 		}
@@ -582,7 +582,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, FILE* out, size_t& o
 		lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
 		if (!lastTxSize) {
-			printf("Attempted to write to port but 0 bytes were written\n");
+			LOGD("Attempted to write to port but 0 bytes were written\n");
 			return 0;
 		}
 
@@ -615,7 +615,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, const char* outFile,
 	}
 
 	if (deviceState.mode != SAHARA_MODE_MEMORY_DEBUG) {
-		printf("Not In Memory Debug Mode. Attempting To Switch.\n");
+		LOGD("Not In Memory Debug Mode. Attempting To Switch.\n");
 		if (!switchMode(SAHARA_MODE_MEMORY_DEBUG)) {
 			return 0;
 		}
@@ -629,7 +629,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, const char* outFile,
 #endif	
 
 	if (!fp) {
-		printf("Error opening file %s for writing\n", outFile);
+		LOGD("Error opening file %s for writing\n", outFile);
 		return 0;
 	}
 
@@ -653,7 +653,7 @@ int SaharaSerial::sendDone()
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
     if (!lastTxSize) {
-        printf("Attempted to write to port but 0 bytes were written\n");
+        LOGD("Attempted to write to port but 0 bytes were written\n");
         return 0;
     }
 
@@ -662,7 +662,7 @@ int SaharaSerial::sendDone()
     lastRxSize = read(buffer, bufferSize);
 
     if (!lastRxSize) {
-        printf("Expected response but 0 bytes received from device\n");
+        LOGD("Expected response but 0 bytes received from device\n");
         return 0;
     }
 
@@ -696,24 +696,24 @@ int SaharaSerial::sendReset()
 		hexdump_rx(buffer, lastRxSize);
 
 	} catch (std::exception e) {
-		printf(e.what());
+		LOGD(e.what());
 		try {
 			close();
 		} catch (std::exception e) {
-			printf(e.what());
+			LOGD(e.what());
 		}
 		return 1;
 	}
 
     if (!lastTxSize) {
-        printf("Attempted to write to port but 0 bytes were written\n");
+        LOGD("Attempted to write to port but 0 bytes were written\n");
         return 0;
     }
 
     //hexdump_tx((uint8_t*)&packet, lastTxSize);
 
     if (!lastRxSize) {
-        printf("Expected response but 0 bytes received from device\n");
+        LOGD("Expected response but 0 bytes received from device\n");
         return 0;
     }
 
@@ -760,13 +760,13 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* da
 		sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*)data;
 		if (error->status != 0x00 && expectedResponseCommand != SAHARA_READ_DATA) {
 			memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
-			printf("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
+			LOGD("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
 			// we need to reset after an error and disconnect to prepare for another transfer if needed
 			sendReset();
 			return false;
 		}
 	} else if (NULL != expectedResponseCommand) {
-		printf("Unexpected Response. Expected 0x%02x But Received 0x%02x", expectedResponseCommand, data[0]);
+		LOGD("Unexpected Response. Expected 0x%02x But Received 0x%02x", expectedResponseCommand, data[0]);
 		return false;
 	}
 

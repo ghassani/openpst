@@ -349,10 +349,10 @@ void SaharaWindow::sendImage()
     }
 
     sahara_image_transfer_worker_request request;
-    request.imageType = port.readState.imageId;
-    request.imagePath = fileName.toStdString();
-    request.offset = port.readState.offset;
-    request.chunkSize = port.readState.size;
+    request.imageType	= port.readState.imageId;
+    request.imagePath	= fileName.toStdString();
+    request.offset		= port.readState.offset;
+    request.chunkSize	= port.readState.size;
 
 #ifdef _WIN32
     FILE* fp;
@@ -741,13 +741,15 @@ void SaharaWindow::cancelOperation()
 void SaharaWindow::disableControls()
 {
     ui->mainTabSet->setEnabled(false);
+	ui->deviceContainer->setEnabled(false);
     ui->cancelOperationButton->setEnabled(true);
 }
 
 void SaharaWindow::enableControls()
 {
     ui->mainTabSet->setEnabled(true);
-    ui->progressBarTextLabel2->setText("");
+	ui->deviceContainer->setEnabled(true);
+	ui->progressBarTextLabel2->setText("");
     ui->progressBarTextLabel->setText("");
     ui->progressBar->setValue(0);
     ui->cancelOperationButton->setEnabled(false);
