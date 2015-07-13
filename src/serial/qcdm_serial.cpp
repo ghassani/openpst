@@ -192,13 +192,7 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
     qcdm_nv_tx_t packet;
     packet.cmd = DIAG_NV_WRITE_F;
     packet.nvItem = itemId;
-
-    if (itemId != NV_MEID_I) {
-        memcpy(&packet.data, data, length);
-    } else {
-        long newData = std::stoul(data, nullptr, 16);
-        memcpy(&packet.data, &newData, sizeof(newData));
-    }
+    memcpy(&packet.data, data, length);
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 

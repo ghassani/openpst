@@ -274,11 +274,16 @@ void QcdmWindow::writeMeid()
         log(LOGTYPE_WARNING, "Enter a Valid 14 Character MEID");
     }
 
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.setNvItem(NV_MEID_I, ui->hexMeidValue->text().toStdString().c_str(), 7, &response);
+    long data = HexToBytes(ui->hexMeidValue->text().toStdString());
 
-    if (result == DIAG_NV_WRITE_F) {
+    qcdm_nv_raw_tx_t packet;
+    memcpy(&packet.data, &data, sizeof(data));
+
+    int rx = port.setNvItem(NV_MEID_I, (const char *)&packet, sizeof(packet), &resp);
+
+    if (rx == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - MEID: " + ui->hexMeidValue->text());
     }
     else {
