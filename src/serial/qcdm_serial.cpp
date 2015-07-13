@@ -45,7 +45,6 @@ int QcdmSerial::sendSpc(const char* spc)
     }
 
     qcdm_spc_tx_t packet;
-    packet.command = DIAG_SPC_F;
     memcpy(&packet.spc, spc, 6);
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
@@ -87,7 +86,6 @@ int QcdmSerial::sendPassword(const char* password)
     #endif
 
     qcdm_16pw_tx_t packet;
-    packet.command = DIAG_PASSWORD_F;
     memcpy(&packet.password, &data, sizeof(data));
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
@@ -121,9 +119,7 @@ int QcdmSerial::sendPhoneMode(uint8_t mode)
     }
 
     qcdm_phone_mode_tx_t packet;
-    packet.command = DIAG_CONTROL_F;
     packet.mode = mode;
-    packet.padding = 0x0;
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
@@ -157,7 +153,6 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
     }
 
     qcdm_nv_tx_t packet;
-    memset(&packet, 0, sizeof(packet));
     packet.cmd = DIAG_NV_READ_F;
     packet.nvItem = itemId;
 
