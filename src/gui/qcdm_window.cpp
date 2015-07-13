@@ -295,30 +295,21 @@ void QcdmWindow::writeMeid()
 * @brief QcdmWindow::nvReadGetImei
 */
 void QcdmWindow::readImei() {
-    uint8_t* response = NULL;
+    uint8_t* response = nullptr;
 
-    int result = port.getNvItem(NV_UE_IMEI_I, &response);
+    int rx = port.getNvItem(NV_UE_IMEI_I, &response);
 
-    if (result == DIAG_NV_READ_F) {
-        QString imeiValue, tmp;
-
+    if (rx == DIAG_NV_READ_F) {
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        for (int p = 1; p <= 8; p++) {
-            tmp.sprintf("%02x", rxPacket->data[p]);
-            imeiValue.append(tmp);
-        }
+        QString result;
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 8, true);
+        result.append(QString::fromStdString(tmp));
+        result = result.remove("a");
 
-        imeiValue = imeiValue.remove("a");
+        ui->imeiValue->setText(result);
 
-        if (imeiValue != "0000000000000000") {
-            ui->imeiValue->setText(imeiValue);
-
-            log(LOGTYPE_INFO, "Read Success - IMEI: " + imeiValue);
-        }
-        else {
-            log(LOGTYPE_ERROR, "Read Failure - IMEI");
-        }
+        log(LOGTYPE_INFO, "Read Success - IMEI: " + result);
     }
     else {
         log(LOGTYPE_ERROR, "Read Failure - IMEI");
