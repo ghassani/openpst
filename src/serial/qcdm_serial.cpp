@@ -188,19 +188,18 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
 * @param response = Full QCDM response
 * @return QCDM command response status
 */
-int QcdmSerial::setNvItem(int itemId, const char *data, uint8_t** response)
+int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** response)
 {
     if (!isOpen()) {
         return DIAG_CMD_PORT_CLOSED;
     }
 
     qcdm_nv_tx_t packet;
-    memset(&packet, 0, sizeof(packet));
     packet.cmd = DIAG_NV_WRITE_F;
     packet.nvItem = itemId;
 
     if (itemId != NV_MEID_I) {
-        memcpy(&packet.data, data, sizeof(data));
+        memcpy(&packet.data, data, length);
     } else {
         long newData = std::stoul(data, nullptr, 16);
         memcpy(&packet.data, &newData, sizeof(newData));

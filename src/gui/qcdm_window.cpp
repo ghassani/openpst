@@ -280,7 +280,7 @@ void QcdmWindow::writeMeid()
 
     uint8_t* response = NULL;
 
-    int result = port.setNvItem(NV_MEID_I, ui->hexMeidValue->text().toStdString().c_str(), &response);
+    int result = port.setNvItem(NV_MEID_I, ui->hexMeidValue->text().toStdString().c_str(), 7, &response);
 
     if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - MEID: " + ui->hexMeidValue->text());
@@ -783,7 +783,7 @@ void QcdmWindow::writeSpc()
 
     uint8_t* response = NULL;
 
-    int result = port.setNvItem(NV_SEC_CODE_I, ui->decSpcValue->text().toStdString().c_str(), &response);
+    int result = port.setNvItem(NV_SEC_CODE_I, ui->decSpcValue->text().toStdString().c_str(), 6, &response);
 
     if (result == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - SPC: " + ui->decSpcValue->text());
@@ -840,7 +840,7 @@ void QcdmWindow::writeSubscription()
 
     const char* data = static_cast<const char *>(static_cast<void*>(&mode));
 
-    int result = port.setNvItem(NV_RTRE_CONFIG_I, data, &response);
+    int result = port.setNvItem(NV_RTRE_CONFIG_I, data, 1, &response);
 
     if (result == DIAG_NV_WRITE_F) {
         QString result;
