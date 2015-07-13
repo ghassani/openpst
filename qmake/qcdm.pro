@@ -19,6 +19,7 @@ DEPENDPATH += $$PWD/../
 VPATH += $$PWD/../
 
 SOURCES += \
+    src/util/convert.cpp \
     src/util/hexdump.cpp \
     src/util/endian.cpp \
     src/util/sleep.cpp \
@@ -34,6 +35,7 @@ HEADERS  += \
     src/qc/sahara.h \
     src/qc/crc.h \
     src/qc/hdlc.h \
+    src/util/convert.h \
     src/util/hexdump.h \
     src/util/endian.h \
     src/util/sleep.h \

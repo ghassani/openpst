@@ -250,20 +250,15 @@ void QcdmWindow::readMeid()
     int result = port.getNvItem(NV_MEID_I, &response);
 
     if (result == DIAG_NV_READ_F){
-        QString meidValue, tmp;
-
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        for (int p = 6; p >= 0; p--) {
-            tmp.sprintf("%02x", rxPacket->data[p]);
-            meidValue.append(tmp);
-        }
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 6, true);
 
-        meidValue = meidValue.toUpper();
+        QString result = QString::fromStdString(tmp).toUpper();
 
-        ui->hexMeidValue->setText(meidValue);
+        ui->hexMeidValue->setText(result);
 
-        log(LOGTYPE_INFO, "Read Success - MEID: " + meidValue);
+        log(LOGTYPE_INFO, "Read Success - MEID: " + result);
     }
     else {
         log(LOGTYPE_ERROR, "Read Failure - MEID");
@@ -386,7 +381,8 @@ void QcdmWindow::readMdn() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
-        QString mdnValue = QString::fromStdString(port.hexToString((char *)rxPacket->data, 9));
+        std::string tmp = hexToString((char *)rxPacket->data, 9);
+        QString mdnValue = QString::fromStdString(tmp);
 
         ui->mdnValue->setText(mdnValue);
 
@@ -426,8 +422,8 @@ void QcdmWindow::writeMdn()
 * @brief QcdmWindow::readMin
 */
 void QcdmWindow::readMin() {
-    char minChunk1[3];
-    char minChunk2[1];
+    unsigned char minChunk1[3];
+    unsigned char minChunk2[1];
 
     int32_t iMin1, iMin2, min1a, min1b, min1c, min2;
 
@@ -443,12 +439,12 @@ void QcdmWindow::readMin() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
-        minChunk1[0] = rxPacket->data[3];
-        minChunk1[1] = rxPacket->data[6];
-        minChunk1[2] = rxPacket->data[5];
-        minChunk1[3] = rxPacket->data[4];
+        minChunk1[0] = rxPacket->data[0];
+        minChunk1[1] = rxPacket->data[1];
+        minChunk1[2] = rxPacket->data[2];
+        minChunk1[3] = rxPacket->data[3];
 
-        sMin1 = port.bytesToHex(minChunk1, 4);
+        sMin1 = bytesToHex(minChunk1, 4, true);
 
         iMin1 = strtoul(sMin1.c_str(), nullptr, 16);
 
@@ -468,10 +464,10 @@ void QcdmWindow::readMin() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
-        minChunk2[0] = rxPacket->data[3];
-        minChunk2[1] = rxPacket->data[2];
+        minChunk2[0] = rxPacket->data[2];
+        minChunk2[1] = rxPacket->data[3];
 
-        sMin2 = port.bytesToHex(minChunk2, 2);
+        sMin2 = bytesToHex(minChunk2, 2, true);
 
         iMin2 = strtoul(sMin2.c_str(), nullptr, 16);
 
@@ -505,12 +501,12 @@ void QcdmWindow::readSid() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
 
-        char result[2];
+        unsigned char result[2];
 
-        result[0] = rxPacket->data[1];
-        result[1] = rxPacket->data[0];
+        result[0] = rxPacket->data[0];
+        result[1] = rxPacket->data[1];
 
-        strValue = port.bytesToHex(result, 2);
+        strValue = bytesToHex(result, 2, true);
 
         uint16_t value = std::strtoul(strValue.c_str(), nullptr, 16);
 
@@ -847,10 +843,6 @@ void QcdmWindow::readRoamPref()
             result = "AUTOMATIC";
             newIndex = 3;
             break;
-        case ROAM_PREF_STATIC: // Work on this...
-            result = "STATIC";
-            newIndex = 4;
-            break;
         }
 
         ui->roamPrefValue->setCurrentIndex(newIndex);
@@ -955,7 +947,7 @@ void QcdmWindow::readSpc()
     if (result == DIAG_NV_READ_F){
         qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
 
-        std::string rxSpcValue = port.hexToString((char *)rxPacket->data, 5);
+        std::string rxSpcValue = hexToString((char *)rxPacket->data, 5);
 
         ui->decSpcValue->setText(QString::fromStdString(rxSpcValue));
 
@@ -1073,7 +1065,7 @@ void QcdmWindow::readPapUserId() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
 
-        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
         result = fixedTrim(result);
 
@@ -1093,7 +1085,7 @@ void QcdmWindow::readPppUserId() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
 
-        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
         result = fixedTrim(result);
 
@@ -1113,7 +1105,7 @@ void QcdmWindow::readHdrAnUserId() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
 
-        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
         result = fixedTrim(result);
 
@@ -1133,7 +1125,7 @@ void QcdmWindow::readHdrAnLongUserId() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
 
-        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
         result = fixedTrim(result);
 
@@ -1153,7 +1145,7 @@ void QcdmWindow::readHdrAnPppUserId() {
     if (result == DIAG_NV_READ_F){
         qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
 
-        std::string tmp = port.hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
+        std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
         result = fixedTrim(result);
 
@@ -1167,12 +1159,8 @@ void QcdmWindow::readHdrAnPppUserId() {
 
 void QcdmWindow::spcTextChanged(QString value) {
     if (value.length() == 6) {
-        QString result, tmp;
-
-        for (int i = 0; i < value.length(); i++) {
-            tmp.sprintf("%02x", value.toStdString().c_str()[i]);
-            result.append(tmp);
-        }
+        std::string tmp = bytesToHex((unsigned char *)value.toStdString().c_str(), 6, false);
+        QString result = QString::fromStdString(tmp);
 
         ui->hexSpcValue->setText(result);
     }

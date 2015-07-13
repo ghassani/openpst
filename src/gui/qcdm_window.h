@@ -19,6 +19,7 @@
 #include "ui_qcdm_window.h"
 #include "qc/diag_nv.h"
 #include "serial/qcdm_serial.h"
+#include "util/convert.h"
 
 
 namespace Ui {
