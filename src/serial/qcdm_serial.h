@@ -18,6 +18,8 @@
 #include "serial/serial.h"
 #include "serial/hdlc_serial.h"
 #include "qc/diag.h"
+#include "qc/qcdm_nv_response_def.h"
+#include "qc/qcdm_packet_types.h"
 #include "qc/diag_nv.h"
 #include "qc/hdlc.h"
 #include "util/hexdump.h"
