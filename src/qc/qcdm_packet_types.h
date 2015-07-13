@@ -58,6 +58,10 @@ PACKED(typedef struct {
 }) qcdm_nv_alt_tx_t;
 
 PACKED(typedef struct {
+    uint8_t data[DIAG_NV_ITEM_SIZE - 3] = { 0x0 };
+}) qcdm_nv_raw_tx_t;
+
+PACKED(typedef struct {
     uint8_t cmd;
     uint16_t nvItem;
     uint8_t data[DIAG_NV_ITEM_SIZE];
