@@ -33,11 +33,9 @@ int main(int argc, char *argv[])
 
 	QApplication application(argc, argv);
 
-    openpst::MbnToolWindow window;
+	openpst::MbnToolWindow window;
 
 	window.show();
-
-	qRegisterMetaType<size_t>("size_t");
 
     return application.exec();
 }
