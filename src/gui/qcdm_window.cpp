@@ -895,6 +895,26 @@ void QcdmWindow::readPapUserId() {
     }
 }
 
+void QcdmWindow::readPapPassword() {
+    uint8_t* resp = nullptr;
+
+    int rx = port.getNvItem(NV_PAP_PASSWORD_I, &resp);
+
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
+
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 16, false);
+        tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
+        QString result = QString::fromStdString(tmp).toUpper();
+
+        ui->papPasswordValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - PAP Password: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - PAP Password");
+    }
+}
+
 void QcdmWindow::readPppUserId() {
     uint8_t* resp = nullptr;
 
@@ -912,6 +932,26 @@ void QcdmWindow::readPppUserId() {
         log(LOGTYPE_INFO, "Read Success - PPP User ID: " + result);
     } else {
         log(LOGTYPE_ERROR, "Read Failure - PPP User ID");
+    }
+}
+
+void QcdmWindow::readPppPassword() {
+    uint8_t* resp = nullptr;
+
+    int rx = port.getNvItem(NV_PPP_PASSWORD_I, &resp);
+
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
+
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 16, false);
+        tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
+        QString result = QString::fromStdString(tmp).toUpper();
+
+        ui->pppPasswordValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - PPP Password: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - PPP Password");
     }
 }
 

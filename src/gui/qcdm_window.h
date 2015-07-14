@@ -75,7 +75,9 @@ namespace openpst {
         void writeRoamPref();
 
         void readPapUserId();
+        void readPapPassword();
         void readPppUserId();
+        void readPppPassword();
         void readHdrAnUserId();
         void readHdrAnLongUserId();
         void readHdrAnPppUserId();
