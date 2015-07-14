@@ -63,6 +63,14 @@ namespace openpst {
             * @brief setNvItem
             * @param itemId - NV Item ID
             * @param data - NV Item Data
+            * @return
+            */
+            int setNvItem(int itemId, const char* data, int length);
+
+            /**
+            * @brief setNvItem
+            * @param itemId - NV Item ID
+            * @param data - NV Item Data
             * @param response -
             * @return
             */

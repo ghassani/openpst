@@ -183,6 +183,18 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
 * @param response = Full QCDM response
 * @return QCDM command response status
 */
+int QcdmSerial::setNvItem(int itemId, const char *data, int length) {
+    uint8_t* resp = nullptr;
+
+    setNvItem(itemId, data, length, &resp);
+}
+
+/**
+* @brief setNvItem
+* @param itemId = NV Item ID
+* @param response = Full QCDM response
+* @return QCDM command response status
+*/
 int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** response)
 {
     if (!isOpen()) {
