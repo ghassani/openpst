@@ -29,8 +29,8 @@
 #define DEBUG_ENABLED 0
 #endif
 
-#define LOGD(fmt, ...) do { if (DEBUG_ENABLED) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
-#define LOGI(fmt, ...) do { fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+#define LOGD(...) do { if (DEBUG_ENABLED) fprintf(stderr, __VA_ARGS__); } while (0)
+#define LOGI(...) do { fprintf(stderr, __VA_ARGS__); } while (0)
 
 
 #endif //_INCLUDE_DEFINITIONS_H
