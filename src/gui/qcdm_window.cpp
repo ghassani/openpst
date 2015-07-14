@@ -221,14 +221,14 @@ void QcdmWindow::sendPassword()
 */
 void QcdmWindow::sendPhoneMode()
 {
-    int result = port.sendPhoneMode((uint8_t)ui->phoneModeValue->currentIndex());
+    int rx = port.sendPhoneMode((uint8_t)ui->phoneModeValue->currentIndex());
 
-    if (result == MODE_RESET_F) {
+    if (rx == MODE_RESET_F) {
         DisconnectPort();
         UpdatePortList();
     }
 
-    if (result == (uint8_t)ui->phoneModeValue->currentIndex()){
+    if (rx == (uint8_t)ui->phoneModeValue->currentIndex()){
         log(LOGTYPE_INFO, "Send Phone Mode Success: " + ui->phoneModeValue->currentText());
     }
     else {
@@ -237,7 +237,7 @@ void QcdmWindow::sendPhoneMode()
 }
 
 /**
-* @brief QcdmWindow::nvReadGetMeid
+* @brief QcdmWindow::readMeid
 */
 void QcdmWindow::readMeid()
 {
@@ -245,28 +245,26 @@ void QcdmWindow::readMeid()
         ui->hexMeidValue->setText("");
     }
 
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_MEID_I, &response);
+    int rx = port.getNvItem(NV_MEID_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)resp;
 
         std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 6, true);
-
         QString result = QString::fromStdString(tmp).toUpper();
 
         ui->hexMeidValue->setText(result);
 
         log(LOGTYPE_INFO, "Read Success - MEID: " + result);
-    }
-    else {
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - MEID");
     }
 }
 
 /**
-* @brief QcdmWindow::nvWriteSetMeid
+* @brief QcdmWindow::writeMeid
 */
 void QcdmWindow::writeMeid()
 {
@@ -274,19 +272,16 @@ void QcdmWindow::writeMeid()
         log(LOGTYPE_WARNING, "Enter a Valid 14 Character MEID");
     }
 
-    uint8_t* resp = nullptr;
-
     long data = HexToBytes(ui->hexMeidValue->text().toStdString());
 
     qcdm_nv_raw_tx_t packet;
     memcpy(&packet.data, &data, sizeof(data));
 
-    int rx = port.setNvItem(NV_MEID_I, (const char *)&packet, sizeof(packet), &resp);
+    int rx = port.setNvItem(NV_MEID_I, (const char *)&packet, sizeof(packet));
 
     if (rx == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - MEID: " + ui->hexMeidValue->text());
-    }
-    else {
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - MEID");
     }
 }
@@ -295,23 +290,20 @@ void QcdmWindow::writeMeid()
 * @brief QcdmWindow::nvReadGetImei
 */
 void QcdmWindow::readImei() {
-    uint8_t* response = nullptr;
+    uint8_t* resp = nullptr;
 
-    int rx = port.getNvItem(NV_UE_IMEI_I, &response);
+    int rx = port.getNvItem(NV_UE_IMEI_I, &resp);
 
     if (rx == DIAG_NV_READ_F) {
-        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)resp;
 
-        QString result;
         std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 8, true);
-        result.append(QString::fromStdString(tmp));
-        result = result.remove("a");
+        QString result = QString::fromStdString(tmp).remove("a");
 
         ui->imeiValue->setText(result);
 
         log(LOGTYPE_INFO, "Read Success - IMEI: " + result);
-    }
-    else {
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - IMEI");
     }
 }
@@ -325,14 +317,14 @@ void QcdmWindow::readNvItem() {
         return;
     }
 
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(ui->nvItemValue->text().toInt(), &response);
+    int rx = port.getNvItem(ui->nvItemValue->text().toInt(), &resp);
 
-    if (result == DIAG_NV_READ_F){
+    if (rx == DIAG_NV_READ_F){
         QString result;
 
-        hexdump(response, sizeof(response) * 16, result, true);
+        hexdump(resp, sizeof(resp) * 16, result, true);
 
         log(LOGTYPE_INFO, "Read Success - Item Number: " + ui->nvItemValue->text() + "<br>" + result);
     }
@@ -370,12 +362,12 @@ void QcdmWindow::writeNam() {
 * @brief QcdmWindow::readMdn
 */
 void QcdmWindow::readMdn() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_DIR_NUMBER_I, &response);
+    int rx = port.getNvItem(NV_DIR_NUMBER_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         std::string tmp = hexToString((char *)rxPacket->data, 9);
         QString mdnValue = QString::fromStdString(tmp);
@@ -398,18 +390,14 @@ void QcdmWindow::writeMdn()
         return;
     }
 
-    uint8_t* response = NULL;
-
     qcdm_nv_alt_tx_t packet;
-    memset(&packet, 0, sizeof(packet));
     memcpy(&packet.data, ui->mdnValue->text().toStdString().c_str(), 10);
 
-    int result = port.setNvItem(NV_DIR_NUMBER_I, (const char *)&packet, 11, &response);
+    int rx = port.setNvItem(NV_DIR_NUMBER_I, (const char *)&packet, 11);
 
-    if (result == DIAG_NV_WRITE_F) {
+    if (rx == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - MDN: " + ui->mdnValue->text());
-    }
-    else {
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - MDN");
     }
 }
@@ -478,9 +466,8 @@ void QcdmWindow::readSid() {
         data[0] = rxPacket->data[1];
         data[1] = rxPacket->data[0];
 
-        QString result;
         std::string tmp = sidDecode(data);
-        result.append(QString::fromStdString(tmp));
+        QString result = QString::fromStdString(tmp);
         result = fixedTrim(result);
 
         ui->sidValue->setText(result);
@@ -496,43 +483,23 @@ void QcdmWindow::readSid() {
 */
 void QcdmWindow::readSystemPref()
 {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_SYSTEM_PREF_I, &response);
+    int rx = port.getNvItem(NV_SYSTEM_PREF_I, &resp);
 
-    if (result == DIAG_NV_READ_F) {
-        QString result;
-
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+    if (rx == DIAG_NV_READ_F) {
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         ui->systemPrefValue->setCurrentIndex(rxPacket->data[0] + 1);
 
-        switch (rxPacket->data[0]) {
-        case SYSTEM_PREF_SYSTEM_A:
-            result = "SYSTEM_A";
-            break;
-        case SYSTEM_PREF_SYSTEM_B:
-            result = "SYSTEM_B";
-            break;
-        case SYSTEM_PREF_HOME_ONLY:
-            result = "HOME_ONLY";
-            break;
-        case SYSTEM_PREF_HOME_PREF:
-            result = "HOME_PREF";
-            break;
-        }
-
-        log(LOGTYPE_INFO, "Read Success - System Pref: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Read Success - System Pref: " + ui->systemPrefValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - System Pref");
     }
 }
 
 void QcdmWindow::writeSystemPref()
 {
-    uint8_t* response = NULL;
-
     int mode = ui->systemPrefValue->currentIndex() - 1;
 
     if (mode < 0) {
@@ -540,37 +507,20 @@ void QcdmWindow::writeSystemPref()
         return;
     }
 
+    uint8_t* resp = nullptr;
+
     qcdm_nv_alt_tx_t packet;
-    memset(&packet, 0, sizeof(packet));
     memcpy(&packet.data, static_cast<const char *>(static_cast<void*>(&mode)), 1);
 
-    int result = port.setNvItem(NV_SYSTEM_PREF_I, (const char *)&packet, 2, &response);
+    int rx = port.setNvItem(NV_SYSTEM_PREF_I, (const char *)&packet, 2, &resp);
 
-    if (result == DIAG_NV_WRITE_F) {
-        QString result;
-
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+    if (rx == DIAG_NV_WRITE_F) {
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         ui->systemPrefValue->setCurrentIndex(rxPacket->data[0] + 1);
 
-        switch (rxPacket->data[0]) {
-        case SYSTEM_PREF_SYSTEM_A:
-            result = "SYSTEM_A";
-            break;
-        case SYSTEM_PREF_SYSTEM_B:
-            result = "SYSTEM_B";
-            break;
-        case SYSTEM_PREF_HOME_ONLY:
-            result = "HOME_ONLY";
-            break;
-        case SYSTEM_PREF_HOME_PREF:
-            result = "HOME_PREF";
-            break;
-        }
-
-        log(LOGTYPE_INFO, "Write Success - System Pref: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Write Success - System Pref: " + ui->systemPrefValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - System Pref");
     }
 }
@@ -580,14 +530,14 @@ void QcdmWindow::writeSystemPref()
 */
 void QcdmWindow::readPrefMode()
 {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_PREF_MODE_I, &response);
+    int rx = port.getNvItem(NV_PREF_MODE_I, &resp);
 
-    if (result == DIAG_NV_READ_F) {
+    if (rx == DIAG_NV_READ_F) {
         QString result = "NOT_IMPLEMENTED";
 
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         int newIndex = 0;
 
@@ -682,8 +632,7 @@ void QcdmWindow::readPrefMode()
         ui->prefModeValue->setCurrentIndex(newIndex);
 
         log(LOGTYPE_INFO, "Read Success - Pref Mode: " + result);
-    }
-    else {
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - Pref Mode");
     }
 }
@@ -693,49 +642,23 @@ void QcdmWindow::readPrefMode()
 */
 void QcdmWindow::readPrefServ()
 {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_CDMA_PREF_SERV_I, &response);
+    int rx = port.getNvItem(NV_CDMA_PREF_SERV_I, &resp);
 
-    if (result == DIAG_NV_READ_F) {
-        QString result;
-
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+    if (rx == DIAG_NV_READ_F) {
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         ui->prefServValue->setCurrentIndex(rxPacket->data[0] + 1);
 
-        switch (rxPacket->data[0]) {
-        case PREF_SERV_SYSTEM_A:
-            result = "SYSTEM_A";
-            break;
-        case PREF_SERV_SYSTEM_AB:
-            result = "SYSTEM_AB";
-            break;
-        case PREF_SERV_SYSTEM_B:
-            result = "SYSTEM_B";
-            break;
-        case PREF_SERV_SYSTEM_BA:
-            result = "SYSTEM_BA";
-            break;
-        case PREF_SERV_HOME_ONLY:
-            result = "HOME_ONLY";
-            break;
-        case PREF_SERV_HOME_PREF:
-            result = "HOME_PREF";
-            break;
-        }
-
-        log(LOGTYPE_INFO, "Read Success - Pref Serv: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Read Success - Pref Serv: " + ui->prefServValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - Pref Serv");
     }
 }
 
 void QcdmWindow::writePrefServ()
 {
-    uint8_t* response = NULL;
-
     int mode = ui->prefServValue->currentIndex() - 1;
 
     if (mode < 0) {
@@ -743,43 +666,20 @@ void QcdmWindow::writePrefServ()
         return;
     }
 
+    uint8_t* resp = nullptr;
+
     qcdm_nv_alt_tx_t packet;
-    memset(&packet, 0, sizeof(packet));
     memcpy(&packet.data, static_cast<const char *>(static_cast<void*>(&mode)), 1);
 
-    int result = port.setNvItem(NV_CDMA_PREF_SERV_I, (const char *)&packet, 2, &response);
+    int rx = port.setNvItem(NV_CDMA_PREF_SERV_I, (const char *)&packet, 2, &resp);
 
-    if (result == DIAG_NV_WRITE_F) {
-        QString result;
-
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
+    if (rx == DIAG_NV_WRITE_F) {
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         ui->prefServValue->setCurrentIndex(rxPacket->data[0] + 1);
 
-        switch (rxPacket->data[0]) {
-        case PREF_SERV_SYSTEM_A:
-            result = "SYSTEM_A";
-            break;
-        case PREF_SERV_SYSTEM_AB:
-            result = "SYSTEM_AB";
-            break;
-        case PREF_SERV_SYSTEM_B:
-            result = "SYSTEM_B";
-            break;
-        case PREF_SERV_SYSTEM_BA:
-            result = "SYSTEM_BA";
-            break;
-        case PREF_SERV_HOME_ONLY:
-            result = "HOME_ONLY";
-            break;
-        case PREF_SERV_HOME_PREF:
-            result = "HOME_PREF";
-            break;
-        }
-
-        log(LOGTYPE_INFO, "Write Success - System Pref: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Write Success - System Pref: " + ui->prefServValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - System Pref");
     }
 }
@@ -789,44 +689,38 @@ void QcdmWindow::writePrefServ()
 */
 void QcdmWindow::readRoamPref()
 {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_ROAM_PREF_I, &response);
+    int rx = port.getNvItem(NV_ROAM_PREF_I, &resp);
 
-    if (result == DIAG_NV_READ_F) {
-        QString result;
+    if (rx == DIAG_NV_READ_F) {
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
-
-        int newIndex = 0;
+        int i = 0;
 
         switch (rxPacket->data[0]) {
         case ROAM_PREF_HOME:
-            result = "HOME";
-            newIndex = 1;
+            i = 1;
             break;
         case ROAM_PREF_AFFILIATED:
-            result = "AFFILIATED";
-            newIndex = 2;
+            i = 2;
             break;
         case ROAM_PREF_AUTOMATIC:
-            result = "AUTOMATIC";
-            newIndex = 3;
+            i = 3;
             break;
         }
 
-        ui->roamPrefValue->setCurrentIndex(newIndex);
+        ui->roamPrefValue->setCurrentIndex(i);
 
-        log(LOGTYPE_INFO, "Read Success - Roam Pref: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Read Success - Roam Pref: " + ui->roamPrefValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - Roam Pref");
     }
 }
 
 void QcdmWindow::writeRoamPref()
 {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
     int mode = ui->roamPrefValue->currentIndex() - 1;
 
@@ -836,7 +730,6 @@ void QcdmWindow::writeRoamPref()
     }
 
     qcdm_nv_alt_tx_t packet;
-    memset(&packet, 0, sizeof(packet));
 
     switch(mode) {
     case 0:
@@ -850,35 +743,29 @@ void QcdmWindow::writeRoamPref()
         break;
     }
 
-    int result = port.setNvItem(NV_ROAM_PREF_I, (const char *)&packet, 2, &response);
+    int rx = port.setNvItem(NV_ROAM_PREF_I, (const char *)&packet, 2, &resp);
 
-    if (result == DIAG_NV_WRITE_F) {
-        QString result;
+    if (rx == DIAG_NV_WRITE_F) {
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
-        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)response;
-
-        int newIndex = 0;
+        int i = 0;
 
         switch (rxPacket->data[0]) {
         case ROAM_PREF_HOME:
-            result = "HOME";
-            newIndex = 1;
+            i = 1;
             break;
         case ROAM_PREF_AFFILIATED:
-            result = "AFFILIATED";
-            newIndex = 2;
+            i = 2;
             break;
         case ROAM_PREF_AUTOMATIC:
-            result = "AUTOMATIC";
-            newIndex = 3;
+            i = 3;
             break;
         }
 
-        ui->roamPrefValue->setCurrentIndex(newIndex);
+        ui->roamPrefValue->setCurrentIndex(i);
 
-        log(LOGTYPE_INFO, "Write Success - Roam Pref: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Write Success - Roam Pref: " + ui->roamPrefValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - Roam Pref");
     }
 }
@@ -888,25 +775,25 @@ void QcdmWindow::writeRoamPref()
 */
 void QcdmWindow::readSpc()
 {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = 0;
+    int rx = 0;
 
     switch (ui->readSpcMethod->currentIndex()) {
     case 0:
-        result = port.getNvItem(NV_SEC_CODE_I, &response);
+        rx = port.getNvItem(NV_SEC_CODE_I, &resp);
         break;
     case 1:
         // EFS Method
 
         break;
     case 2:
-        port.sendHtcNvUnlock(&response); // HTC Method
-        result = port.getNvItem(NV_SEC_CODE_I, &response);
+        port.sendHtcNvUnlock(&resp); // HTC Method
+        rx = port.getNvItem(NV_SEC_CODE_I, &resp);
         break;
     case 3:
-        port.sendLgNvUnlock(&response); // LG Method
-        result = port.getLgSpc(&response);
+        port.sendLgNvUnlock(&resp); // LG Method
+        rx = port.getLgSpc(&resp);
         break;
     case 4:
         // Samsung Method
@@ -914,14 +801,14 @@ void QcdmWindow::readSpc()
         break;
     }
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)resp;
 
-        std::string rxSpcValue = hexToString((char *)rxPacket->data, 5);
+        std::string result = hexToString((char *)rxPacket->data, 5);
 
-        ui->decSpcValue->setText(QString::fromStdString(rxSpcValue));
+        ui->decSpcValue->setText(QString::fromStdString(result));
 
-        log(LOGTYPE_INFO, "Read Success - SPC: " + rxSpcValue);
+        log(LOGTYPE_INFO, "Read Success - SPC: " + result);
     } else {
         log(LOGTYPE_ERROR, "Read Failure - SPC");
     }
@@ -937,56 +824,33 @@ void QcdmWindow::writeSpc()
         return;
     }
 
-    uint8_t* response = NULL;
+    int rx = port.setNvItem(NV_SEC_CODE_I, ui->decSpcValue->text().toStdString().c_str(), 6);
 
-    int result = port.setNvItem(NV_SEC_CODE_I, ui->decSpcValue->text().toStdString().c_str(), 6, &response);
-
-    if (result == DIAG_NV_WRITE_F) {
+    if (rx == DIAG_NV_WRITE_F) {
         log(LOGTYPE_INFO, "Write Success - SPC: " + ui->decSpcValue->text());
-    }
-    else {
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - SPC");
     }
 }
 
 void QcdmWindow::readSubscription() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_RTRE_CONFIG_I, &response);
+    int rx = port.getNvItem(NV_RTRE_CONFIG_I, &resp);
 
-    if (result == DIAG_NV_READ_F) {
-        QString result;
-
-        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+    if (rx == DIAG_NV_READ_F) {
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)resp;
 
         ui->subscriptionValue->setCurrentIndex(rxPacket->data[0] + 1);
 
-        switch (rxPacket->data[0]) {
-        case RTRE_MODE_RUIM_ONLY:
-            result = "RUIM_ONLY";
-            break;
-        case RTRE_MODE_NV_ONLY:
-            result = "NV_ONLY";
-            break;
-        case RTRE_MODE_RUIM_PREF:
-            result = "RUIM_PREF";
-            break;
-        case RTRE_MODE_GSM_1X:
-            result = "GSM_1X";
-            break;
-        }
-
-        log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Read Success - Subscription Mode: " + ui->subscriptionValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Read Failure - Subscription Mode");
     }
 }
 
 void QcdmWindow::writeSubscription()
 {
-    uint8_t* response = NULL;
-
     int mode = ui->subscriptionValue->currentIndex() - 1;
 
     if (mode < 0) {
@@ -994,46 +858,30 @@ void QcdmWindow::writeSubscription()
         return;
     }
 
+    uint8_t* resp = nullptr;
+
     const char* data = static_cast<const char *>(static_cast<void*>(&mode));
 
-    int result = port.setNvItem(NV_RTRE_CONFIG_I, data, 1, &response);
+    int rx = port.setNvItem(NV_RTRE_CONFIG_I, data, 1, &resp);
 
-    if (result == DIAG_NV_WRITE_F) {
-        QString result;
-
-        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)response;
+    if (rx == DIAG_NV_WRITE_F) {
+        qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)resp;
 
         ui->subscriptionValue->setCurrentIndex(rxPacket->data[0] + 1);
 
-        switch (rxPacket->data[0]) {
-        case RTRE_MODE_RUIM_ONLY:
-            result = "RUIM_ONLY";
-            break;
-        case RTRE_MODE_NV_ONLY:
-            result = "NV_ONLY";
-            break;
-        case RTRE_MODE_RUIM_PREF:
-            result = "RUIM_PREF";
-            break;
-        case RTRE_MODE_GSM_1X:
-            result = "GSM_1X";
-            break;
-        }
-
-        log(LOGTYPE_INFO, "Write Success - Subscription Mode: " + result);
-    }
-    else {
+        log(LOGTYPE_INFO, "Write Success - Subscription Mode: " + ui->subscriptionValue->currentText());
+    } else {
         log(LOGTYPE_ERROR, "Write Failure - Subscription Mode");
     }
 }
 
 void QcdmWindow::readPapUserId() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_PAP_USER_ID_I, &response);
+    int rx = port.getNvItem(NV_PAP_USER_ID_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
@@ -1048,12 +896,12 @@ void QcdmWindow::readPapUserId() {
 }
 
 void QcdmWindow::readPppUserId() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_PPP_USER_ID_I, &response);
+    int rx = port.getNvItem(NV_PPP_USER_ID_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
@@ -1068,12 +916,12 @@ void QcdmWindow::readPppUserId() {
 }
 
 void QcdmWindow::readHdrAnUserId() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_HDR_AN_AUTH_NAI_I, &response);
+    int rx = port.getNvItem(NV_HDR_AN_AUTH_NAI_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
@@ -1088,12 +936,12 @@ void QcdmWindow::readHdrAnUserId() {
 }
 
 void QcdmWindow::readHdrAnLongUserId() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_LONG_I, &response);
+    int rx = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_LONG_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
@@ -1108,12 +956,12 @@ void QcdmWindow::readHdrAnLongUserId() {
 }
 
 void QcdmWindow::readHdrAnPppUserId() {
-    uint8_t* response = NULL;
+    uint8_t* resp = nullptr;
 
-    int result = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_PPP_I, &response);
+    int rx = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_PPP_I, &resp);
 
-    if (result == DIAG_NV_READ_F){
-        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)response;
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
