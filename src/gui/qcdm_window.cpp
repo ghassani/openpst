@@ -33,25 +33,25 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QObject::connect(ui->portListRefreshButton, SIGNAL(clicked()), this, SLOT(UpdatePortList()));
     QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(DisconnectPort()));
     QObject::connect(ui->portConnectButton, SIGNAL(clicked()), this, SLOT(ConnectToPort()));
-    QObject::connect(ui->sendSpcButton, SIGNAL(clicked()), this, SLOT(sendSpc()));
-    QObject::connect(ui->sendPasswordButton, SIGNAL(clicked()), this, SLOT(sendPassword()));
-    QObject::connect(ui->readMeidButton, SIGNAL(clicked()), this, SLOT(readMeid()));
-    QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(writeMeid()));
-    QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(readImei()));
-    QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(readNam()));
-    QObject::connect(ui->writeNamButton, SIGNAL(clicked()), this, SLOT(writeNam()));
-    QObject::connect(ui->readNvItemButton, SIGNAL(clicked()), this, SLOT(readNvItem()));
-    QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(readSpc()));
-    QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(writeSpc()));
-    QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(readSubscription()));
-    QObject::connect(ui->writeSubscriptionButton, SIGNAL(clicked()), this, SLOT(writeSubscription()));
+    QObject::connect(ui->sendSpcButton, SIGNAL(clicked()), this, SLOT(SendSpc()));
+    QObject::connect(ui->sendPasswordButton, SIGNAL(clicked()), this, SLOT(SendPassword()));
+    QObject::connect(ui->readMeidButton, SIGNAL(clicked()), this, SLOT(ReadMeid()));
+    QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(WriteMeid()));
+    QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(ReadImei()));
+    QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(ReadNam()));
+    QObject::connect(ui->writeNamButton, SIGNAL(clicked()), this, SLOT(WriteNam()));
+    QObject::connect(ui->readNvItemButton, SIGNAL(clicked()), this, SLOT(ReadNvItem()));
+    QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(ReadSpc()));
+    QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(WriteSpc()));
+    QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(ReadSubscription()));
+    QObject::connect(ui->writeSubscriptionButton, SIGNAL(clicked()), this, SLOT(WriteSubscription()));
 
-    QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
-    QObject::connect(ui->saveLogButton, SIGNAL(clicked()), this, SLOT(saveLog()));
+    QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(ClearLog()));
+    QObject::connect(ui->saveLogButton, SIGNAL(clicked()), this, SLOT(SaveLog()));
 
-    QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(sendPhoneMode()));
+    QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(SendPhoneMode()));
 
-    QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(spcTextChanged(QString)));
+    QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(SpcTextChanged(QString)));
 }
 
 /**
@@ -167,9 +167,9 @@ void QcdmWindow::DisconnectPort()
 }
 
 /**
-* @brief QcdmWindow::SecuritySendSpc
+* @brief QcdmWindow::SendSpc
 */
-void QcdmWindow::sendSpc()
+void QcdmWindow::SendSpc()
 {
     if (ui->sendSpcValue->text().length() != 6) {
         log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
@@ -192,9 +192,9 @@ void QcdmWindow::sendSpc()
 }
 
 /**
-* @brief QcdmWindow::SecuritySend16Password
+* @brief QcdmWindow::SendPassword
 */
-void QcdmWindow::sendPassword()
+void QcdmWindow::SendPassword()
 {
     if (ui->sendPasswordValue->text().length() != 16) {
         log(LOGTYPE_WARNING, "Enter a Valid 16 Digit Password");
@@ -217,9 +217,9 @@ void QcdmWindow::sendPassword()
 }
 
 /**
-* @brief QcdmWindow::sendQcdmPhoneMode
+* @brief QcdmWindow::SendPhoneMode
 */
-void QcdmWindow::sendPhoneMode()
+void QcdmWindow::SendPhoneMode()
 {
     int rx = port.sendPhoneMode((uint8_t)ui->phoneModeValue->currentIndex());
 
@@ -237,9 +237,9 @@ void QcdmWindow::sendPhoneMode()
 }
 
 /**
-* @brief QcdmWindow::readMeid
+* @brief QcdmWindow::ReadMeid
 */
-void QcdmWindow::readMeid()
+void QcdmWindow::ReadMeid()
 {
     if (ui->hexMeidValue->text().length() != 0) {
         ui->hexMeidValue->setText("");
@@ -264,9 +264,9 @@ void QcdmWindow::readMeid()
 }
 
 /**
-* @brief QcdmWindow::writeMeid
+* @brief QcdmWindow::WriteMeid
 */
-void QcdmWindow::writeMeid()
+void QcdmWindow::WriteMeid()
 {
     if (ui->hexMeidValue->text().length() != 14) {
         log(LOGTYPE_WARNING, "Enter a Valid 14 Character MEID");
@@ -287,9 +287,9 @@ void QcdmWindow::writeMeid()
 }
 
 /**
-* @brief QcdmWindow::nvReadGetImei
+* @brief QcdmWindow::ReadImei
 */
-void QcdmWindow::readImei() {
+void QcdmWindow::ReadImei() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_UE_IMEI_I, &resp);
@@ -309,9 +309,9 @@ void QcdmWindow::readImei() {
 }
 
 /**
-* @brief QcdmWindow::readNvItem
+* @brief QcdmWindow::ReadNvItem
 */
-void QcdmWindow::readNvItem() {
+void QcdmWindow::ReadNvItem() {
     if (ui->nvItemValue->text().length() == 0) {
         log(LOGTYPE_WARNING, "Input a Valid NV Item Number");
         return;
@@ -331,37 +331,42 @@ void QcdmWindow::readNvItem() {
 }
 
 /**
-* @brief QcdmWindow::readNam
+* @brief QcdmWindow::ReadNam
 */
-void QcdmWindow::readNam() {
-    readMdn();
-    readMin();
-    readSid();
-    readSystemPref();
-    readPrefMode();
-    readPrefServ();
-    readRoamPref();
-    //readPapUserId();
-    //readPppUserId();
-    //readHdrAnUserId();
-    //readHdrAnLongUserId();
-    //readHdrAnPppUserId();
+void QcdmWindow::ReadNam() {
+    // readMdn();
+    // readMin();
+    // readSid();
+    // readSystemPref();
+    // readPrefMode();
+    // readPrefServ();
+    // readRoamPref();
+
+    ReadPapUserId();
+    ReadPapPassword();
+    ReadPppUserId();
+    ReadPppPassword();
+    ReadHdrAnUserId();
+    ReadHdrAnPassword();
+    ReadHdrAnLongUserId();
+    ReadHdrAnLongPassword();
+    ReadHdrAnPppUserId();
 }
 
 /**
-* @brief QcdmWindow::writeNam
+* @brief QcdmWindow::WriteNam
 */
-void QcdmWindow::writeNam() {
-    writeMdn();
-    writeSystemPref();
-    writePrefServ();
-    writeRoamPref();
+void QcdmWindow::WriteNam() {
+    // writeMdn();
+    // writeSystemPref();
+    // writePrefServ();
+    // writeRoamPref();
 }
 
 /**
-* @brief QcdmWindow::readMdn
+* @brief QcdmWindow::ReadMdn
 */
-void QcdmWindow::readMdn() {
+void QcdmWindow::ReadMdn() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_DIR_NUMBER_I, &resp);
@@ -381,9 +386,9 @@ void QcdmWindow::readMdn() {
 }
 
 /**
-* @brief QcdmWindow::writeMdn
+* @brief QcdmWindow::WriteMdn
 */
-void QcdmWindow::writeMdn()
+void QcdmWindow::WriteMdn()
 {
     if (ui->mdnValue->text().length() != 10) {
         log(LOGTYPE_WARNING, "Enter a Valid 10 Digit MDN");
@@ -403,9 +408,9 @@ void QcdmWindow::writeMdn()
 }
 
 /**
-* @brief QcdmWindow::readMin
+* @brief QcdmWindow::ReadMin
 */
-void QcdmWindow::readMin() {
+void QcdmWindow::ReadMin() {
     unsigned char min1Chunk[3], min2Chunk[1];
     std::string min1, min2;
 
@@ -451,9 +456,9 @@ void QcdmWindow::readMin() {
 }
 
 /**
-* @brief QcdmWindow::readSid
+* @brief QcdmWindow::ReadSid
 */
-void QcdmWindow::readSid() {
+void QcdmWindow::ReadSid() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HOME_SID_NID_I, &resp);
@@ -468,7 +473,7 @@ void QcdmWindow::readSid() {
 
         std::string tmp = sidDecode(data);
         QString result = QString::fromStdString(tmp);
-        result = fixedTrim(result);
+        result = FixedEmptyTrim(result);
 
         ui->sidValue->setText(result);
 
@@ -479,9 +484,9 @@ void QcdmWindow::readSid() {
 }
 
 /**
-* @brief QcdmWindow::readSystemPref
+* @brief QcdmWindow::ReadSystemPref
 */
-void QcdmWindow::readSystemPref()
+void QcdmWindow::ReadSystemPref()
 {
     uint8_t* resp = nullptr;
 
@@ -498,7 +503,10 @@ void QcdmWindow::readSystemPref()
     }
 }
 
-void QcdmWindow::writeSystemPref()
+/**
+* @brief QcdmWindow::WriteSystemPref
+*/
+void QcdmWindow::WriteSystemPref()
 {
     int mode = ui->systemPrefValue->currentIndex() - 1;
 
@@ -526,9 +534,9 @@ void QcdmWindow::writeSystemPref()
 }
 
 /**
-* @brief QcdmWindow::readPrefMode
+* @brief QcdmWindow::ReadPrefMode
 */
-void QcdmWindow::readPrefMode()
+void QcdmWindow::ReadPrefMode()
 {
     uint8_t* resp = nullptr;
 
@@ -638,9 +646,9 @@ void QcdmWindow::readPrefMode()
 }
 
 /**
-* @brief QcdmWindow::readPrefServ
+* @brief QcdmWindow::ReadPrefServ
 */
-void QcdmWindow::readPrefServ()
+void QcdmWindow::ReadPrefServ()
 {
     uint8_t* resp = nullptr;
 
@@ -657,7 +665,10 @@ void QcdmWindow::readPrefServ()
     }
 }
 
-void QcdmWindow::writePrefServ()
+/**
+* @brief QcdmWindow::WritePrefServ
+*/
+void QcdmWindow::WritePrefServ()
 {
     int mode = ui->prefServValue->currentIndex() - 1;
 
@@ -685,9 +696,9 @@ void QcdmWindow::writePrefServ()
 }
 
 /**
-* @brief QcdmWindow::readRoamPref
+* @brief QcdmWindow::ReadRoamPref
 */
-void QcdmWindow::readRoamPref()
+void QcdmWindow::ReadRoamPref()
 {
     uint8_t* resp = nullptr;
 
@@ -718,16 +729,19 @@ void QcdmWindow::readRoamPref()
     }
 }
 
-void QcdmWindow::writeRoamPref()
+/**
+* @brief QcdmWindow::WriteRoamPref
+*/
+void QcdmWindow::WriteRoamPref()
 {
-    uint8_t* resp = nullptr;
-
     int mode = ui->roamPrefValue->currentIndex() - 1;
 
     if (mode < 0) {
         log(LOGTYPE_WARNING, "Select a Roam Pref to Write");
         return;
     }
+
+    uint8_t* resp = nullptr;
 
     qcdm_nv_alt_tx_t packet;
 
@@ -771,9 +785,9 @@ void QcdmWindow::writeRoamPref()
 }
 
 /**
-* @brief QcdmWindow::nvReadGetSpc
+* @brief QcdmWindow::ReadSpc
 */
-void QcdmWindow::readSpc()
+void QcdmWindow::ReadSpc()
 {
     uint8_t* resp = nullptr;
 
@@ -815,9 +829,9 @@ void QcdmWindow::readSpc()
 }
 
 /**
-* @brief QcdmWindow::nvWriteSetSpc
+* @brief QcdmWindow::WriteSpc
 */
-void QcdmWindow::writeSpc()
+void QcdmWindow::WriteSpc()
 {
     if (ui->decSpcValue->text().length() != 6) {
         log(LOGTYPE_WARNING, "Enter a Valid 6 Digit SPC");
@@ -833,7 +847,10 @@ void QcdmWindow::writeSpc()
     }
 }
 
-void QcdmWindow::readSubscription() {
+/**
+* @brief QcdmWindow::ReadSubscription
+*/
+void QcdmWindow::ReadSubscription() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_RTRE_CONFIG_I, &resp);
@@ -849,7 +866,10 @@ void QcdmWindow::readSubscription() {
     }
 }
 
-void QcdmWindow::writeSubscription()
+/**
+* @brief QcdmWindow::WriteSubscription
+*/
+void QcdmWindow::WriteSubscription()
 {
     int mode = ui->subscriptionValue->currentIndex() - 1;
 
@@ -875,7 +895,10 @@ void QcdmWindow::writeSubscription()
     }
 }
 
-void QcdmWindow::readPapUserId() {
+/**
+* @brief QcdmWindow::ReadPapUserId
+*/
+void QcdmWindow::ReadPapUserId() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PAP_USER_ID_I, &resp);
@@ -885,7 +908,7 @@ void QcdmWindow::readPapUserId() {
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
-        result = fixedTrim(result);
+        result = FixedEmptyTrim(result);
 
         ui->papUserIdValue->setText(result);
 
@@ -895,13 +918,16 @@ void QcdmWindow::readPapUserId() {
     }
 }
 
-void QcdmWindow::readPapPassword() {
+/**
+* @brief QcdmWindow::ReadPapPassword
+*/
+void QcdmWindow::ReadPapPassword() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PAP_PASSWORD_I, &resp);
 
     if (rx == DIAG_NV_READ_F){
-        qcdm_nv_alt2_rx_t* rxPacket = (qcdm_nv_alt2_rx_t*)resp;
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
 
         std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 16, false);
         tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
@@ -915,7 +941,10 @@ void QcdmWindow::readPapPassword() {
     }
 }
 
-void QcdmWindow::readPppUserId() {
+/**
+* @brief QcdmWindow::ReadPppUserId
+*/
+void QcdmWindow::ReadPppUserId() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PPP_USER_ID_I, &resp);
@@ -925,7 +954,7 @@ void QcdmWindow::readPppUserId() {
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
-        result = fixedTrim(result);
+        result = FixedEmptyTrim(result);
 
         ui->pppUserIdValue->setText(result);
 
@@ -935,7 +964,10 @@ void QcdmWindow::readPppUserId() {
     }
 }
 
-void QcdmWindow::readPppPassword() {
+/**
+* @brief QcdmWindow::ReadPppPassword
+*/
+void QcdmWindow::ReadPppPassword() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PPP_PASSWORD_I, &resp);
@@ -955,7 +987,10 @@ void QcdmWindow::readPppPassword() {
     }
 }
 
-void QcdmWindow::readHdrAnUserId() {
+/**
+* @brief QcdmWindow::ReadHdrAnUserId
+*/
+void QcdmWindow::ReadHdrAnUserId() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_NAI_I, &resp);
@@ -965,7 +1000,7 @@ void QcdmWindow::readHdrAnUserId() {
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
-        result = fixedTrim(result);
+        result = FixedEmptyTrim(result);
 
         ui->hdrAnUserIdValue->setText(result);
 
@@ -975,7 +1010,33 @@ void QcdmWindow::readHdrAnUserId() {
     }
 }
 
-void QcdmWindow::readHdrAnLongUserId() {
+/**
+* @brief QcdmWindow::ReadHdrAnPassword
+*/
+void QcdmWindow::ReadHdrAnPassword() {
+    uint8_t* resp = nullptr;
+
+    int rx = port.getNvItem(NV_HDR_AN_AUTH_PASSWORD_I, &resp);
+
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
+
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 16, false);
+        tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
+        QString result = QString::fromStdString(tmp).toUpper();
+
+        ui->hdrAnPasswordValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - HDR AN Password: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - HDR AN Password");
+    }
+}
+
+/**
+* @brief QcdmWindow::ReadHdrAnLongUserId
+*/
+void QcdmWindow::ReadHdrAnLongUserId() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_LONG_I, &resp);
@@ -985,7 +1046,7 @@ void QcdmWindow::readHdrAnLongUserId() {
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
-        result = fixedTrim(result);
+        result = FixedEmptyTrim(result);
 
         ui->hdrAnLongUserIdValue->setText(result);
 
@@ -995,7 +1056,33 @@ void QcdmWindow::readHdrAnLongUserId() {
     }
 }
 
-void QcdmWindow::readHdrAnPppUserId() {
+/**
+* @brief QcdmWindow::ReadHdrAnLongPassword
+*/
+void QcdmWindow::ReadHdrAnLongPassword() {
+    uint8_t* resp = nullptr;
+
+    int rx = port.getNvItem(NV_HDR_AN_AUTH_PASSWORD_LONG_I, &resp);
+
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
+
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 16, false);
+        tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
+        QString result = QString::fromStdString(tmp).toUpper();
+
+        ui->hdrAnLongPasswordValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - HDR AN LONG Password: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - HDR AN LONG Password");
+    }
+}
+
+/**
+* @brief QcdmWindow::ReadHdrAnPppUserId
+*/
+void QcdmWindow::ReadHdrAnPppUserId() {
     uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_PPP_I, &resp);
@@ -1005,7 +1092,7 @@ void QcdmWindow::readHdrAnPppUserId() {
 
         std::string tmp = hexToString((char *)rxPacket->data, DIAG_NV_ITEM_SIZE);
         QString result = QString::fromStdString(tmp);
-        result = fixedTrim(result);
+        result = FixedEmptyTrim(result);
 
         ui->hdrAnPppUserIdValue->setText(result);
 
@@ -1015,7 +1102,33 @@ void QcdmWindow::readHdrAnPppUserId() {
     }
 }
 
-void QcdmWindow::spcTextChanged(QString value) {
+/**
+* @brief QcdmWindow::ReadHdrAnPppPassword
+*/
+void QcdmWindow::ReadHdrAnPppPassword() {
+    uint8_t* resp = nullptr;
+
+    int rx = port.getNvItem(NV_HDR_AN_AUTH_PASSWORD_PPP_I, &resp);
+
+    if (rx == DIAG_NV_READ_F){
+        qcdm_nv_alt_rx_t* rxPacket = (qcdm_nv_alt_rx_t*)resp;
+
+        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 16, false);
+        tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
+        QString result = QString::fromStdString(tmp).toUpper();
+
+        ui->hdrAnLongPasswordValue->setText(result);
+
+        log(LOGTYPE_INFO, "Read Success - HDR AN PPP Password: " + result);
+    } else {
+        log(LOGTYPE_ERROR, "Read Failure - HDR AN PPP Password");
+    }
+}
+
+/**
+* @brief QcdmWindow::SpcTextChanged
+*/
+void QcdmWindow::SpcTextChanged(QString value) {
     if (value.length() == 6) {
         std::string tmp = bytesToHex((unsigned char *)value.toStdString().c_str(), 6, false);
         QString result = QString::fromStdString(tmp);
@@ -1024,11 +1137,17 @@ void QcdmWindow::spcTextChanged(QString value) {
     }
 }
 
-// Fix odd QString::trimmed() behavior
-QString QcdmWindow::fixedTrim(QString input) {
+/**
+* @brief QcdmWindow::WriteSubscription
+* Fix odd QString::trimmed() behavior
+*/
+QString QcdmWindow::FixedEmptyTrim(QString input) {
     return input.trimmed() == "." ? "" : input.trimmed();
 }
 
+/**
+* @brief QcdmWindow::DisableUiButtons
+*/
 void QcdmWindow::DisableUiButtons() {
     ui->readSpcButton->setEnabled(false);
     ui->readMeidButton->setEnabled(false);
@@ -1049,6 +1168,9 @@ void QcdmWindow::DisableUiButtons() {
     ui->sendPasswordButton->setEnabled(false);
 }
 
+/**
+* @brief QcdmWindow::EnableUiButtons
+*/
 void QcdmWindow::EnableUiButtons() {
     ui->readSpcButton->setEnabled(true);
     ui->readMeidButton->setEnabled(true);
@@ -1070,16 +1192,16 @@ void QcdmWindow::EnableUiButtons() {
 }
 
 /**
-* @brief QcdmWindow::log
+* @brief QcdmWindow::ClearLog
 */
-void QcdmWindow::clearLog() {
+void QcdmWindow::ClearLog() {
     ui->log->clear();
 }
 
 /**
-* @brief QcdmWindow::saveLog
+* @brief QcdmWindow::SaveLog
 */
-void QcdmWindow::saveLog() {
+void QcdmWindow::SaveLog() {
     log(LOGTYPE_WARNING, "Not Implemented Yet");
 }
 

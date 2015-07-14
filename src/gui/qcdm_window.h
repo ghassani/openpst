@@ -39,50 +39,56 @@ namespace openpst {
         void UpdatePortList();
         void ConnectToPort();
         void DisconnectPort();
+
         void DisableUiButtons();
         void EnableUiButtons();
-        void sendSpc();
-        void sendPassword();
-        void readImei();
-        void readMeid();
-        void writeMeid();
-        void readNam();
-        void writeNam();
-        void readNvItem();
-        void readSpc();
-        void writeSpc();
-        void readSubscription();
-        void writeSubscription();
 
-        void sendPhoneMode();
+        void SendSpc();
+        void SendPassword();
 
-        void spcTextChanged(QString value);
+        void ReadImei();
+        void ReadMeid();
+        void WriteMeid();
+        void ReadNam();
+        void WriteNam();
+        void ReadNvItem();
+        void ReadSpc();
+        void WriteSpc();
+        void ReadSubscription();
+        void WriteSubscription();
 
-        void clearLog();
-        void saveLog();
+        void SendPhoneMode();
+
+        void SpcTextChanged(QString value);
+
+        void ClearLog();
+        void SaveLog();
 
     private:
-        void readMdn();
-        void writeMdn();
-        void readMin();
-        void readSid();
-        void readSystemPref();
-        void writeSystemPref();
-        void readPrefMode();
-        void readPrefServ();
-        void writePrefServ();
-        void readRoamPref();
-        void writeRoamPref();
+        void ReadMdn();
+        void WriteMdn();
+        void ReadMin();
+        void ReadSid();
+        void ReadSystemPref();
+        void WriteSystemPref();
+        void ReadPrefMode();
+        void ReadPrefServ();
+        void WritePrefServ();
+        void ReadRoamPref();
+        void WriteRoamPref();
 
-        void readPapUserId();
-        void readPapPassword();
-        void readPppUserId();
-        void readPppPassword();
-        void readHdrAnUserId();
-        void readHdrAnLongUserId();
-        void readHdrAnPppUserId();
+        void ReadPapUserId();
+        void ReadPapPassword();
+        void ReadPppUserId();
+        void ReadPppPassword();
+        void ReadHdrAnUserId();
+        void ReadHdrAnPassword();
+        void ReadHdrAnLongUserId();
+        void ReadHdrAnLongPassword();
+        void ReadHdrAnPppUserId();
+        void ReadHdrAnPppPassword();
 
-        QString fixedTrim(QString input);
+        QString FixedEmptyTrim(QString input);
 
         void log(int type, const char* message);
         void log(int type, std::string message);
