@@ -12,8 +12,6 @@
 #ifndef _QC_QCDM_NV_RESPONSE_DEF_H
 #define _QC_QCDM_NV_RESPONSE_DEF_H
 
-#include "include/definitions.h"
-
 enum DIAG_RTRE_MODE {
     RTRE_MODE_RUIM_ONLY = 0x0,
     RTRE_MODE_NV_ONLY = 0x1,
