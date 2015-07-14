@@ -40,6 +40,7 @@ HEADERS  += \
     src/util/sleep.h \
     src/gui/streaming_dload_window.h \
     src/serial/streaming_dload_serial.h \
+    src/worker/streaming_dload_read_worker.h \
     src/serial/hdlc_serial.h
 
 
