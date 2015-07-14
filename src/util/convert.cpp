@@ -20,7 +20,7 @@ std::string hexToString(char *input, int length) {
     char outputBuffer[128];
     std::string result;
 
-    for (int i = 0; i <= length; i++) {
+    for (int i = 0; i < length; i++) {
     #ifdef _WIN32
         sprintf_s(outputBuffer, "%c", hex_trans_display[input[i]]);
     #else
