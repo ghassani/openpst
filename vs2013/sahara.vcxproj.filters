@@ -147,6 +147,9 @@
     <ClCompile Include="..\build\x64-Release\generated\moc_sahara_window.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gui\application.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_stdint.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\ui_sahara_window.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\application.h">
+      <Filter>Header Files\src\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

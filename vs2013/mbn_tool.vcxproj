@@ -280,6 +280,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\gui\application.cpp" />
     <ClCompile Include="..\src\mbn_tool.cpp" />
     <ClCompile Include="..\src\util\endian.cpp" />
     <ClCompile Include="..\src\util\hexdump.cpp" />
@@ -468,6 +469,7 @@ endlocal
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\ui_mbn_tool_window.h" />
+    <ClInclude Include="..\src\gui\application.h" />
     <ClInclude Include="..\src\include\win_inttypes.h" />
     <ClInclude Include="..\src\include\win_stdint.h" />
   </ItemGroup>

@@ -1,20 +1,15 @@
 /**
 * LICENSE PLACEHOLDER
 *
-* @file main.cpp
+* @file mbn_tool.cpp
 * @package OpenPST
-* @brief program entry point
+* @brief mbn tool program entry point
 *
 * @author Gassan Idriss <ghassani@gmail.com>
-* @author Matteson Raab <mraabhimself@gmail.com>
 */
 
-#include <QApplication>
-#include <QMetaType>
+#include "gui/application.h"
 #include "gui/mbn_tool_window.h"
-#ifdef _WIN32
-	#include <windows.h>
-#endif
 
 /**
  * @brief main
@@ -25,17 +20,11 @@
 int main(int argc, char *argv[])
 {
 
-#if defined (_WIN32) && defined (DEBUG)
-	AllocConsole();
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONOUT$", "w", stderr);
-#endif
-
-	QApplication application(argc, argv);
+	openpst::Application application(argc, argv, "mbn_tool_");
 
 	openpst::MbnToolWindow window;
 
 	window.show();
 
-    return application.exec();
+	return application.exec();
 }

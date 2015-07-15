@@ -301,6 +301,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\gui\application.cpp" />
     <ClCompile Include="..\src\gui\streaming_dload_window.cpp" />
     <ClCompile Include="..\src\qc\crc.cpp" />
     <ClCompile Include="..\src\serial\hdlc_serial.cpp" />
@@ -526,6 +527,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\ui_streaming_dload_window.h" />
+    <ClInclude Include="..\src\gui\application.h" />
     <ClInclude Include="..\src\serial\streaming_dload_serial.h" />
     <CustomBuild Include="..\src\worker\streaming_dload_read_worker.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing streaming_dload_read_worker.h...</Message>

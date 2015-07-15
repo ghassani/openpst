@@ -25,6 +25,9 @@
     <ClCompile Include="..\build\x64-Release\generated\moc_mbn_tool_window.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gui\application.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_inttypes.h">
@@ -35,6 +38,9 @@
     </ClInclude>
     <ClInclude Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\ui_mbn_tool_window.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\application.h">
+      <Filter>Header Files\src\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

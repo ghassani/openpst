@@ -280,6 +280,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\gui\application.cpp" />
     <ClCompile Include="..\src\qcdm.cpp" />
     <ClCompile Include="..\src\qc\crc.cpp" />
     <ClCompile Include="..\src\serial\hdlc_serial.cpp" />
@@ -618,6 +619,7 @@ endlocal
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\gui\application.h" />
     <ClInclude Include="..\src\include\win_inttypes.h" />
     <ClInclude Include="..\src\include\win_stdint.h" />
     <ClInclude Include="..\src\serial\hdlc_serial.h" />
