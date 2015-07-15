@@ -12,6 +12,8 @@
 #ifndef _SERIAL_STREAMING_DLOAD_SERIAL_H
 #define _SERIAL_STREAMING_DLOAD_SERIAL_H
 
+#include <iostream>
+#include <fstream>
 #include "include/definitions.h"
 #include "serial/serial.h"
 #include "serial/hdlc_serial.h"
@@ -239,7 +241,21 @@ namespace openpst {
 			const char* getNamedMultiImage(uint8_t imageType);
 
 	private:
+		/**
+		* @brief isValidResponse
+		*
+		* @param uint8_t expectedCommand, 
+		* @param uint8_t* response
+		* @param size_t responseSize
+		*/
 		bool isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize);
+
+		/**
+		* @brief isValidResponse
+		*
+		* @param uint8_t expectedCommand,
+		* @param std::vector<uint8_t> response
+		*/
 		bool isValidResponse(uint8_t expectedCommand, std::vector<uint8_t> &response);
 
     };

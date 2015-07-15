@@ -28,6 +28,7 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->openModeValue->addItem("0x01 - Bootloader Download", STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD);
 	ui->openModeValue->addItem("0x02 - Bootable Image Download", STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD);
 	ui->openModeValue->addItem("0x03 - CEFS Image Download", STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD);
+	ui->openModeValue->addItem("0x04 - Factory", STREAMING_DLOAD_OPEN_MODE_FACTORY);
 	ui->openModeValue->setCurrentIndex(0);
 
 	//ui->eccSetValue->addItem("", NULL);
