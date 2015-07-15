@@ -287,16 +287,14 @@ void SaharaWindow::writeHello()
 
         if (saveMemoryTableResponse == QMessageBox::Yes) {
             QString memoryTableFileName = QFileDialog::getSaveFileName(this, tr("Save Raw Memory Table"), "", tr("Binary Files (*.bin)"));
-            if (memoryTableFileName.length()) {
-#ifdef _WIN32
-                FILE* fp;
-                errno_t err = fopen_s(&fp, memoryTableFileName.toStdString().c_str(), "a+b");
-#else
-                FILE* fp = fopen(memoryTableFileName.toStdString().c_str(), "a+b");
-#endif
-                if (fp) {
-                    fwrite(memoryTableData, sizeof(uint8_t), memoryTableSize, fp);
-                    fclose(fp);
+
+			if (memoryTableFileName.length()) {
+
+				std::ofstream file(memoryTableFileName.toStdString().c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+
+                if (file.is_open()) {
+					file.write((char*)memoryTableData, memoryTableSize);
+					file.close();
                 } else {
                     log("Error opening memory table file for writing");
                 }
@@ -354,17 +352,15 @@ void SaharaWindow::sendImage()
     request.offset		= port.readState.offset;
     request.chunkSize	= port.readState.size;
 
-#ifdef _WIN32
-    FILE* fp;
-    errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "rb");
-#else
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-#endif
+	std::ifstream file(fileName.toStdString().c_str(), std::ios::in | std::ios::binary);
+	
+	file.seekg(0, file.end);
 
-    // get file size
-    fseek(fp, 0, SEEK_END);
-    request.fileSize = ftell(fp);
-    fclose(fp);
+	request.fileSize = file.tellg();
+
+	file.seekg(0, file.beg);
+
+	file.close();
 
     QString tmp;
 
@@ -565,18 +561,6 @@ void SaharaWindow::memoryRead()
 
     log(tmp.sprintf("Reading %lu bytes from address 0x%08X", size, address));
 
-#ifdef _WIN32
-    FILE* fp;
-    errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "a+b");
-#else
-    FILE* fp = fopen(fileName.toStdString().c_str(), "a+b");
-#endif
-
-    if (!fp) {
-        log(tmp.sprintf("Error opening file %s for writing", fileName.toStdString().c_str()));
-        return;
-    }
-
     // queue a read request and setup the worker
     sahara_memory_read_worker_request memoryReadWorkerRequest;
     memoryReadWorkerRequest.address = address;
@@ -775,20 +759,17 @@ void SaharaWindow::saveLog()
         return;
     }
 
-#ifdef _WIN32
-    FILE* fp;
-    errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "a+");
-#else
-    FILE* fp = fopen(fileName.toStdString().c_str(), "a+");
-#endif
+	std::ofstream file(fileName.toStdString().c_str(), std::ios::out | std::ios::trunc);
 
-    if (!fp) {
+	if (!file.is_open()) {
         log("Error opening file for writing");
+		return;
     }
 
     QString content = ui->log->toPlainText();
 
-    fwrite(content.toStdString().c_str(), sizeof(uint8_t), content.size(), fp);
+	file.write(content.toStdString().c_str(), content.size());
+	file.close();
 }
 
 /**

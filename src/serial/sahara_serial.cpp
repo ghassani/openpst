@@ -345,7 +345,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 }
 
 
-int SaharaSerial::sendImage(std::string file)
+int SaharaSerial::sendImage(std::string filePath)
 {
     if (!isOpen()) {
         return 0;
@@ -356,30 +356,24 @@ int SaharaSerial::sendImage(std::string file)
         return 0;
     }
 
-#ifdef _WIN32
-	FILE* fp;
-	errno_t err = fopen_s(&fp, file.c_str(), "rb");
-#else
-	FILE* fp = fopen(file.c_str(), "rb");
-#endif	
+	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
 
-    if (!fp) {
-        LOGD("Could Not Open File %s\n", file.c_str());
+	if (!file.is_open()) {
+		LOGD("Could Not Open File %s\n", filePath.c_str());
         return 0;
     }
 
     size_t fileSize,
-           fileReadResult,
            totalSent = 0,
            totalRequestLength = 0;
 
     unsigned int chunkSize;
 
-    fseek(fp, 0, SEEK_END);
-    fileSize = ftell(fp);
-    rewind(fp);
-
-    LOGD("Loaded File %s With Size %lu\n", file.c_str(), fileSize);
+	file.seekg(0, file.end);
+	fileSize = file.tellg();
+	file.seekg(0, file.beg);
+	
+    LOGD("Loaded File %s With Size %lu\n", filePath.c_str(), fileSize);
 
     uint8_t* fileBuffer = new uint8_t[readState.size];
     size_t fileBufferSize = readState.size;
@@ -402,7 +396,7 @@ int SaharaSerial::sendImage(std::string file)
             chunkSize = fileSize - totalSent;
         }
 
-        fileReadResult = fread(fileBuffer, 1, chunkSize, fp);
+        file.read((char *)&fileBuffer, chunkSize);
 
         lastTxSize = write(fileBuffer, chunkSize);
 
@@ -416,7 +410,7 @@ int SaharaSerial::sendImage(std::string file)
 		if (!readNextImageOffset(nextOffset, nextSize)) {
 			LOGD("Error getting next image offset and size\n");
 			free(fileBuffer);
-			fclose(fp);
+			file.close();
 			return 0;
 		}
         
@@ -426,7 +420,7 @@ int SaharaSerial::sendImage(std::string file)
     }
 
     free(fileBuffer);
-    fclose(fp);
+	file.close();
 
     return 1;
 }
@@ -542,9 +536,9 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 	return 1;
 }
 
-int SaharaSerial::readMemory(uint32_t address, size_t size, FILE* out, size_t& outSize)
+int SaharaSerial::readMemory(uint32_t address, size_t size, std::ofstream& out, size_t& outSize)
 {
-	if (!isOpen()) {
+	if (!isOpen() || !out.is_open()) {
 		return 0;
 	}
 
@@ -598,7 +592,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, FILE* out, size_t& o
 
 			//hexdump_rx(memBuffer, lastRxSize);
 
-			fwrite(memBuffer, sizeof(uint8_t), lastRxSize, out);
+			out.write((char *)memBuffer, lastRxSize);
 
 			outSize += lastRxSize;
 		} while (true);
@@ -621,21 +615,16 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, const char* outFile,
 		}
 	}
 
-#ifdef _WIN32
-	FILE* fp;
-	errno_t err = fopen_s(&fp, outFile, "a+b");
-#else
-	FILE* fp = fopen(outFile, "a+b");
-#endif	
+	std::ofstream file(outFile, std::ios::out | std::ios::binary | std::ios::trunc);
 
-	if (!fp) {
+	if (!file.is_open()) {
 		LOGD("Error opening file %s for writing\n", outFile);
 		return 0;
 	}
 
-	int res = readMemory(address, size, fp, outFileSize);
+	int res = readMemory(address, size, file, outFileSize);
 
-	fclose(fp);
+	file.close();
 
 	return res;
 }

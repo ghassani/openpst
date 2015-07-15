@@ -80,9 +80,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	if (!isValidResponse(STREAMING_DLOAD_HELLO_RESPONSE, buffer)) {
 		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
-		
-	streaming_dload_hello_rx_header_t* resp = (streaming_dload_hello_rx_header_t*)&buffer[0];
-	
+			
 	memcpy(&state.hello, &buffer[0], sizeof(streaming_dload_hello_rx_header_t));
 	
 	int dataStartIndex = sizeof(streaming_dload_hello_rx_header_t);
@@ -627,7 +625,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 
 	size_t txSize, rxSize;
 
-	streaming_dload_read_tx_t packet;
+	streaming_dload_read_tx_t packet = {};
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
@@ -723,7 +721,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out
 
 	size_t txSize, rxSize;
 
-	streaming_dload_read_tx_t packet;
+	streaming_dload_read_tx_t packet = {};
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
@@ -816,7 +814,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
-	std::ifstream file(fileName.c_str(), std::ios::binary);
+	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);
 
 	if (!file.is_open()) {
 		LOGD("Could Not Open File %s\n", fileName.c_str());

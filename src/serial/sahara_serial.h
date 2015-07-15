@@ -80,7 +80,7 @@ namespace openpst {
 
 			/**
 			 * @brief sendImage - Send a whole image file to the device. 
-			 * @param std::string file
+			 * @param std::string filePath
 			 * @return int
 			 */
 			int sendImage(std::string filePath);
@@ -126,11 +126,11 @@ namespace openpst {
 			*
 			* @param uint32_t address
 			* @param size_t size - If the size is over SAHARA_MAX_MEMORY_REQUEST_SIZE, it will read in chunks of SAHARA_MAX_MEMORY_REQUEST_SIZE
-			* @param FILE* out - File pointer to the file to store the read data
+			* @param std::ofstream out - out file stream to write to
 			* @param size_t outSize
 			* @return int
 			*/
-			int readMemory(uint32_t address, size_t size, FILE* out, size_t& outSize);
+			int readMemory(uint32_t address, size_t size, std::ofstream& out, size_t& outSize);
 
 			/**
 			 * @brief sendReset

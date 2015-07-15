@@ -37,18 +37,13 @@ void SaharaMemoryReadWorker::run()
 	request.lastChunkSize = 0;
 	request.outSize = 0;
 
-#ifdef _WIN32
-	FILE* fp;
-	fopen_s(&fp, request.outFilePath.c_str(), "a+b");
-#else
-	FILE* fp = fopen(request.outFilePath.c_str(), "a+b");
+	std::ofstream file(request.outFilePath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 
-	if (!fp) {
-		emit error(request, tmp.sprintf("Error opening %s for writing", request.outFilePath.c_str()));
+	if (!file.is_open()) {
+		emit error(request, "Error opening file for writing");
 		return;
 	}
-#endif
-	
+
 	if (request.size > 100000) {
 		
 		size_t requestSize = 100000;
@@ -62,8 +57,8 @@ void SaharaMemoryReadWorker::run()
 
 			uint32_t address = request.address + request.outSize;
 
-			if (!port.readMemory(address, requestSize, fp, request.lastChunkSize)) {
-				fclose(fp);
+			if (!port.readMemory(address, requestSize, file, request.lastChunkSize)) {
+				file.close();
 				emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", requestSize, address));
 				return;
 			}
@@ -76,8 +71,8 @@ void SaharaMemoryReadWorker::run()
 		} while (request.outSize < request.size && !cancelled);
 
 	} else {
-		if (!port.readMemory(request.address, request.size, fp, request.lastChunkSize)) {
-			fclose(fp); 
+		if (!port.readMemory(request.address, request.size, file, request.lastChunkSize)) {
+			file.close();
 			emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", request.size, request.address));
 			return;
 		}
@@ -87,7 +82,7 @@ void SaharaMemoryReadWorker::run()
 		emit chunkReady(request);
 	}
 
-	fclose(fp);
+	file.close();
 
 	emit complete(request);
 }
