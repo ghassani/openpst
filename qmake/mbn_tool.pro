@@ -22,6 +22,7 @@ SOURCES += \
     src/util/hexdump.cpp \
     src/util/endian.cpp \
     src/gui/mbn_tool_window.cpp \
+    src/gui/application.cpp \
     src/mbn_tool.cpp
 
 HEADERS  += \
@@ -29,7 +30,8 @@ HEADERS  += \
     src/qc/mbn.h \
     src/util/hexdump.h \
     src/util/endian.h \
-    src/gui/mbn_tool_window.h
+    src/gui/mbn_tool_window.h \
+    src/gui/application.h 
 
 
 FORMS  += resources/ui/mbn_tool_window.ui
