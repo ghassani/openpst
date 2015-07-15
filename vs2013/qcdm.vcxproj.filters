@@ -123,6 +123,9 @@
     <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_window.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gui\application.cpp">
+      <Filter>Source Files\src\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_stdint.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="..\src\serial\hdlc_serial.h">
       <Filter>Header Files\src\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\application.h">
+      <Filter>Header Files\src\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

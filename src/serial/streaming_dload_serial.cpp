@@ -14,20 +14,21 @@
 using namespace openpst;
 
 /**
- * @brief StreamingDloadSerial::StreamingDloadSerial
- * @param port
- * @param baudrate
- */
+* @brief StreamingDloadSerial() - Constructor
+*
+* @param std::string port - The device to connect to
+* @param int baudrate - Defaults to 115200
+*/
 StreamingDloadSerial::StreamingDloadSerial(std::string port, int baudrate) :
     HdlcSerial (port, baudrate)
 {
-	memset(&state, 0x00, sizeof(state));
-	state.hello.maxPreferredBlockSize = STREAMING_DLOAD_MAX_PACKET_SIZE;
+	state = {};
+	state.hello.maxPreferredBlockSize = STREAMING_DLOAD_MAX_DATA_SIZE;
 }
 
 /**
- * @brief StreamingDloadSerial::~StreamingDloadSerial
- */
+* @brief ~StreamingDloadSerial() - Deconstructor
+*/
 StreamingDloadSerial::~StreamingDloadSerial()
 {
 
@@ -35,7 +36,15 @@ StreamingDloadSerial::~StreamingDloadSerial()
 
 
 /**
-* @brief StreamingDloadSerial::~StreamingDloadSerial
+* @brief sendHello - sends the initial handshake for the session
+*
+* @param std::string magic - The magic handhsake word. Should be QCOM FAST DOWNLOAD HOST
+* @param uint8_t version - The max version to be compatible with
+* @param uint8_t compatibleVersion - The lowest version to be compatible with
+* @param uint8_t featureBits - a set of feature bits of what features to enable.
+*	@see qc/streaming_dload.h
+*
+* @return int
 */
 int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits)
 {
@@ -46,7 +55,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	
 	size_t rxSize, txSize; 
 	std::vector<uint8_t> buffer; 
-	streaming_dload_hello_tx_t hello;
+	streaming_dload_hello_tx_t hello = {};
 	
 	hello.command = STREAMING_DLOAD_HELLO;
 	memcpy(hello.magic, magic.c_str(), magic.size());
@@ -61,7 +70,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 	
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -71,9 +80,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	if (!isValidResponse(STREAMING_DLOAD_HELLO_RESPONSE, buffer)) {
 		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
-		
-	streaming_dload_hello_rx_header_t* resp = (streaming_dload_hello_rx_header_t*)&buffer[0];
-	
+			
 	memcpy(&state.hello, &buffer[0], sizeof(streaming_dload_hello_rx_header_t));
 	
 	int dataStartIndex = sizeof(streaming_dload_hello_rx_header_t);
@@ -92,6 +99,13 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief sendUnlock - send the unlock command for implementations that require it
+*
+* @param std::string code - The unlock code
+*
+* @return int
+*/
 int StreamingDloadSerial::sendUnlock(std::string code)
 {
 	if (!isOpen()) {
@@ -113,7 +127,7 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -127,6 +141,13 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief setSecurityMode - set the session security mode
+*
+* @param uint8_t mode - The security mode to set to
+*
+* @return int
+*/
 int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 {
 	if (!isOpen()) {
@@ -136,6 +157,7 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 	
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
+
 	streaming_dload_security_mode_tx_t packet;
 	packet.command = STREAMING_DLOAD_SECURITY_MODE;
 	packet.mode = mode;
@@ -147,7 +169,7 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -161,74 +183,12 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-int StreamingDloadSerial::sendReset()
-{
-	if (!isOpen()) {
-		LOGD("Port Not Open\n");
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
-	}
-	
-	size_t txSize, rxSize;
-	std::vector<uint8_t> buffer;
-	
-	streaming_dload_reset_tx_t packet;
-	packet.command = STREAMING_DLOAD_RESET;
 
-	txSize = write((uint8_t*)&packet, sizeof(packet));
-
-	if (!txSize) {
-		LOGD("Wrote 0 bytes\n");
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
-	}
-
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
-
-	if (!rxSize) {
-		LOGD("Device did not respond\n");
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
-	}
-
-	if (!isValidResponse(STREAMING_DLOAD_RESET_ACK, buffer)) {
-		return STREAMING_DLOAD_OPERATION_ERROR;
-	}
-
-	return STREAMING_DLOAD_OPERATION_SUCCESS;
-}
-
-int StreamingDloadSerial::sendPowerOff()
-{
-	if (!isOpen()) {
-		LOGD("Port Not Open\n");
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
-	}
-
-	size_t txSize, rxSize;
-	std::vector<uint8_t> buffer;
-	streaming_dload_reset_tx_t packet;
-	packet.command = STREAMING_DLOAD_POWER_OFF;
-
-	txSize = write((uint8_t*)&packet, sizeof(packet));
-
-	if (!txSize) {
-		LOGD("Wrote 0 bytes\n");
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
-	}
-
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
-
-	if (!rxSize) {
-		LOGD("Device did not respond\n");
-		return STREAMING_DLOAD_OPERATION_IO_ERROR;
-	}
-
-	if (!isValidResponse(STREAMING_DLOAD_POWERING_DOWN, buffer)) {
-		return STREAMING_DLOAD_OPERATION_ERROR;
-	}
-
-	return STREAMING_DLOAD_OPERATION_SUCCESS;
-}
-
-
+/**
+* @brief sendNop - send a NOP
+*
+* @return int
+*/
 int StreamingDloadSerial::sendNop()
 {
 	if (!isOpen()) {
@@ -249,7 +209,7 @@ int StreamingDloadSerial::sendNop()
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -262,13 +222,96 @@ int StreamingDloadSerial::sendNop()
 
 	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)&buffer[0];
 
-	if (resp->identifier  != packet.identifier) {
+	if (resp->identifier != packet.identifier) {
 		LOGD("Received NOP response but identifier did not match\n");
 	}
 
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief sendReset - send a reset command
+*
+* @return int
+*/
+int StreamingDloadSerial::sendReset()
+{
+	if (!isOpen()) {
+		LOGD("Port Not Open\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+	
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
+	
+	streaming_dload_reset_tx_t packet;
+	packet.command = STREAMING_DLOAD_RESET;
+
+	txSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!txSize) {
+		LOGD("Wrote 0 bytes\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
+
+	if (!rxSize) {
+		LOGD("Device did not respond\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_RESET_ACK, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
+	}
+
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
+}
+
+/**
+* @brief sendNop - send a power down command
+*
+* @return int
+*/
+int StreamingDloadSerial::sendPowerOff()
+{
+	if (!isOpen()) {
+		LOGD("Port Not Open\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	size_t txSize, rxSize;
+	std::vector<uint8_t> buffer;
+	streaming_dload_reset_tx_t packet;
+	packet.command = STREAMING_DLOAD_POWER_OFF;
+
+	txSize = write((uint8_t*)&packet, sizeof(packet));
+
+	if (!txSize) {
+		LOGD("Wrote 0 bytes\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
+
+	if (!rxSize) {
+		LOGD("Device did not respond\n");
+		return STREAMING_DLOAD_OPERATION_IO_ERROR;
+	}
+
+	if (!isValidResponse(STREAMING_DLOAD_POWERING_DOWN, buffer)) {
+		return STREAMING_DLOAD_OPERATION_ERROR;
+	}
+
+	return STREAMING_DLOAD_OPERATION_SUCCESS;
+}
+
+/**
+* @brief readEcc - read the current ECC state
+*
+* @param uint8_t& status - Will be set with the current status
+* @return int
+*/
 int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 {
 	if (!isOpen()) {
@@ -288,7 +331,7 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -306,6 +349,13 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief setEcc - set the current ECC state
+*
+* @param uint8_t status - The status to set it to
+*
+* @return int
+*/
 int StreamingDloadSerial::setEcc(uint8_t status)
 {
 	if (!isOpen()) {
@@ -326,7 +376,7 @@ int StreamingDloadSerial::setEcc(uint8_t status)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -340,6 +390,13 @@ int StreamingDloadSerial::setEcc(uint8_t status)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief openMode - Open mode
+*
+* @param uint8_t mode - The mode to open
+*	@see qc/streaming_dload.h
+* @return int
+*/
 int StreamingDloadSerial::openMode(uint8_t mode)
 {
 	if (!isOpen()) {
@@ -360,7 +417,7 @@ int StreamingDloadSerial::openMode(uint8_t mode)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -374,6 +431,11 @@ int StreamingDloadSerial::openMode(uint8_t mode)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief closeMode - Close the current opened mode
+*
+* @return int
+*/
 int StreamingDloadSerial::closeMode()
 {
 	if (!isOpen()) {
@@ -393,7 +455,7 @@ int StreamingDloadSerial::closeMode()
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -407,8 +469,14 @@ int StreamingDloadSerial::closeMode()
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-
-
+/**
+* @brief openMultiImage - open mode for multi image devices
+*
+* @param uint8_t imageType - The image type to open
+*	@see qc/streaming_dload.h
+*
+* @return int
+*/
 int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 {
 	if (!isOpen()) {
@@ -429,7 +497,7 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -443,6 +511,18 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief readAddress - Read x bytes from starting address
+*					   into a memory allocated array
+*
+* @param uint32_t address - The starting address
+* @param size_t length - The length to read from address
+* @param uint8_t** - The memory allocated array containing the read data until success or error encountered.
+* @param size_t& - The size of the memory allocated data
+* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+*
+* @return int
+*/
 int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize)
 {
 	if (!isOpen()) {
@@ -455,7 +535,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 	uint8_t* out = new uint8_t[length];
 	size_t outSize = length;
 
-	uint8_t buffer[STREAMING_DLOAD_MAX_PACKET_SIZE * 2];
+	uint8_t buffer[STREAMING_DLOAD_MAX_RX_SIZE];
 
 	dataSize = 0;
 
@@ -481,10 +561,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		// read accounting for additional room for the data to be read
-		// and the extra packet data in the header of the response
-		// and possibly escaped content
-		rxSize = read(buffer, STREAMING_DLOAD_MAX_PACKET_SIZE * 2);
+		rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 		if (!rxSize) {
 			LOGD("Device did not respond\n");
@@ -528,6 +605,17 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief readAddress - Read x bytes from starting address
+*					   into a std::vector<uint8_t> container
+*
+* @param uint32_t address - The starting address
+* @param size_t length - The length to read from address
+* @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
+* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+*
+* @return int
+*/
 int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize)
 {
 	if (!isOpen()) {
@@ -537,7 +625,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 
 	size_t txSize, rxSize;
 
-	streaming_dload_read_tx_t packet;
+	streaming_dload_read_tx_t packet = {};
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
@@ -572,7 +660,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 		// read accounting for additional room for the data to be read
 		// and the extra packet data in the header of the response
 		// and possibly escaped content
-		rxSize = read(tmp, (packet.length + sizeof(packet)) * 2);
+		rxSize = read(tmp, STREAMING_DLOAD_MAX_RX_SIZE);
 
 		if (!rxSize) {
 			LOGD("Device did not respond to request to read %lu bytes from 0x%08X\n", packet.length, packet.address);
@@ -612,7 +700,18 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
-
+/**
+* @brief readAddress - Read x bytes from starting address
+*					   into a file pointer
+*
+* @param uint32_t address - The starting address
+* @param size_t length - The length to read from address
+* @param FILE* out - The file pointer to write the data to
+* @param size_t& outSize - The amount of bytes written to the file until success or error encountered.
+* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+*
+* @return int
+*/
 int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out, size_t &outSize, size_t chunkSize)
 {
 	if (!isOpen()) {
@@ -622,7 +721,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out
 
 	size_t txSize, rxSize;
 
-	streaming_dload_read_tx_t packet;
+	streaming_dload_read_tx_t packet = {};
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
@@ -650,10 +749,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		// read accounting for additional room for the data to be read
-		// and the extra packet data in the header of the response
-		// and possibly escaped content
-		rxSize = read(tmp, (packet.length + sizeof(packet)) * 2);
+		rxSize = read(tmp, STREAMING_DLOAD_MAX_RX_SIZE);
 
 		if (!rxSize) {
 			LOGD("Device did not respond to request to read %lu bytes from 0x%08X\n", packet.length, packet.address);
@@ -699,6 +795,18 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief writePartitionTable - Writes partition table for sessions that require it.
+*
+* You should send this request with overwrite set to false first and check the outStatus
+* If it is ok the write will take place. If it is not ok then to write the file you will
+* need to force it with overwrite set to true.
+*
+* @param std::string filePath - The path to the partition table (max 512 bytes)
+* @param uint8_t& - The status reported back by the device.
+*	@see qc/streaming_dload.h
+* @param bool overwritte - Defaults to false. If true will overwrite even if error is reported.
+*/
 int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& outStatus, bool overwrite)
 {
 	if (!isOpen()) {
@@ -706,35 +814,34 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 	
-#ifdef _WIN32
-	FILE* fp;
-	fopen_s(&fp, fileName.c_str(), "rb");
-#else
-	FILE* fp = fopen(fileName.c_str(), "rb");
-#endif
+	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);
 
-	if (!fp) {
+	if (!file.is_open()) {
 		LOGD("Could Not Open File %s\n", fileName.c_str());
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	fseek(fp, 0, SEEK_END);
-	size_t fileSize = ftell(fp);
-	rewind(fp);
+	file.seekg(0, file.end);
 
+	size_t fileSize = file.tellg();
+	
+	file.seekg(0, file.beg);
+	
 	if (fileSize > 512) {
 		LOGD("File can\'t exceed 512 bytes");
-		fclose(fp);
+		file.close();
 		return STREAMING_DLOAD_OPERATION_ERROR;
 	}
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
-	streaming_partition_table_tx_t packet;
+	streaming_partition_table_tx_t packet = {};
+
 	packet.command = STREAMING_DLOAD_PARTITION_TABLE;
 	packet.overrideExisting = overwrite;
-	fread(&packet.data, sizeof(uint8_t), fileSize, fp);
-	fclose(fp);
+
+	file.read((char *)&packet.data, fileSize);
+	file.close();
 
 	txSize = write((uint8_t*)&packet, sizeof(packet));
 	
@@ -743,7 +850,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -767,6 +874,9 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 	
 }
 
+/**
+* @brief readQfprom - Havent found a device or mode to use this in
+*/
 int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 {
 	if (!isOpen()) {
@@ -788,7 +898,7 @@ int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
 
-	rxSize = read(buffer, state.hello.maxPreferredBlockSize);
+	rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (!rxSize) {
 		LOGD("Device did not respond\n");
@@ -802,6 +912,13 @@ int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }
 
+/**
+* @brief isValidResponse
+*
+* @param uint8_t expectedCommand,
+* @param uint8_t* response
+* @param size_t responseSize
+*/
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)
 {
 	if (response[0] != expectedCommand) {
@@ -822,11 +939,24 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 	return true;
 }
 
+/**
+* @brief isValidResponse
+*
+* @param uint8_t expectedCommand,
+* @param std::vector<uint8_t> response
+*/
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, std::vector<uint8_t> &data)
 {
 	return isValidResponse(expectedCommand, &data[0], data.size());
 }
 
+/**
+* @brief getNamedError - Get a named error from an error code
+*
+* @param uint8_t code - The error code
+*
+* @return const char* msg
+*/
 const char* StreamingDloadSerial::getNamedError(uint8_t code)
 {
 	switch (code) {
@@ -852,6 +982,13 @@ const char* StreamingDloadSerial::getNamedError(uint8_t code)
 	}
 }
 
+/**
+* @brief getNamedOpenMode - Get a named mode from an open mode integer
+*
+* @param uint8_t mode - The mode
+*
+* @return const char* mode
+*/
 const char* StreamingDloadSerial::getNamedOpenMode(uint8_t mode)
 {
 	switch (mode) {
@@ -863,7 +1000,13 @@ const char* StreamingDloadSerial::getNamedOpenMode(uint8_t mode)
 	}
 }
 
-
+/**
+* @brief getNamedMultiImage - Get a named image from an open multi image type
+*
+* @param uint8_t imageType - The image type id
+*
+* @return const char* name
+*/
 const char* StreamingDloadSerial::getNamedMultiImage(uint8_t imageType)
 {
 	switch (imageType) {

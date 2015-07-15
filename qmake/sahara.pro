@@ -27,6 +27,7 @@ SOURCES += \
     src/serial/sahara_serial.cpp \
     src/worker/sahara_memory_read_worker.cpp \
     src/worker/sahara_image_transfer_worker.cpp \
+    src/gui/application.cpp \
     src/sahara.cpp
 
 HEADERS  += \
@@ -38,7 +39,8 @@ HEADERS  += \
     src/gui/sahara_window.h \
     src/serial/sahara_serial.h \
     src/worker/sahara_memory_read_worker.h \
-    src/worker/sahara_image_transfer_worker.h
+    src/worker/sahara_image_transfer_worker.h \
+    src/gui/application.h
 
 
 FORMS  += resources/ui/sahara_window.ui

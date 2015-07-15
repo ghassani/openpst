@@ -28,6 +28,7 @@ SOURCES += \
     src/gui/qcdm_window.cpp \
     src/serial/hdlc_serial.cpp \
     src/serial/qcdm_serial.cpp \
+    src/gui/application.cpp \
     src/qcdm.cpp
 
 HEADERS  += \
@@ -41,7 +42,8 @@ HEADERS  += \
     src/util/sleep.h \
     src/gui/qcdm_window.h \
     src/serial/qcdm_serial.h \
-    src/serial/hdlc_serial.h
+    src/serial/hdlc_serial.h \
+    src/gui/application.h
 
 
 FORMS  += resources/ui/qcdm_window.ui
