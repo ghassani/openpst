@@ -19,7 +19,7 @@
 namespace openpst {
 	class Application : public QApplication {
 		public:
-			Application(int argc, char *argv[], char* translationPrefix);
+			Application(int argc, char *argv[], const char* translationPrefix);
 			~Application();
 		private:
 			QTranslator qtTranslator;

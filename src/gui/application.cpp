@@ -12,7 +12,7 @@
 
 using namespace openpst;
 
-Application::Application(int argc, char *argv[], char* translatorPrefix) :
+Application::Application(int argc, char *argv[], const char* translatorPrefix) :
 QApplication(argc, argv)
 {
 
