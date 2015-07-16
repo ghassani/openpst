@@ -284,6 +284,7 @@
     <ClCompile Include="..\src\qcdm.cpp" />
     <ClCompile Include="..\src\qc\crc.cpp" />
     <ClCompile Include="..\src\serial\hdlc_serial.cpp" />
+    <ClCompile Include="..\src\util\convert.cpp" />
     <ClCompile Include="..\src\util\endian.cpp" />
     <ClCompile Include="..\src\qc\hdlc.cpp" />
     <ClCompile Include="..\src\util\hexdump.cpp" />
@@ -623,6 +624,7 @@ endlocal
     <ClInclude Include="..\src\include\win_inttypes.h" />
     <ClInclude Include="..\src\include\win_stdint.h" />
     <ClInclude Include="..\src\serial\hdlc_serial.h" />
+    <ClInclude Include="..\src\util\convert.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

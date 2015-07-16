@@ -185,8 +185,10 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
 */
 int QcdmSerial::setNvItem(int itemId, const char *data, int length) {
     uint8_t* resp = nullptr;
-
+	
+	//TODO: fix this
     setNvItem(itemId, data, length, &resp);
+	return 0;
 }
 
 /**
