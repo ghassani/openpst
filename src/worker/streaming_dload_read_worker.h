@@ -22,7 +22,7 @@ namespace openpst {
 	struct streaming_dload_read_worker_request {
 		uint32_t		address;
 		size_t			size;
-		size_t			chunkSize;
+		size_t			stepSize;
 		size_t			outSize;
 		std::string		outFilePath;		
 	};

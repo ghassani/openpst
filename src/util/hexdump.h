@@ -41,6 +41,7 @@ const char hex_trans_display[] =
     "                                        ";
 
 void hexdump(unsigned char *data, unsigned int amount);
+void hexdump(unsigned char *data, unsigned int amount, FILE* file);
 
 #ifdef QT_CORE_LIB
 void hexdump(unsigned char *data, unsigned int amount, QString& out, bool toHtml);

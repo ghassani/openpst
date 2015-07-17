@@ -519,11 +519,11 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 * @param size_t length - The length to read from address
 * @param uint8_t** - The memory allocated array containing the read data until success or error encountered.
 * @param size_t& - The size of the memory allocated data
-* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 *
 * @return int
 */
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t chunkSize)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t stepSize)
 {
 	if (!isOpen()) {
 		LOGD("Port Not Open\n");
@@ -544,13 +544,13 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 
 	streaming_dload_read_rx_t* readRx;
 
-	if (chunkSize > state.hello.maxPreferredBlockSize) {
-		chunkSize = state.hello.maxPreferredBlockSize;
+	if (stepSize > state.hello.maxPreferredBlockSize) {
+		stepSize = state.hello.maxPreferredBlockSize;
 	}
 
 	do {
 		packet.address = address + dataSize;
-		packet.length = length <= chunkSize ? length : chunkSize;
+		packet.length = length <= stepSize ? length : stepSize;
 
 		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 
@@ -590,7 +590,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 		
 		memcpy(&out[dataSize], readRx->data, rxSize - sizeof(packet));
 		dataSize += (rxSize - sizeof(packet));
-
+		
 		if (length <= dataSize) {
 			break; //done
 		}
@@ -612,11 +612,11 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 * @param uint32_t address - The starting address
 * @param size_t length - The length to read from address
 * @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
-* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 *
 * @return int
 */
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t stepSize)
 {
 	if (!isOpen()) {
 		LOGD("Port Not Open\n");
@@ -640,13 +640,13 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 	std::vector<uint8_t> tmp;
 	tmp.reserve(packet.length + sizeof(packet));
 
-	if (chunkSize > state.hello.maxPreferredBlockSize) {
-		chunkSize = state.hello.maxPreferredBlockSize;
+	if (stepSize > state.hello.maxPreferredBlockSize) {
+		stepSize = state.hello.maxPreferredBlockSize;
 	}
 
 	do {
 		packet.address = packet.address + out.size();		
-		packet.length = length <= chunkSize ? length : chunkSize;
+		packet.length = length <= stepSize ? length : stepSize;
 		
 		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 
@@ -708,13 +708,13 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 * @param size_t length - The length to read from address
 * @param FILE* out - The file pointer to write the data to
 * @param size_t& outSize - The amount of bytes written to the file until success or error encountered.
-* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 *
 * @return int
 */
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out, size_t &outSize, size_t chunkSize)
+int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::ofstream& out, size_t &outSize, size_t stepSize)
 {
-	if (!isOpen()) {
+	if (!isOpen() || !out.is_open()) {
 		LOGD("Port Not Open\n");
 		return STREAMING_DLOAD_OPERATION_IO_ERROR;
 	}
@@ -725,20 +725,17 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
-	streaming_dload_read_rx_t* readRx;
-
 	outSize = 0;
 
-	std::vector<uint8_t> tmp;
-	tmp.reserve(packet.length + sizeof(packet));
+	uint8_t tmp[STREAMING_DLOAD_MAX_RX_SIZE];
 
-	if (chunkSize > state.hello.maxPreferredBlockSize) {
-		chunkSize = state.hello.maxPreferredBlockSize;
+	if (stepSize > state.hello.maxPreferredBlockSize) {
+		stepSize = state.hello.maxPreferredBlockSize;
 	}
 
 	do {
 		packet.address = packet.address + outSize;
-		packet.length = length <= chunkSize ? length : chunkSize;
+		packet.length = length <= stepSize ? length : stepSize;
 
 		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 
@@ -756,41 +753,31 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, FILE* out
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, tmp)) {
+		if (!isValidResponse(STREAMING_DLOAD_READ_DATA, tmp, rxSize)) {
 			LOGD("Invalid response in request to read %lu bytes from 0x%08X. Data read so far is %lu bytes.\n", packet.length, packet.address, outSize);
 			return STREAMING_DLOAD_OPERATION_ERROR;
 		}
 
-		readRx = (streaming_dload_read_rx_t*)&tmp[0];
-
-		if (readRx->address != packet.address) {
+		streaming_dload_read_rx_t* resp = (streaming_dload_read_rx_t*)&tmp;
+	
+		if (resp->address != packet.address) {
 			LOGD("Packet address and response address differ\n");
 			return STREAMING_DLOAD_OPERATION_ERROR;
 		}
 
-		// remove the command code, address, and length to only
-		// keep the real data
-		tmp.erase(tmp.end() - rxSize, (tmp.end() - rxSize) + sizeof(packet));
+		size_t dataSize = rxSize - (sizeof(resp->command) + sizeof(resp->address));
 
-		size_t bytesWritten = fwrite(&tmp[0], sizeof(uint8_t), tmp.size(), out);
+		out.write((char *)resp->data, dataSize);
 
-		if (bytesWritten != tmp.size()) {
-			LOGD("Error writting to file. Attempted to write %lu bytes but only wrote %lu. Check for sufficient disk space.\n", tmp.size(), bytesWritten);
-			return STREAMING_DLOAD_OPERATION_IO_ERROR;
+		if (packet.length != dataSize) {
+			LOGD("Data Written Does Not Match Requested Length. Requested %lu bytes wrote %lu bytes\n", packet.length, dataSize);
 		}
 
-		outSize += bytesWritten;
+		outSize += dataSize;
 
-		if (length <= outSize) {
-			LOGD("Final read size is %lu bytes\n", outSize);
-			break; //done
-		}
+	} while (outSize < length);
 
-		// clear out the tmp buffer
-		// for a possible next read
-		tmp.clear();
-
-	} while (true);
+	LOGD("Final read size is %lu bytes\n", outSize);
 
 	return STREAMING_DLOAD_OPERATION_SUCCESS;
 }

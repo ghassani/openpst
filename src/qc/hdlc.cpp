@@ -47,12 +47,7 @@ int hdlc_request(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize) {
 }
 
 int  hdlc_response(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize) {
-    uint16_t crc = crc16((const char*)&in[1], inSize - HDLC_OVERHEAD_LENGTH);
-    uint16_t chk = *((uint16_t*)&in[inSize - HDLC_TRAILER_LENGTH]);
-    if (crc != chk) {
-        printf("Invalid Response CRC Expected: %04X - Received: %04X\n", crc, chk);
-    }
-
+    
     outSize = inSize;
     uint8_t* buffer = new uint8_t[outSize];
 
@@ -61,19 +56,25 @@ int  hdlc_response(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize) {
         if (in[i] == HDLC_ESC_CHAR) {
             buffer[o] = in[i + 1] ^ HDLC_ESC_MASK;
             i++;
-        }
-        else if (in[i] == HDLC_CONTROL_CHAR) {
+        } else if (in[i] == HDLC_CONTROL_CHAR) {
             continue;
-        }
-        else {
+        } else {
             buffer[o] = in[i];
         }
-
         o++;
     }
 
     outSize = o - 2; // less crc
     *out = buffer;
+
+	uint16_t crc = crc16((const char*)buffer, outSize); // perform the crc or the original data
+	uint16_t chk = *((uint16_t*)&in[inSize - HDLC_TRAILER_LENGTH]);
+
+	if (crc != chk) {
+		printf("Invalid Response CRC Expected: %04X - Received: %04X\n", crc, chk);
+		outSize += 2; // add back the crc
+	}
+
     return 1;
 }
 

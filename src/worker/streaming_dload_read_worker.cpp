@@ -35,57 +35,51 @@ void StreamingDloadReadWorker::run()
 {
 	QString tmp;
 
-#ifdef _WIN32
-	FILE* fp;
-	fopen_s(&fp, request.outFilePath.c_str(), "a+b");
-#else
-	FILE* fp = fopen(request.outFilePath.c_str(), "a+b");
-#endif
-
-	if (!fp) {
+	std::ofstream file(request.outFilePath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+	
+	if (!file.is_open()) {
 		emit error(request, tmp.sprintf("Error opening %s for writing", request.outFilePath.c_str()));
 		return;
 	}
 
-	if (request.chunkSize > port.state.hello.maxPreferredBlockSize) {
-		request.chunkSize = port.state.hello.maxPreferredBlockSize;
+	if (request.stepSize > port.state.hello.maxPreferredBlockSize) {
+		request.stepSize = port.state.hello.maxPreferredBlockSize;
 	}
 
 	request.outSize = 0;
 
-	
-	if (request.size <= request.chunkSize) {
-		if (port.readAddress(request.address, request.chunkSize, fp, request.outSize, request.chunkSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
-			fclose(fp); 
-			emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.chunkSize, request.address));
+	if (request.size <= request.stepSize) {
+
+		if (port.readAddress(request.address, request.stepSize, file, request.outSize, request.stepSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
+			file.close();
+			emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, request.address));
 			return;
 		}
 
 		emit chunkReady(request);
 	} else {
 
-		size_t outSize;
+		
+		uint32_t address = request.address;
 
 		do {
-			outSize = 0;
+			size_t chunkOutSize = 0;
 
-			if (port.readAddress(request.address, request.chunkSize, fp, outSize, request.chunkSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
-				fclose(fp);
-				emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.chunkSize, request.address));
+			if (port.readAddress((address + request.outSize), request.stepSize, file, chunkOutSize, request.stepSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
+				file.close();
+				emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, request.address));
 				return;
 			}
-
-			request.outSize += outSize;
+			
+			request.outSize += chunkOutSize;
 
 			emit chunkReady(request);
-
-			request.address += outSize;
 
 		} while (request.outSize < request.size && !cancelled);
 
 	}		
 
-	fclose(fp);
+	file.close();
 
 	emit complete(request);
 }

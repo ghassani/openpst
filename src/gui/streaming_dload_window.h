@@ -37,6 +37,7 @@ namespace openpst{
 
 
 		public slots:
+
 			/**
 			 * @brief updatePortList
 			 */
@@ -113,11 +114,6 @@ namespace openpst{
 			void read();
 
 			/**
-			* @brief readQfprom
-			*/
-			void readQfprom();
-
-			/**
 			* @brief eraseFlash
 			*/
 			void eraseFlash();
@@ -146,8 +142,7 @@ namespace openpst{
 			* @brief browseForWriteFile
 			*/
 			void browseForWriteFile();
-
-
+			
 			/**
 			* @brief readChunkReadyHandler
 			*/

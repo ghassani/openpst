@@ -31,16 +31,10 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	ui->openModeValue->addItem("0x04 - Factory", STREAMING_DLOAD_OPEN_MODE_FACTORY);
 	ui->openModeValue->setCurrentIndex(0);
 
-	//ui->eccSetValue->addItem("", NULL);
 	ui->eccSetValue->addItem("0x00 - Disable", 0x00);
 	ui->eccSetValue->addItem("0x01 - Enable", 0x01);
 	ui->eccSetValue->setCurrentIndex(0);
 
-	ui->qfpromReadAddressTypeValue->addItem("0x00 - Corrected", 0x00);
-	ui->qfpromReadAddressTypeValue->addItem("0x01 - RAW", 0x01);
-	ui->qfpromReadAddressTypeValue->setCurrentIndex(0);
-
-	//ui->openMultiValue->addItem("", NULL);
 	ui->openMultiValue->addItem("0x01 - PBL", STREAMING_DLOAD_OPEN_MULTI_MODE_PBL);
 	ui->openMultiValue->addItem("0x02 - QC SBL Header & Config", STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBLHDCFG);
 	ui->openMultiValue->addItem("0x03 - QC SBL", STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBL);
@@ -89,17 +83,13 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->closeModeButton, SIGNAL(clicked()), this, SLOT(closeMode()));
 	QObject::connect(ui->openMultiCloseButton, SIGNAL(clicked()), this, SLOT(closeMode()));
 	QObject::connect(ui->readButton, SIGNAL(clicked()), this, SLOT(read()));
-	QObject::connect(ui->qfpromReadButton, SIGNAL(clicked()), this, SLOT(readQfprom()));
 	QObject::connect(ui->writePartitionTableButton, SIGNAL(clicked()), this, SLOT(writePartitionTable()));
 	QObject::connect(ui->cancelOperationButton, SIGNAL(clicked()), this, SLOT(cancelOperation()));
-
-	
 	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
 	QObject::connect(ui->writePartitionTableFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForParitionTable()));
 	QObject::connect(ui->writeFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForWriteFile()));
 
 	qRegisterMetaType<streaming_dload_read_worker_request>("streaming_dload_read_worker_request");
-
 
 	updatePortList();
 }
@@ -254,11 +244,11 @@ void StreamingDloadWindow::sendHello()
 	log(tmp.sprintf("Window Size: %d", port.state.hello.windowSize));
 	log(tmp.sprintf("Number of Sectors: %d", port.state.hello.numberOfSectors));
 	
-	/*
+	
 	// dump all sector sizes
 	for (int i = 0; i < port.state.hello.numberOfSectors; i++) {
 		log(tmp.sprintf("Sector %d: %d", i, port.state.hello.sectorSizes[i*4]));
-	}*/
+	}
 
 	log(tmp.sprintf("Feature Bits: %04X", port.state.hello.featureBits));
 }
@@ -475,7 +465,7 @@ void StreamingDloadWindow::read()
 
 	uint32_t address = std::stoul(ui->readAddressValue->text().toStdString().c_str(), nullptr, 16);
 	size_t	 size = std::stoi(ui->readSizeValue->text().toStdString().c_str(), nullptr, 10);
-	size_t	 chunkSize = std::stoi(ui->readChunkSizeValue->currentText().toStdString().c_str(), nullptr, 10);
+	size_t	 stepSize = std::stoi(ui->readStepSizeValue->currentText().toStdString().c_str(), nullptr, 10);
 
 	if (size <= 0) {
 		log("Enter a valid size to read");
@@ -497,7 +487,7 @@ void StreamingDloadWindow::read()
 	streaming_dload_read_worker_request request;	
 	request.address = address;
 	request.size = size;
-	request.chunkSize = chunkSize;
+	request.stepSize = stepSize;
 	request.outFilePath = fileName.toStdString();
 
 	// setup progress bar
@@ -568,27 +558,6 @@ void StreamingDloadWindow::openMultiMode()
 
 	log(tmp.sprintf("Opening multi image mode for %s", port.getNamedMultiImage(imageType)));
 	
-}
-
-/**
-* @brief StreamingDloadWindow::readQfprom
-*/
-void StreamingDloadWindow::readQfprom()
-{
-	if (!port.isOpen()) {
-		log("Port Not Open");
-		return;
-	}
-	
-	uint32_t rowAddress = std::stoul(ui->qfpromReadRowAddressValue->text().toStdString().c_str(), nullptr, 16);
-	uint32_t addressType = ui->qfpromReadAddressTypeValue->currentData().toUInt();
-
-	if (!port.readQfprom(rowAddress, addressType)) {
-		log("Error Reading QFPROM Row Address");
-		return;
-	}
-
-	log("Read QFPROM Row Address");
 }
 
 /**

@@ -51,7 +51,7 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
     }
 
     size_t packetSize = 0;
-    uint8_t* packet     = NULL;
+    uint8_t* packet   = NULL;
 
     hdlc_request(data, size, &packet, packetSize);
 
@@ -81,6 +81,8 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 {
     size_t bytesRead = Serial::read(buf, size);
+	LOGD("Original a: %lu\n", bytesRead);
+	hexdump_rx(&buf[0], bytesRead);
 
     if (!unescape || !bytesRead) {
         return bytesRead;
@@ -120,7 +122,12 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape)
 {
 
+	buffer.reserve(buffer.size() + (size + HDLC_OVERHEAD_LENGTH));
+	
 	size_t bytesRead = Serial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
+
+	LOGD("Original: %lu\n", bytesRead);
+	hexdump_rx(&buffer[0], bytesRead);
 
 	if (!unescape || !bytesRead) {
 		return bytesRead;

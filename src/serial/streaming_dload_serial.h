@@ -174,11 +174,11 @@ namespace openpst {
 			* @param uint32_t address - The starting address
 			* @param size_t length - The length to read from address
 			* @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
-			* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+			* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 			*
 			* @return int
 			*/
-			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t chunkSize);
+			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t stepSize);
 			
 			/**
 			* @brief readAddress - Read x bytes from starting address
@@ -188,11 +188,11 @@ namespace openpst {
 			* @param size_t length - The length to read from address
 			* @param FILE* out - The file pointer to write the data to
 			* @param size_t& outSize - The amount of bytes written to the file until success or error encountered.
-			* @param size_t chunkSize - The amount to request per read operation. The max size is 1024.
+			* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 			*
 			* @return int
 			*/
-			int readAddress(uint32_t address, size_t length, FILE* out, size_t &outSize, size_t chunkSize);
+			int readAddress(uint32_t address, size_t length, std::ofstream& out, size_t &outSize, size_t stepSize);
 			
 			/**
 			* @brief writePartitionTable - Writes partition table for sessions that require it.
