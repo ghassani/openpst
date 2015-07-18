@@ -16,6 +16,15 @@
 #define MBN_HEADER_MAX_SIZE 80
 #define MBN_HEADER_MIN_SIZE 40
 #define MBN_EIGHTY_BYTE_MAGIC 0x73D71034
+#define MBN_ROOT_CERTIFICATE_SIZE 1024 * 6
+#define MBN_MAX_ROOT_CERTIFICATES 4
+
+enum MBN_IMAGE_SEGMENTS {
+	MBN_SEGMENT_HEADER = 1,
+	MBN_SEGMENT_CODE,
+	MBN_SEGMENT_SIGNATURE,
+	MBN_SEGMENT_X509_CHAIN_CERTIFICATE
+};
 
 PACKED(typedef struct {
     uint32_t  codeword;            /* Codeword/magic number defining flash type
@@ -61,15 +70,15 @@ PACKED(typedef struct {
   uint32_t header_vsn_num;     /**< Header version number. */
   uint32_t image_src;          /**< Offset from end of the Boot header where the
                                   image starts. */
-  uint8_t* image_dest_ptr;     /**< Pointer to location to store image in RAM.
+  uint32_t image_dest_ptr;     /**< Pointer to location to store image in RAM.
                                   Also, entry point at which image execution
                                   begins. */
   uint32_t image_size;         /**< Size of complete image in bytes */
   uint32_t code_size;          /**< Size of code region of image in bytes */
-  uint8_t* signature_ptr;      /**< Pointer to images attestation signature */
+  uint32_t signature_ptr;      /**< Pointer to images attestation signature */
   uint32_t signature_size;     /**< Size of the attestation signature in
                                  bytes */
-  uint8_t* cert_chain_ptr;     /**< Pointer to the chain of attestation
+  uint32_t cert_chain_ptr;     /**< Pointer to the chain of attestation
                                  certificates associated with the image. */
   uint32_t cert_chain_size;    /**< Size of the attestation chain in bytes */
 }) fourty_byte_mbn_header_t;
@@ -107,5 +116,6 @@ enum MBN_IMAGE {
     MBN_IMAGE_ACDB           = 0x1D,
     MBN_IMAGE_WDT            = 0x1E,
     MBN_IMAGE_MBA            = 0x1F,
+	MBN_IMAGE_LAST
 };
 #endif // _QC_MBN_H

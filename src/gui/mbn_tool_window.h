@@ -35,8 +35,8 @@ namespace openpst{
 			~MbnToolWindow();
 
 			public slots:
-			void BrowseForFile();
-			void LoadFile();
+			void browseForFile();
+			void loadFile();
 			void readX509Chain();
 			void readSignature();
 			void readCode();
@@ -46,6 +46,10 @@ namespace openpst{
 			void log(const char* message);
 			void log(std::string message);
 			void log(QString message);
+			void extractSegment(int segment);
+			bool isValidHeader(uint8_t* data);
+			bool isEightyByteHeader(uint8_t* data);
+			bool isFourtyByteHeader(uint8_t* data);
 
 	};
 }
