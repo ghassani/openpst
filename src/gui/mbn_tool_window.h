@@ -18,6 +18,8 @@
 #include "qc/mbn.h"
 #include "util/hexdump.h"
 #include "util/endian.h"
+#include <fstream>
+#include <ostream>
 
 namespace Ui {
 class MbnToolWindow;
@@ -36,13 +38,14 @@ namespace openpst{
 			void BrowseForFile();
 			void LoadFile();
 			void readX509Chain();
+			void readSignature();
+			void readCode();
 
 		private:
 			Ui::MbnToolWindow *ui;
 			void log(const char* message);
 			void log(std::string message);
 			void log(QString message);
-			void logHex(uint8_t* data, size_t amount);
 
 	};
 }

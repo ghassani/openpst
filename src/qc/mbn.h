@@ -13,6 +13,10 @@
 
 #include "include/definitions.h"
 
+#define MBN_HEADER_MAX_SIZE 80
+#define MBN_HEADER_MIN_SIZE 40
+#define MBN_EIGHTY_BYTE_MAGIC 0x73D71034
+
 PACKED(typedef struct {
     uint32_t  codeword;            /* Codeword/magic number defining flash type
                                 information. */

@@ -21,7 +21,9 @@ MbnToolWindow::MbnToolWindow(QWidget *parent) :
 
     QObject::connect(ui->fileBrowseButton, SIGNAL(clicked()), this, SLOT(BrowseForFile()));
     QObject::connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(LoadFile()));
-    QObject::connect(ui->readx509ChainButton, SIGNAL(clicked()), this, SLOT(readX509Chain()));
+	QObject::connect(ui->readCodeButton, SIGNAL(clicked()), this, SLOT(readCode()));
+	QObject::connect(ui->readSignatureButton, SIGNAL(clicked()), this, SLOT(readSignature()));
+	QObject::connect(ui->readx509ChainButton, SIGNAL(clicked()), this, SLOT(readX509Chain()));
 }
 
 MbnToolWindow::~MbnToolWindow()
@@ -49,37 +51,33 @@ void MbnToolWindow::LoadFile()
         return;
     }
 
-#ifdef _WIN32
-	FILE* fp;
-	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "rb");
-#else
-	FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-#endif	     
+	std::ifstream file(fileName.toStdString(), std::ios::in | std::ios::binary);     
 
-    if (!fp) {
+    if (!file.is_open()) {
         log("Error Opening File");
         return;
     }    
 
-    fseek(fp, 0, SEEK_END);
-    size_t fileSize = ftell(fp);
-    rewind(fp);
+	file.seekg(0, file.end);
+
+    size_t fileSize = file.tellg();
+
+	file.seekg(0, file.beg);
 
 
-    log(tmp.sprintf("SBL Header Size: %lu", sizeof(eighty_byte_mbn_header_t)));
+	eighty_byte_mbn_header_t sblHeader = {};
 
-    eighty_byte_mbn_header_t sblHeader;
+	file.read((char *)&sblHeader, sizeof(sblHeader));
 
-    size_t bytesRead = fread((uint8_t*)&sblHeader, 1, sizeof(eighty_byte_mbn_header_t), fp);
-
-    //logHex((uint8_t*)&sblHeader, sizeof(eighty_byte_mbn_header_t));
-
-    fclose(fp);
+	file.close();
 
     log(tmp.sprintf("File Size: %lu bytes", fileSize));
 
     // code_size = fileSize - sizeof(eighty_byte_mbn_header_t) - sblHeader.image_size - sblHeader.image_size
     // image_size = fileSize - sizeof(eighty_byte_mbn_header_t)
+	bool asDec = ui->displayDataAsSelect->currentText().compare("DEC");
+
+	const char* format = asDec ? "%04X" : "%lu";
 
     if (ui->flipEndianCheckbox->isChecked()) {
         log(tmp.sprintf("Image Size: %lu bytes", flip_endian32(sblHeader.image_size)));
@@ -87,118 +85,260 @@ void MbnToolWindow::LoadFile()
         log(tmp.sprintf("Signature Size: %lu bytes", flip_endian32(sblHeader.signature_size)));
         log(tmp.sprintf("Cert Chain Size: %lu bytes", flip_endian32(sblHeader.cert_chain_size)));
 
-        ui->mbnHeaderCodewordValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.codeword)));
-        ui->mbnHeaderMagicValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.magic)));
-        ui->mbnHeaderImageIdValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_id)));
-        ui->mbnHeaderReserved1Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved1)));
-        ui->mbnHeaderReserved2Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved2)));
-        ui->mbnHeaderImageSrcValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_src)));
-        ui->mbnHeaderImageDestPtrValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_dest_ptr)));
-        ui->mbnHeaderImageSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.image_size)));
-        ui->mbnHeaderCodeSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.code_size)));
-        ui->mbnHeaderSignaturePtrValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.signature_ptr)));
-        ui->mbnHeaderSignatureSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.signature_size)));
-        ui->mbnHeaderCertChainPtrValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.cert_chain_ptr)));
-        ui->mbnHeaderCertChainSizeValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.cert_chain_size)));
-        ui->mbnHeaderOemRootCertSelectionValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.oem_root_cert_sel)));
-        ui->mbnHeaderOemNumberRootCertsValue->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.oem_num_root_certs)));
-        ui->mbnHeaderReserved3Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved3)));
-        ui->mbnHeaderReserved4Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved4)));
-        ui->mbnHeaderReserved5Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved5)));
-        ui->mbnHeaderReserved6Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved6)));
-        ui->mbnHeaderReserved7Value->setText(tmp.sprintf("%04X", flip_endian32(sblHeader.reserved7)));
+        ui->mbnHeaderCodewordValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.codeword)));
+        ui->mbnHeaderMagicValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.magic)));
+        ui->mbnHeaderImageIdValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.image_id)));
+        ui->mbnHeaderReserved1Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved1)));
+        ui->mbnHeaderReserved2Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved2)));
+        ui->mbnHeaderImageSrcValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.image_src)));
+        ui->mbnHeaderImageDestPtrValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.image_dest_ptr)));
+        ui->mbnHeaderImageSizeValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.image_size)));
+        ui->mbnHeaderCodeSizeValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.code_size)));
+		ui->mbnHeaderSignaturePtrValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.signature_ptr)));
+        ui->mbnHeaderSignatureSizeValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.signature_size)));
+		ui->mbnHeaderCertChainPtrValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.cert_chain_ptr)));
+        ui->mbnHeaderCertChainSizeValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.cert_chain_size)));
+        ui->mbnHeaderOemRootCertSelectionValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.oem_root_cert_sel)));
+        ui->mbnHeaderOemNumberRootCertsValue->setText(tmp.sprintf(format, flip_endian32(sblHeader.oem_num_root_certs)));
+        ui->mbnHeaderReserved3Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved3)));
+        ui->mbnHeaderReserved4Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved4)));
+        ui->mbnHeaderReserved5Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved5)));
+        ui->mbnHeaderReserved6Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved6)));
+        ui->mbnHeaderReserved7Value->setText(tmp.sprintf(format, flip_endian32(sblHeader.reserved7)));
     } else {
         log(tmp.sprintf("Image Size: %lu bytes", sblHeader.image_size));
         log(tmp.sprintf("Code Size: %lu bytes", sblHeader.code_size));
         log(tmp.sprintf("Signature Size: %lu bytes", sblHeader.signature_size));
         log(tmp.sprintf("Cert Chain Size: %lu bytes", sblHeader.cert_chain_size));
 
-        ui->mbnHeaderCodewordValue->setText(tmp.sprintf("%04X", sblHeader.codeword));
-        ui->mbnHeaderMagicValue->setText(tmp.sprintf("%04X", sblHeader.magic));
-        ui->mbnHeaderImageIdValue->setText(tmp.sprintf("%04X", sblHeader.image_id));
-        ui->mbnHeaderReserved1Value->setText(tmp.sprintf("%04X", sblHeader.reserved1));
-        ui->mbnHeaderReserved2Value->setText(tmp.sprintf("%04X", sblHeader.reserved2));
-        ui->mbnHeaderImageSrcValue->setText(tmp.sprintf("%04X", sblHeader.image_src));
-        ui->mbnHeaderImageDestPtrValue->setText(tmp.sprintf("%04X", sblHeader.image_dest_ptr));
-        ui->mbnHeaderImageSizeValue->setText(tmp.sprintf("%04X", sblHeader.image_size));
-        ui->mbnHeaderCodeSizeValue->setText(tmp.sprintf("%04X", sblHeader.code_size));
-        ui->mbnHeaderSignaturePtrValue->setText(tmp.sprintf("%04X", sblHeader.signature_ptr));
-        ui->mbnHeaderSignatureSizeValue->setText(tmp.sprintf("%04X", sblHeader.signature_size));
-        ui->mbnHeaderCertChainPtrValue->setText(tmp.sprintf("%04X", sblHeader.cert_chain_ptr));
-        ui->mbnHeaderCertChainSizeValue->setText(tmp.sprintf("%04X", sblHeader.cert_chain_size));
-        ui->mbnHeaderOemRootCertSelectionValue->setText(tmp.sprintf("%04X", sblHeader.oem_root_cert_sel));
-        ui->mbnHeaderOemNumberRootCertsValue->setText(tmp.sprintf("%04X", sblHeader.oem_num_root_certs));
-        ui->mbnHeaderReserved3Value->setText(tmp.sprintf("%04X", sblHeader.reserved3));
-        ui->mbnHeaderReserved4Value->setText(tmp.sprintf("%04X", sblHeader.reserved4));
-        ui->mbnHeaderReserved5Value->setText(tmp.sprintf("%04X", sblHeader.reserved5));
-        ui->mbnHeaderReserved6Value->setText(tmp.sprintf("%04X", sblHeader.reserved6));
-        ui->mbnHeaderReserved7Value->setText(tmp.sprintf("%04X", sblHeader.reserved7));
+        ui->mbnHeaderCodewordValue->setText(tmp.sprintf(format, sblHeader.codeword));
+        ui->mbnHeaderMagicValue->setText(tmp.sprintf(format, sblHeader.magic));
+        ui->mbnHeaderImageIdValue->setText(tmp.sprintf(format, sblHeader.image_id));
+        ui->mbnHeaderReserved1Value->setText(tmp.sprintf(format, sblHeader.reserved1));
+        ui->mbnHeaderReserved2Value->setText(tmp.sprintf(format, sblHeader.reserved2));
+        ui->mbnHeaderImageSrcValue->setText(tmp.sprintf(format, sblHeader.image_src));
+        ui->mbnHeaderImageDestPtrValue->setText(tmp.sprintf(format, sblHeader.image_dest_ptr));
+        ui->mbnHeaderImageSizeValue->setText(tmp.sprintf(format, sblHeader.image_size));
+        ui->mbnHeaderCodeSizeValue->setText(tmp.sprintf(format, sblHeader.code_size));
+        ui->mbnHeaderSignaturePtrValue->setText(tmp.sprintf(format, sblHeader.signature_ptr));
+        ui->mbnHeaderSignatureSizeValue->setText(tmp.sprintf(format, sblHeader.signature_size));
+        ui->mbnHeaderCertChainPtrValue->setText(tmp.sprintf(format, sblHeader.cert_chain_ptr));
+        ui->mbnHeaderCertChainSizeValue->setText(tmp.sprintf(format, sblHeader.cert_chain_size));
+        ui->mbnHeaderOemRootCertSelectionValue->setText(tmp.sprintf(format, sblHeader.oem_root_cert_sel));
+        ui->mbnHeaderOemNumberRootCertsValue->setText(tmp.sprintf(format, sblHeader.oem_num_root_certs));
+        ui->mbnHeaderReserved3Value->setText(tmp.sprintf(format, sblHeader.reserved3));
+        ui->mbnHeaderReserved4Value->setText(tmp.sprintf(format, sblHeader.reserved4));
+        ui->mbnHeaderReserved5Value->setText(tmp.sprintf(format, sblHeader.reserved5));
+        ui->mbnHeaderReserved6Value->setText(tmp.sprintf(format, sblHeader.reserved6));
+        ui->mbnHeaderReserved7Value->setText(tmp.sprintf(format, sblHeader.reserved7));
     }
 
 }
 
+void MbnToolWindow::readCode()
+{
+	QString tmp;
+	QString fileName = ui->filePathInput->text();
+
+	if (!fileName.length()) {
+		log("Please Enter or Browse For a Image File");
+		return;
+	}
+
+	std::ifstream file(fileName.toStdString(), std::ios::in | std::ios::binary);
+
+	file.seekg(0, file.end);
+	size_t fileSize = file.tellg();
+	file.seekg(0, file.beg);
+
+	if (MBN_HEADER_MAX_SIZE > fileSize) {
+		log("File is not large enough to be an mbn image");
+		file.close();
+		return;
+	}
+
+	uint8_t headerBuffer[MBN_HEADER_MAX_SIZE];
+
+	file.read((char*)headerBuffer, MBN_HEADER_MAX_SIZE);
+
+	uint32_t magic = *((uint32_t*)&headerBuffer[sizeof(uint32_t)]);
+
+	if (magic == MBN_EIGHTY_BYTE_MAGIC) {
+		eighty_byte_mbn_header_t* header = (eighty_byte_mbn_header_t*)headerBuffer;
+		
+		size_t codeOffset = header->image_src;
+		
+		if (header->code_size > fileSize) {
+			log("Error. Code size exceeds file size");
+			file.close();
+			return;
+		}
+
+		QString outFilePath = QFileDialog::getSaveFileName(this, tr("Save MBN Image Code Segment"), "", tr("Binary Files (*.bin)"));
+
+		std::ofstream outFile(outFilePath.toStdString(), std::ios::out | std::ios::binary | std::ios::trunc);
+
+		if (!outFile.is_open()) {
+			log("Could not open file for writing");
+			file.close();
+		}
+
+		uint8_t* outBuffer = new uint8_t[header->code_size];
+
+		file.seekg(codeOffset, file.beg);
+		
+		file.read((char *)outBuffer, header->code_size);
+
+		outFile.write((char *)outBuffer, header->code_size);
+
+		outFile.close();
+
+		free(outBuffer);
+
+	} else {
+		log("40 Byte and check not implemented");
+	}
+
+
+	file.close();
+}
+
+
+void MbnToolWindow::readSignature()
+{
+	QString tmp;
+	QString fileName = ui->filePathInput->text();
+
+	if (!fileName.length()) {
+		log("Please Enter or Browse For a Image File");
+		return;
+	}
+
+	std::ifstream file(fileName.toStdString(), std::ios::in | std::ios::binary);
+
+	file.seekg(0, file.end);
+	size_t fileSize = file.tellg();
+	file.seekg(0, file.beg);
+
+	if (MBN_HEADER_MAX_SIZE > fileSize) {
+		log("File is not large enough to be an mbn image");
+		file.close();
+		return;
+	}
+
+	uint8_t headerBuffer[MBN_HEADER_MAX_SIZE];
+
+	file.read((char*)headerBuffer, MBN_HEADER_MAX_SIZE);
+
+	uint32_t magic = *((uint32_t*)&headerBuffer[sizeof(uint32_t)]);
+
+	if (magic == MBN_EIGHTY_BYTE_MAGIC) {
+		eighty_byte_mbn_header_t* header = (eighty_byte_mbn_header_t*)headerBuffer;
+
+		size_t signatureOffset = header->image_src + header->code_size;
+
+		if (header->signature_size > fileSize) {
+			log("Error. Signature size exceeds file size");
+			file.close();
+			return;
+		}
+
+		QString outFilePath = QFileDialog::getSaveFileName(this, tr("Save MBN Image Signature Segment"), "", tr("Binary Files (*.bin)"));
+
+		std::ofstream outFile(outFilePath.toStdString(), std::ios::out | std::ios::binary | std::ios::trunc);
+
+		if (!outFile.is_open()) {
+			log("Could not open file for writing");
+			file.close();
+		}
+
+		uint8_t* outBuffer = new uint8_t[header->signature_size];
+
+		file.seekg(signatureOffset, file.beg);
+
+		file.read((char *)outBuffer, header->signature_size);
+
+		outFile.write((char *)outBuffer, header->signature_size);
+
+		outFile.close();
+
+		free(outBuffer);
+
+	} else {
+		log("40 Byte and check not implemented");
+	}
+
+
+	file.close();
+}
+
+
 void MbnToolWindow::readX509Chain()
 {
-    QString tmp;
-    QString fileName = ui->filePathInput->text();
+	QString tmp;
+	QString fileName = ui->filePathInput->text();
 
-    if (!fileName.length()) {
-        log("Please Enter or Browse For a Image File");
-        return;
-    }
+	if (!fileName.length()) {
+		log("Please Enter or Browse For a Image File");
+		return;
+	}
 
-#ifdef _WIN32
-	FILE* fp;
-	errno_t err = fopen_s(&fp, fileName.toStdString().c_str(), "rb");
-#else
-	FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-#endif	    
+	std::ifstream file(fileName.toStdString(), std::ios::in | std::ios::binary);
 
-    if (!fp) {
-        log("Error Opening File");
-        return;
-    }
+	file.seekg(0, file.end);
+	size_t fileSize = file.tellg();
+	file.seekg(0, file.beg);
 
-    fseek(fp, 0, SEEK_END);
-    size_t fileSize = ftell(fp);
-    rewind(fp);
+	if (MBN_HEADER_MAX_SIZE > fileSize) {
+		log("File is not large enough to be an mbn image");
+		file.close();
+		return;
+	}
 
-    eighty_byte_mbn_header_t sblHeader;
+	uint8_t headerBuffer[MBN_HEADER_MAX_SIZE];
 
-    fread((uint8_t*)&sblHeader, 1, sizeof(eighty_byte_mbn_header_t), fp);
+	file.read((char*)headerBuffer, MBN_HEADER_MAX_SIZE);
 
-    rewind(fp);
+	uint32_t magic = *((uint32_t*)&headerBuffer[sizeof(uint32_t)]);
 
-    uint32_t codeSize     = sblHeader.code_size;
-    uint32_t imgSize      = sblHeader.image_size;
-    uint32_t imgSrc       = sblHeader.image_src;
-    uint32_t certChainPtr = flip_endian32(sblHeader.cert_chain_ptr);
-    uint32_t certSize     = sblHeader.cert_chain_size;
-    uint32_t sigSize      = sblHeader.signature_size;
-    uint32_t offset       = sizeof(eighty_byte_mbn_header_t) + imgSrc + codeSize;
+	if (magic == MBN_EIGHTY_BYTE_MAGIC) {
+		eighty_byte_mbn_header_t* header = (eighty_byte_mbn_header_t*)headerBuffer;
 
-    if (offset > fileSize) {
-        log(tmp.sprintf("Offset Exceeds File Size: %u | %u %u %u %u", fileSize, offset, sizeof(eighty_byte_mbn_header_t), imgSrc, codeSize));
-        return;
-    }
+		size_t x509Offset = header->image_src + header->code_size + header->signature_size;
 
-    uint8_t* fileBuffer = new uint8_t[fileSize];
+		if (header->cert_chain_size > fileSize) {
+			log("Error. Certificate size exceeds file size");
+			file.close();
+			return;
+		}
 
-    fread(fileBuffer, 1, fileSize, fp);
+		QString outFilePath = QFileDialog::getSaveFileName(this, tr("Save MBN Image X509 Certificate Segment"), "", tr("Binary Files (*.bin)"));
 
-    uint8_t* sig = &fileBuffer[offset];
+		std::ofstream outFile(outFilePath.toStdString(), std::ios::out | std::ios::binary | std::ios::trunc);
 
-    hexdump(sig, sigSize);
+		if (!outFile.is_open()) {
+			log("Could not open file for writing");
+			file.close();
+		}
 
-    uint8_t* cert = &fileBuffer[offset + sigSize];
+		uint8_t* outBuffer = new uint8_t[header->cert_chain_size];
 
-    hexdump(cert, certSize);
+		file.seekg(x509Offset, file.beg);
+
+		file.read((char *)outBuffer, header->cert_chain_size);
+
+		outFile.write((char *)outBuffer, header->cert_chain_size);
+
+		outFile.close();
+
+		free(outBuffer);
+
+	} else {
+		log("40 Byte and check not implemented");
+	}
 
 
-
-    free(fileBuffer);
-
-    fclose(fp);
+	file.close();
 }
 
 /**
@@ -227,62 +367,3 @@ void MbnToolWindow::log(QString message)
     ui->log->appendPlainText(message);
 }
 
-/**
- * @brief MbnToolWindow::logHex
- * @param data
- * @param amount
- */
-void MbnToolWindow::logHex(uint8_t* data, size_t amount)
-{
-    unsigned int    dp, p;  /* data pointer */
-    const char      trans[] =
-        "................................ !\"#$%&'()*+,-./0123456789"
-        ":;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklm"
-        "nopqrstuvwxyz{|}~...................................."
-        "....................................................."
-        "........................................";
-
-    hexdump(data, amount);
-
-    QString lineBuff;
-    QString tmp;
-
-    for (dp = 1; dp <= amount; dp++) {
-        tmp.sprintf("%02x ", data[dp - 1]);
-        lineBuff.append(tmp);
-
-        if ((dp % 8) == 0) {
-            lineBuff.append(" ");
-        }
-
-        if ((dp % 16) == 0) {
-            lineBuff.append("| ");
-            p = dp;
-            for (dp -= 16; dp < p; dp++) {
-                tmp.sprintf("%c ", trans[data[dp]]);
-                lineBuff.append(tmp);
-            }
-            lineBuff.append("\n");
-        }
-    }
-
-    // tail
-    if ((amount % 16) != 0) {
-        p = dp = 16 - (amount % 16);
-        for (dp = p; dp > 0; dp--) {
-            lineBuff.append("   ");
-            if (((dp % 8) == 0) && (p != 8))
-                lineBuff.append(" ");
-        }
-        lineBuff.append(" | ");
-        for (dp = (amount - (16 - p)); dp < amount; dp++)
-            tmp.sprintf("%c ", trans[data[dp]]);
-            lineBuff.append(tmp);
-    }
-
-    lineBuff.append("\n");
-
-    log(lineBuff);
-
-    return;
-}
