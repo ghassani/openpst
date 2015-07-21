@@ -47,7 +47,9 @@ HdlcSerial::~HdlcSerial()
 size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 {
     if (!encapsulate) {
-        return Serial::write(data, size);
+        size_t bytesWritten = Serial::write(data, size);
+		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
+		return bytesWritten;
     }
 
     size_t packetSize = 0;
@@ -81,10 +83,9 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 {
     size_t bytesRead = Serial::read(buf, size);
-	LOGD("Original a: %lu\n", bytesRead);
-	hexdump_rx(&buf[0], bytesRead);
 
     if (!unescape || !bytesRead) {
+		if (bytesRead) hexdump_rx(&buf[0], bytesRead);
         return bytesRead;
     }
 
@@ -107,7 +108,9 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 {
 	if (!encapsulate) {
-		return Serial::write(data);
+		size_t bytesWritten = Serial::write(data);
+		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
+		return bytesWritten;
 	}
 
 	hdlc_request(data);
@@ -126,10 +129,8 @@ size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape
 	
 	size_t bytesRead = Serial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
 
-	LOGD("Original: %lu\n", bytesRead);
-	hexdump_rx(&buffer[0], bytesRead);
-
 	if (!unescape || !bytesRead) {
+		if (bytesRead) hexdump_rx(&buffer[0], bytesRead);
 		return bytesRead;
 	}
 

@@ -207,7 +207,20 @@ namespace openpst {
 			* @param bool overwritte - Defaults to false. If true will overwrite even if error is reported.
 			*/
 			int writePartitionTable(std::string filePath, uint8_t& outStatus, bool overwrite = false);
-
+			
+			/**
+			* @brief streamWrite - Stream write data starting at specified address. Writes hdlc encoded chunks
+			*					of max block size specified by device
+			*
+			* @param uint32_t address - The starting address to write to
+			* @param uint8_t data - A pointer to the data to be written
+			* @param size_t dataSize - The amount of data to write.
+			* @param bool unframed - Write in unframed (non hdlc encoded) packets
+			*
+			* @return int
+			*/
+			int streamWrite(uint32_t address, uint8_t* data, size_t dataSize, bool unframed = false);
+			
 			/**
 			* @brief readQfprom - Havent found a device or mode to use this in
 			*/

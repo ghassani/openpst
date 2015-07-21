@@ -16,7 +16,9 @@ using namespace openpst;
 SaharaWindow::SaharaWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::SaharaWindow),
-    port("", 115200)
+    port("", 115200),
+	memoryReadWorker(nullptr),
+	imageTransferWorker(nullptr)
 {
     ui->setupUi(this);
 
@@ -701,6 +703,8 @@ void SaharaWindow::cancelOperation()
                 memoryReadQueue.clear();
             }
 
+			memoryReadWorker = nullptr;
+
             log("Memory read cancelled");
         }
     } else if (NULL != imageTransferWorker && imageTransferWorker->isRunning()) {
@@ -712,7 +716,11 @@ void SaharaWindow::cancelOperation()
                 imageTransferWorker->terminate();
                 imageTransferWorker->wait();
             }
-            log("Image transfer cancelled");
+
+			imageTransferWorker = nullptr; 
+
+			log("Image transfer cancelled");
+			
         }
     } else {
         log("No operation currently running");

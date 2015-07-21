@@ -30,7 +30,8 @@
 #endif
 
 #define LOGD(...) do { if (DEBUG_ENABLED) fprintf(stderr, __VA_ARGS__); } while (0)
-#define LOGI(...) fprintf(stderr, __VA_ARGS__); 
+#define LOGE(...) fprintf(stderr, __VA_ARGS__); 
+#define LOGI(...) fprintf(stdout, __VA_ARGS__); 
 
 
 #endif //_INCLUDE_DEFINITIONS_H

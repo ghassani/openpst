@@ -220,7 +220,7 @@ PACKED(typedef struct { // 0x06
 PACKED(typedef struct {// 0x07
     uint8_t command;
     uint32_t address;
-    uint8_t* data;
+	uint8_t data[0];
 }) streaming_dload_stream_write_tx_t;
 
 PACKED(typedef struct { // 0x08

@@ -18,6 +18,7 @@
 #include "qc/streaming_dload.h"
 #include "serial/streaming_dload_serial.h"
 #include "worker/streaming_dload_read_worker.h"
+#include "worker/streaming_dload_stream_write_worker.h"
 #include <iostream>
 #include <fstream>
 
@@ -114,6 +115,11 @@ namespace openpst{
 			void read();
 
 			/**
+			* @brief streamWrite - Stream write file starting at spcified address
+			*/
+			void streamWrite();
+
+			/**
 			* @brief eraseFlash
 			*/
 			void eraseFlash();
@@ -144,22 +150,39 @@ namespace openpst{
 			void browseForWriteFile();
 			
 			/**
-			* @brief readChunkReadyHandler
+			* @brief readChunkReadyHandler - callback function to update UI when a read chunk is ready. 
+			*								 used to increment the progress bar
 			*/
 			void readChunkReadyHandler(streaming_dload_read_worker_request request);
 
 			/**
-			* @brief readCompleteHandler
+			* @brief readCompleteHandler - callback function to update UI when the read worker completes the request
 			*/
 			void readCompleteHandler(streaming_dload_read_worker_request request);
 
 			/**
-			* @brief readChunkErrorHandler
+			* @brief readChunkErrorHandler - callback function to update UI when the read worker encounters an error
 			*/
 			void readChunkErrorHandler(streaming_dload_read_worker_request request, QString msg);
 			
 			/**
-			* @brief cancelOperation
+			* @brief streamWriteChunkCompleteHandler - callback function to update UI when a stream write chunk has been written. 
+			*										used to increment the progress bar
+			*/
+			void streamWriteChunkCompleteHandler(streaming_dload_stream_write_worker_request request);
+
+			/**
+			* @brief streamWriteCompleteHandler - callback function to update UI when a stream write worker completes the request
+			*/
+			void streamWriteCompleteHandler(streaming_dload_stream_write_worker_request request);
+
+			/**
+			* @brief streamWriteErrorHandler - callback function to update UI when a stream write worker encounters an error
+			*/
+			void streamWriteErrorHandler(streaming_dload_stream_write_worker_request request, QString msg);
+
+			/**
+			* @brief cancelOperation - Cancels any currently running workers
 			*/			
 			void cancelOperation();
 
@@ -188,6 +211,7 @@ namespace openpst{
 			openpst::StreamingDloadSerial port;
 			serial::PortInfo currentPort;
 			StreamingDloadReadWorker* readWorker;
+			StreamingDloadStreamWriteWorker* streamWriteWorker;
 		};
 }
 #endif // _GUI_STREAMING_DLOAD_WINDOW_H

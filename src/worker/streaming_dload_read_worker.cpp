@@ -67,7 +67,7 @@ void StreamingDloadReadWorker::run()
 
 			if (port.readAddress((address + request.outSize), request.stepSize, file, chunkOutSize, request.stepSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
 				file.close();
-				emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, request.address));
+				emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, (address + request.outSize)));
 				return;
 			}
 			

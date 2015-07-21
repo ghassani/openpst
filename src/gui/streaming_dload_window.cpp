@@ -15,7 +15,9 @@ using namespace openpst;
 StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::StreamingDloadWindow),
-	port("", 115200)
+	port("", 115200),
+	readWorker(nullptr),
+	streamWriteWorker(nullptr)
 {
     ui->setupUi(this);
 	 
@@ -88,9 +90,11 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
 	QObject::connect(ui->writePartitionTableFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForParitionTable()));
 	QObject::connect(ui->writeFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForWriteFile()));
+	QObject::connect(ui->streamWriteButton, SIGNAL(clicked()), this, SLOT(streamWrite()));
 
 	qRegisterMetaType<streaming_dload_read_worker_request>("streaming_dload_read_worker_request");
-
+	qRegisterMetaType<streaming_dload_stream_write_worker_request>("streaming_dload_stream_write_worker_request");
+	
 	updatePortList();
 }
 
@@ -510,7 +514,68 @@ void StreamingDloadWindow::read()
 	readWorker->start();
 }
 
+/**
+* @brief streamWrite - Stream write file starting at spcified address
+*/
+void StreamingDloadWindow::streamWrite()
+{
+	if (!port.isOpen()) {
+		log("Port Not Open");
+		return;
+	}
 
+	uint32_t address = std::stoul(ui->writeAddressValue->text().toStdString().c_str(), nullptr, 16);
+
+	QString tmp;
+	QString filePath = ui->writeFileValue->text();
+
+	if (!filePath.length()) {
+		log("No file specified");
+		return;
+	}
+
+	std::ifstream file(filePath.toStdString(), std::ios::in | std::ios::binary);
+
+	if (!file.is_open()) {
+		log("Error opening file for reading");
+		return;
+	}
+
+	file.seekg(0, file.end);
+
+	size_t fileSize = file.tellg();
+	
+	file.close();
+
+	streaming_dload_stream_write_worker_request request;
+	request.address = address;
+	request.filePath = filePath.toStdString();
+	request.unframed = ui->unframedWriteCheckbox->isChecked();
+
+	// setup progress bar
+	ui->progressBar->reset();
+	ui->progressBar->setMaximum(fileSize);
+	ui->progressBar->setMinimum(0);
+	ui->progressBar->setValue(0);
+
+	ui->progressBarTextLabel2->setText(tmp.sprintf("%s", request.filePath.c_str()));
+	ui->progressBarTextLabel->setText(tmp.sprintf("0 / %lu bytes", fileSize));
+
+	disableControls();
+
+	streamWriteWorker = new StreamingDloadStreamWriteWorker(port, request, this);
+	connect(streamWriteWorker, &StreamingDloadStreamWriteWorker::chunkComplete, this, &StreamingDloadWindow::streamWriteChunkCompleteHandler, Qt::QueuedConnection);
+	connect(streamWriteWorker, &StreamingDloadStreamWriteWorker::complete, this, &StreamingDloadWindow::streamWriteCompleteHandler);
+	connect(streamWriteWorker, &StreamingDloadStreamWriteWorker::error, this, &StreamingDloadWindow::streamWriteErrorHandler);
+	connect(streamWriteWorker, &StreamingDloadStreamWriteWorker::finished, streamWriteWorker, &QObject::deleteLater);
+
+	streamWriteWorker->start();
+
+}
+
+/**
+* @brief StreamingDloadWindow::readChunkReadyHandler
+*/
 void StreamingDloadWindow::readChunkReadyHandler(streaming_dload_read_worker_request request)
 {
 	// update progress bar
@@ -519,24 +584,31 @@ void StreamingDloadWindow::readChunkReadyHandler(streaming_dload_read_worker_req
 	ui->progressBarTextLabel->setText(tmp.sprintf("%lu / %lu bytes", ui->progressBar->value(), request.size));
 }
 
+/**
+* @brief StreamingDloadWindow::readCompleteHandler
+*/
 void StreamingDloadWindow::readCompleteHandler(streaming_dload_read_worker_request request)
 {
 	QString tmp;
 
+	enableControls(); 
+	
 	log(tmp.sprintf("Read complete. Contents dumped to %s. Final size is %lu bytes", request.outFilePath.c_str(), request.outSize));
 
-	readWorker = NULL;
+	readWorker = nullptr;
 }
 
+/**
+* @brief StreamingDloadWindow::readChunkErrorHandler
+*/
 void StreamingDloadWindow::readChunkErrorHandler(streaming_dload_read_worker_request request, QString msg)
 {
 	log(msg);
 
 	enableControls();
 
-	readWorker = NULL;
+	readWorker = nullptr;
 }
-
 
 /**
 * @brief StreamingDloadWindow::openMultiMode
@@ -631,7 +703,9 @@ void StreamingDloadWindow::browseForWriteFile()
 	}
 }
 
-
+/**
+* @brief StreamingDloadWindow::disableControls
+*/
 void StreamingDloadWindow::disableControls()
 {
 	ui->tabSet->setEnabled(false);
@@ -639,6 +713,9 @@ void StreamingDloadWindow::disableControls()
 	ui->cancelOperationButton->setEnabled(true);
 }
 
+/**
+* @brief StreamingDloadWindow::enableControls
+*/
 void StreamingDloadWindow::enableControls()
 {
 	ui->tabSet->setEnabled(true);
@@ -649,6 +726,9 @@ void StreamingDloadWindow::enableControls()
 	ui->cancelOperationButton->setEnabled(false);
 }
 
+/**
+* @brief StreamingDloadWindow::cancelOperation
+*/
 void StreamingDloadWindow::cancelOperation()
 {
 
@@ -661,7 +741,19 @@ void StreamingDloadWindow::cancelOperation()
 				readWorker->terminate();
 				readWorker->wait();
 			}
+			readWorker = nullptr;
+			log("Read cancelled");
+		}
+	} else if (nullptr != streamWriteWorker && streamWriteWorker->isRunning()) {
+		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
 
+		if (userResponse == QMessageBox::Yes) {
+			streamWriteWorker->cancel();
+			if (!streamWriteWorker->wait(5000)) {
+				streamWriteWorker->terminate();
+				streamWriteWorker->wait();
+			}
+			streamWriteWorker = nullptr;
 			log("Read cancelled");
 		}
 	} else {
@@ -670,6 +762,41 @@ void StreamingDloadWindow::cancelOperation()
 
 	enableControls();
 }
+
+/**
+* @brief StreamingDloadWindow::streamWriteSegmentCompleteHandler
+*/
+void StreamingDloadWindow::streamWriteChunkCompleteHandler(streaming_dload_stream_write_worker_request request)
+{
+
+}
+
+/**
+* @brief StreamingDloadWindow::streamWriteCompleteHandler
+*/
+void StreamingDloadWindow::streamWriteCompleteHandler(streaming_dload_stream_write_worker_request request)
+{
+	QString tmp;
+
+	enableControls(); 
+	
+	log(tmp.sprintf("Write complete"));
+
+	streamWriteWorker = nullptr;
+}
+
+/**
+* @brief StreamingDloadWindow::streamWriteErrorHandler
+*/
+void StreamingDloadWindow::streamWriteErrorHandler(streaming_dload_stream_write_worker_request request, QString msg)
+{
+	log(msg);
+
+	enableControls();
+
+	streamWriteWorker = nullptr;
+}
+
 /**
 * @brief StreamingDloadWindow::clearLog
 */
