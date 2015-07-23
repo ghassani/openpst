@@ -147,6 +147,21 @@
     <ClCompile Include="..\src\gui\application.cpp">
       <Filter>Source Files\src\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_streaming_dload_stream_write_worker.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Debug\generated\moc_streaming_dload_stream_write_worker.cpp">
+      <Filter>Generated Files\Debug_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_streaming_dload_stream_write_worker.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Release\generated\moc_streaming_dload_stream_write_worker.cpp">
+      <Filter>Generated Files\Release_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\worker\streaming_dload_stream_write_worker.cpp">
+      <Filter>Source Files\src\worker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_stdint.h">
@@ -197,6 +212,9 @@
       <Filter>Header Files\src\include</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\worker\streaming_dload_read_worker.h">
+      <Filter>Header Files\src\worker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\worker\streaming_dload_stream_write_worker.h">
       <Filter>Header Files\src\worker</Filter>
     </CustomBuild>
   </ItemGroup>

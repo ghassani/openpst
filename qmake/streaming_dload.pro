@@ -27,7 +27,8 @@ SOURCES += \
     src/gui/streaming_dload_window.cpp \
     src/serial/hdlc_serial.cpp \
     src/serial/streaming_dload_serial.cpp \
-    src/worker/streaming_dload_read_worker.cpp \
+    src/worker/streaming_dload_read_worker.cpp 
+    src/worker/streaming_dload_stream_write_worker.cpp \
     src/gui/application.cpp \
     src/streaming_dload.cpp
 
@@ -42,6 +43,7 @@ HEADERS  += \
     src/gui/streaming_dload_window.h \
     src/serial/streaming_dload_serial.h \
     src/worker/streaming_dload_read_worker.h \
+    src/worker/streaming_dload_stream_write_worker.h \
     src/gui/application.h \
     src/serial/hdlc_serial.h
 
