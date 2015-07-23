@@ -1,7 +1,7 @@
 
 os:
   - linux
-  
+
 env:
   - CONFIG=release
   - CONFIG=debug
@@ -16,6 +16,9 @@ install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq qt5-qmake qtbase5-dev qtdeclarative5-dev qt5-default qttools5-dev-tools gcc-4.8 g++-4.8 
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - qmake --version
+  - which qmake
+  - update-alternatives --list qmake
 
 script:
   - make
