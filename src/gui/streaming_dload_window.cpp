@@ -19,7 +19,7 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	readWorker(nullptr),
 	streamWriteWorker(nullptr)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 	 
 	this->statusBar()->setSizeGripEnabled(false);
 	
@@ -768,7 +768,10 @@ void StreamingDloadWindow::cancelOperation()
 */
 void StreamingDloadWindow::streamWriteChunkCompleteHandler(streaming_dload_stream_write_worker_request request)
 {
-
+	// update progress bar
+	QString tmp;
+	ui->progressBar->setValue(request.outSize);
+	ui->progressBarTextLabel->setText(tmp.sprintf("%lu / %lu bytes", ui->progressBar->value(), ui->progressBar->maximum()));
 }
 
 /**

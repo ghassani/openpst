@@ -914,14 +914,14 @@ int StreamingDloadSerial::streamWrite(uint32_t address, uint8_t* data, size_t da
 		packet->address = address;
 		memcpy(packet->data, data, dataSize);
 
-		size_t bytesWritten = write((uint8_t*)packet, sizeof(packet->command) + sizeof(packet->address) + dataSize, unframed);
+		size_t bytesWritten = write((uint8_t*)packet, sizeof(packet->command) + sizeof(packet->address) + dataSize, (!unframed));
 
 		if (!bytesWritten) {
 			LOGE("Wrote 0 bytes\n");
 			return STREAMING_DLOAD_OPERATION_IO_ERROR;
 		}
 
-		size_t rxSize = read(responseBuffer, STREAMING_DLOAD_MAX_RX_SIZE, unframed);
+		size_t rxSize = read(responseBuffer, STREAMING_DLOAD_MAX_RX_SIZE, (!unframed));
 
 		if (!rxSize) {
 			LOGE("Device did not respond\n");

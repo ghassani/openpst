@@ -83,8 +83,9 @@ enum STREAMING_DLOAD_COMMAND {
     STREAMING_DLOAD_CURRENT_ECC_STATE            = 0x20,
     STREAMING_DLOAD_SET_ECC                      = 0x21,
     STREAMING_DLOAD_SET_ECC_RESPONSE             = 0x22,
-    STREAMING_DLOAD_CALCULATE_SHA1_HASH          = 0x23, // depreciated
-    STREAMING_DLOAD_CALCULATE_SHA1_HASH_RESPONSE = 0x24, // depreciated
+    STREAMING_DLOAD_CALCULATE_SHA1_HASH          = 0x23, // depreciated - doesnt appear to be used
+	STREAMING_DLOAD_CALCULATE_SHA1_HASH_RESPONSE = 0x24, // depreciated - doesnt appear to be used
+	STREAMING_DLOAD_INFO_RESPONSE				 = 0x24, 
 
     //25-2F commands described in [Q2]
 

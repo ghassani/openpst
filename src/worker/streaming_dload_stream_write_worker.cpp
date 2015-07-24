@@ -75,7 +75,7 @@ void StreamingDloadStreamWriteWorker::run()
 
 			if (port.streamWrite((address + request.outSize), fileBuffer, writeSize, request.unframed) != STREAMING_DLOAD_OPERATION_SUCCESS) {
 				file.close();
-				emit error(request, tmp.sprintf("Error writing %lu bytes from address 0x%04X", writeSize, (address + request.outSize)));
+				emit error(request, tmp.sprintf("Error writing %lu bytes starting at address 0x%04X", writeSize, (address + request.outSize)));
 				return;
 			}
 			
