@@ -11,39 +11,41 @@
 
 #include "hdlc_serial.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 /**
- * @brief HdlcSerial::HdlcSerial
- * @param port
- * @param baudrate
- */
-HdlcSerial::HdlcSerial(std::string port, int baudrate) :
-    serial::Serial (port, baudrate, serial::Timeout::simpleTimeout(1000))
+* @brief HdlcSerial::HdlcSerial
+*
+* @param std::string port
+* @param int baudrate
+* @param serial::Timeout - Timeout, defaults to 1000ms
+*/
+HdlcSerial::HdlcSerial(std::string port, int baudrate, serial::Timeout timeout) :
+	serial::Serial(port, baudrate, timeout)
 {
 
 }
 
 /**
- * @brief QcdmSerial::~QcdmSerial
- */
+* @brief HdlcSerial::~HdlcSerial
+*/
 HdlcSerial::~HdlcSerial()
 {
 
 }
 
 /**
- * Escapes the data and creates a CRC'ed HDLC packet
- * then writes the data
- *
- * @super Serial::write (uint8_t *data, size_t size);
- *
- * @brief write
- * @param data
- * @param size
- * @param bool encapsulate
- * @return
- */
+* @brief HdlcSerial::write - Escapes the data and creates a CRC'ed HDLC packet
+* then writes the data
+*
+* @super Serial::write (uint8_t *data, size_t size);
+*
+* @param uint8_t* data
+* @param size_t size
+* @param bool encapsulate
+*
+* @return size_t - Bytes written
+*/
 size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 {
     if (!encapsulate) {
@@ -62,24 +64,24 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
     hexdump_tx(packet, bytesWritten);
 
     if (packet != NULL) {
-        free(packet);
+        delete packet;
     }
 
     return bytesWritten;    
 }
 
 /**
- * Reads and unescpaes the CRC'ed HDLC packet
- * read from the device
- *
- * @super Serial::read (uint8_t *buffer, size_t size);
- *
- * @brief read
- * @param uint8_t* buf
- * @param size_t size
- * @param bool unescape
- * @return
- */
+* @brief HdlcSerial::read - Reads and unescpaes theCRC'ed HDLC packet
+* read from the device
+*
+* @super Serial::read (uint8_t *buffer, size_t size);
+
+* @param uint8_t* buf
+* @param size_t size
+* @param bool unescape
+*
+* @return size_t bytes read
+*/
 size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 {
     size_t bytesRead = Serial::read(buf, size);
@@ -99,12 +101,24 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 	hexdump_rx(buf, dataSize);
 
 	if (data != nullptr) {
-		free(data);
+		delete data;
 	}
 
 	return dataSize;
 }
 
+/**
+* @brief HdlcSerial::write - Escapes the data and creates a CRC'ed HDLC packet
+* then writes the data
+*
+* @super Serial::write (std::vector<uint8_t> &data);
+*
+* @param std::vector<uint8_t>& data
+* @param size_t size
+* @param bool encapsulate
+*
+* @return size_t - Bytes written
+*/
 size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 {
 	if (!encapsulate) {
@@ -122,6 +136,18 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 	return bytesWritten;
 }
 
+/**
+* @brief HdlcSerial::read - Reads and unescpaes theCRC'ed HDLC packet
+* read from the device
+*
+* @super Serial::read (std::vector<uint8_t> &buffer, size_t size);
+
+* @param std::vector<uint8_t>& buffer
+* @param size_t size
+* @param bool unescape
+*
+* @return size_t bytes read
+*/
 size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape)
 {
 

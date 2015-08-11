@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1083</width>
-    <height>724</height>
+    <width>881</width>
+    <height>717</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,18 +15,6 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>1083</width>
-    <height>724</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>1083</width>
-    <height>724</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Sahara - OpenPST</string>
@@ -37,7 +25,7 @@
      <rect>
       <x>10</x>
       <y>490</y>
-      <width>1061</width>
+      <width>861</width>
       <height>131</height>
      </rect>
     </property>
@@ -50,7 +38,7 @@
    <widget class="QPushButton" name="saveLogButton">
     <property name="geometry">
      <rect>
-      <x>980</x>
+      <x>780</x>
       <y>630</y>
       <width>91</width>
       <height>27</height>
@@ -90,7 +78,7 @@
     </property>
     <widget class="QWidget" name="saharaManualTab">
      <attribute name="title">
-      <string>Manual Processing</string>
+      <string>Command</string>
      </attribute>
      <widget class="QGroupBox" name="clientCommandGroupBox">
       <property name="geometry">
@@ -570,7 +558,7 @@
         <x>350</x>
         <y>230</y>
         <width>491</width>
-        <height>71</height>
+        <height>101</height>
        </rect>
       </property>
       <property name="font">
@@ -677,13 +665,51 @@
         <string>Read</string>
        </property>
       </widget>
+      <widget class="QLabel" name="memoryReadStepSizeLabel">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>60</y>
+         <width>71</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Step Size</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="memoryReadStepSizeValue">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>60</y>
+         <width>81</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>10240</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>
    <widget class="QPushButton" name="clearLogButton">
     <property name="geometry">
      <rect>
-      <x>880</x>
+      <x>680</x>
       <y>630</y>
       <width>91</width>
       <height>27</height>
@@ -696,279 +722,6 @@
     </property>
     <property name="text">
      <string>Clear Log</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="deviceStatePreferredMaxSizeValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>160</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Waiting Hello</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="deviceStateModeLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>70</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Current Mode</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="deviceStatePreferredMaxSizeLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>130</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Pref. Max Size</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="deviceStateModeValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>100</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Waiting Hello</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="deviceStateMinVersionValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>280</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Waiting Hello</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="deviceStateMinVersionLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>250</y>
-      <width>191</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Min. Compatible Version</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="deviceStateVersionLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>190</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Version</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="deviceStateVersionValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>220</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Waiting Hello</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="requestedImageLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>310</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Requested Image</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="deviceStateRequestedImageValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>340</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>None</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="memoryTableAddressLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>370</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Memory Table Address</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="memoryTableAddressValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>400</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>None</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="memoryTableSizeLabel">
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>430</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Memory Table Size</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="memoryTableSizeValue">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>890</x>
-      <y>460</y>
-      <width>181</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>None</string>
     </property>
    </widget>
    <widget class="QLabel" name="progressBarTextLabel">
@@ -1045,7 +798,7 @@
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>1061</width>
+      <width>861</width>
       <height>80</height>
      </rect>
     </property>
@@ -1055,7 +808,7 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>940</x>
+       <x>750</x>
        <y>10</y>
        <width>101</width>
        <height>25</height>
@@ -1073,7 +826,7 @@
     <widget class="QPushButton" name="portRefreshButton">
      <property name="geometry">
       <rect>
-       <x>850</x>
+       <x>660</x>
        <y>40</y>
        <width>91</width>
        <height>27</height>
@@ -1091,7 +844,7 @@
     <widget class="QPushButton" name="portConnectButton">
      <property name="geometry">
       <rect>
-       <x>850</x>
+       <x>660</x>
        <y>10</y>
        <width>91</width>
        <height>25</height>
@@ -1111,7 +864,7 @@
       <rect>
        <x>90</x>
        <y>10</y>
-       <width>751</width>
+       <width>561</width>
        <height>29</height>
       </rect>
      </property>
@@ -1148,20 +901,6 @@
    <zorder>saveLogButton</zorder>
    <zorder>mainTabSet</zorder>
    <zorder>clearLogButton</zorder>
-   <zorder>deviceStatePreferredMaxSizeValue</zorder>
-   <zorder>deviceStateModeLabel</zorder>
-   <zorder>deviceStatePreferredMaxSizeLabel</zorder>
-   <zorder>deviceStateModeValue</zorder>
-   <zorder>deviceStateMinVersionValue</zorder>
-   <zorder>deviceStateMinVersionLabel</zorder>
-   <zorder>deviceStateVersionLabel</zorder>
-   <zorder>deviceStateVersionValue</zorder>
-   <zorder>requestedImageLabel</zorder>
-   <zorder>deviceStateRequestedImageValue</zorder>
-   <zorder>memoryTableAddressLabel</zorder>
-   <zorder>memoryTableAddressValue</zorder>
-   <zorder>memoryTableSizeLabel</zorder>
-   <zorder>memoryTableSizeValue</zorder>
    <zorder>progressBarTextLabel</zorder>
    <zorder>progressBar</zorder>
    <zorder>progressBarTextLabel2</zorder>
@@ -1172,7 +911,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1083</width>
+     <width>881</width>
      <height>21</height>
     </rect>
    </property>

@@ -17,7 +17,7 @@
 
 using namespace serial;
 
-namespace openpst {
+namespace OpenPST {
 
 
 	struct sahara_image_transfer_worker_request {

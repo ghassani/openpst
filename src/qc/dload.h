@@ -34,7 +34,7 @@
 | Revision 9 - 01 - 1A   |
 |------------------------|
 */
-enum DLOAD_COMMAND : uint8_t {
+enum DLOAD_COMMAND {
     DLOAD_WRITE                         = 0x01, // Write data to memory 
     DLOAD_ACK                           = 0x02, // Acknowledge receiving a packet 
     DLOAD_NAK                           = 0x03, // Negatively acknowledge a packet 
@@ -69,7 +69,7 @@ enum DLOAD_COMMAND : uint8_t {
     DLOAD_SWITCH_TO_DLOAD               = 0x3A, // SBL Only - Command packet that  is echoed back by the Phone 
 };
 
-enum DLOAD_NCK_REASON : uint16_t {
+enum DLOAD_NCK_REASON {
     DLOAD_NCK_INVALID_FRAME_FCS             = 0x0001,
     DLOAD_NCK_INVALID_DESTINATION_ADDRESS   = 0x0002,
     DLOAD_NCK_INVALID_LENGTH                = 0x0003,
@@ -87,7 +87,7 @@ enum DLOAD_NCK_REASON : uint16_t {
     DLOAD_NCK_INVALID_READ_ADDRESS          = 0x000F,
 };
 
-enum DLOAF_FLASH_DEVICE_SIZE : uint8_t {
+enum DLOAF_FLASH_DEVICE_SIZE {
     DLOAD_FLASH_DEVICE_SIZE_4MB         = 0x01,
     DLOAD_FLASH_DEVICE_SIZE_8MB         = 0x02,
     DLOAD_FLASH_DEVICE_SIZE_16MB_AS_8MB = 0x03,

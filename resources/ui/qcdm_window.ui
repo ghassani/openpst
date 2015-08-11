@@ -6,21 +6,165 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>841</width>
-    <height>690</height>
+    <width>843</width>
+    <height>754</height>
    </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
   </property>
   <property name="windowTitle">
    <string>QCDM - OpenPST</string>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <widget class="QComboBox" name="portListComboBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>591</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="portListRefreshButton">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>9</y>
+      <width>61</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Refresh</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="portDisconnectButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>9</y>
+      <width>81</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Disconnect</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="portConnectButton">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>9</y>
+      <width>61</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clearLogButton">
+    <property name="geometry">
+     <rect>
+      <x>689</x>
+      <y>710</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Clear Log</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveLogButton">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>710</y>
+      <width>71</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save Log</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="log">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>550</y>
+      <width>821</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
    <widget class="QTabWidget" name="qcdmTabWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>130</y>
       <width>821</width>
-      <height>331</height>
+      <height>411</height>
      </rect>
     </property>
     <property name="font">
@@ -37,7 +181,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tabGeneral">
      <attribute name="title">
@@ -46,11 +190,16 @@
      <widget class="QGroupBox" name="spcGroupBox">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>10</x>
         <y>10</y>
         <width>231</width>
         <height>131</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="title">
        <string>SPC</string>
@@ -66,6 +215,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -85,6 +235,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -126,6 +277,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -145,6 +297,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -164,6 +317,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -189,6 +343,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -208,7 +363,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>9</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
@@ -232,6 +387,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -253,11 +409,16 @@
      <widget class="QGroupBox" name="meidGroupBox">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>470</x>
         <y>10</y>
-        <width>291</width>
-        <height>131</height>
+        <width>331</width>
+        <height>141</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="title">
        <string>MEID</string>
@@ -265,14 +426,15 @@
       <widget class="QPushButton" name="readMeidButton">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>61</y>
-         <width>51</width>
+         <x>260</x>
+         <y>60</y>
+         <width>61</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -284,14 +446,15 @@
       <widget class="QLineEdit" name="hexMeidValue">
        <property name="geometry">
         <rect>
-         <x>79</x>
-         <y>62</y>
-         <width>151</width>
+         <x>80</x>
+         <y>60</y>
+         <width>171</width>
          <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -307,13 +470,14 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>66</y>
-         <width>31</width>
-         <height>20</height>
+         <y>60</y>
+         <width>61</width>
+         <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -331,14 +495,15 @@
       <widget class="QLineEdit" name="decMeidValue">
        <property name="geometry">
         <rect>
-         <x>49</x>
-         <y>91</y>
-         <width>181</width>
+         <x>80</x>
+         <y>100</y>
+         <width>171</width>
          <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -356,15 +521,15 @@
       <widget class="QPushButton" name="writeMeidButton">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>90</y>
-         <width>51</width>
+         <x>260</x>
+         <y>100</y>
+         <width>61</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>9</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
@@ -378,13 +543,14 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>95</y>
+         <y>100</y>
          <width>31</width>
-         <height>20</height>
+         <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -402,14 +568,15 @@
       <widget class="QComboBox" name="meidMethod">
        <property name="geometry">
         <rect>
-         <x>130</x>
-         <y>30</y>
-         <width>151</width>
+         <x>80</x>
+         <y>20</y>
+         <width>241</width>
          <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -429,13 +596,14 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>35</y>
+         <y>20</y>
          <width>51</width>
-         <height>20</height>
+         <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -448,11 +616,16 @@
      <widget class="QGroupBox" name="subscriptionGroupBox">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>160</y>
-        <width>231</width>
-        <height>71</height>
+        <x>260</x>
+        <y>20</y>
+        <width>201</width>
+        <height>111</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="title">
        <string>Subscription</string>
@@ -460,15 +633,15 @@
       <widget class="QPushButton" name="writeSubscriptionButton">
        <property name="geometry">
         <rect>
-         <x>170</x>
-         <y>30</y>
-         <width>51</width>
+         <x>130</x>
+         <y>70</y>
+         <width>61</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>9</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
@@ -483,12 +656,13 @@
         <rect>
          <x>9</x>
          <y>31</y>
-         <width>111</width>
+         <width>181</width>
          <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -522,14 +696,15 @@
       <widget class="QPushButton" name="readSubscriptionButton">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>30</y>
-         <width>51</width>
+         <x>60</x>
+         <y>70</y>
+         <width>61</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -542,11 +717,16 @@
      <widget class="QGroupBox" name="imeiGroupBox">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>470</x>
         <y>160</y>
-        <width>291</width>
-        <height>71</height>
+        <width>331</width>
+        <height>61</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="title">
        <string>IMEI</string>
@@ -554,14 +734,15 @@
       <widget class="QPushButton" name="readImeiButton">
        <property name="geometry">
         <rect>
-         <x>180</x>
-         <y>30</y>
-         <width>51</width>
+         <x>190</x>
+         <y>20</y>
+         <width>61</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -570,43 +751,18 @@
         <string>Read</string>
        </property>
       </widget>
-      <widget class="QLabel" name="imeiLabel">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>35</y>
-         <width>31</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>IMEI</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="indent">
-        <number>-1</number>
-       </property>
-      </widget>
       <widget class="QPushButton" name="writeImeiButton">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>30</y>
-         <width>51</width>
+         <x>260</x>
+         <y>20</y>
+         <width>61</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>9</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
@@ -619,14 +775,15 @@
       <widget class="QLineEdit" name="imeiValue">
        <property name="geometry">
         <rect>
-         <x>39</x>
-         <y>31</y>
-         <width>141</width>
+         <x>10</x>
+         <y>20</y>
+         <width>171</width>
          <height>27</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -642,11 +799,16 @@
      <widget class="QGroupBox" name="nvItemGroupBox">
       <property name="geometry">
        <rect>
-        <x>580</x>
-        <y>10</y>
-        <width>201</width>
-        <height>101</height>
+        <x>10</x>
+        <y>150</y>
+        <width>451</width>
+        <height>71</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="title">
        <string>NV Item</string>
@@ -662,6 +824,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -681,6 +844,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -706,6 +870,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -717,14 +882,15 @@
       <widget class="QLabel" name="label">
        <property name="geometry">
         <rect>
-         <x>15</x>
-         <y>70</y>
+         <x>210</x>
+         <y>30</y>
          <width>181</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -733,6 +899,19 @@
         <string>Response will display in the log</string>
        </property>
       </widget>
+     </widget>
+     <widget class="QPushButton" name="probeSubsysButton">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>380</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Probe Subsys</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tabNamEdit">
@@ -1973,410 +2152,419 @@
       <string>Mobile IP</string>
      </attribute>
     </widget>
+    <widget class="QWidget" name="tabEfs">
+     <attribute name="title">
+      <string>EFS</string>
+     </attribute>
+     <widget class="QTreeWidget" name="efsDirectoryTree">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>45</y>
+        <width>805</width>
+        <height>331</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>File Name</string>
+       </property>
+       <property name="textAlignment">
+        <set>AlignLeft|AlignVCenter</set>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Type</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Size</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Mode</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Last Access</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Last Modified</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Created On</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QPushButton" name="efsListDirectoriesButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>101</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>List Directories</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="efsReadAllButton">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>101</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Read All</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
-   <widget class="QPlainTextEdit" name="log">
+   <widget class="QGroupBox" name="securityGroupBox">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>440</y>
-      <width>821</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="portListComboBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>421</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portListRefreshButton">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>9</y>
-      <width>61</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Refresh</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portDisconnectButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>9</y>
-      <width>81</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Disconnect</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="portConnectButton">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>9</y>
-      <width>61</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Connect</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="programNameText">
-    <property name="geometry">
-     <rect>
-      <x>710</x>
-      <y>10</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>18</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>OpenPST</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="securityLabel">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
       <y>40</y>
-      <width>51</width>
-      <height>16</height>
+      <width>521</width>
+      <height>80</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <pointsize>10</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
-    <property name="text">
+    <property name="title">
      <string>Security</string>
     </property>
+    <widget class="QPushButton" name="sendSpcButton">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>30</y>
+       <width>61</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Send</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="sendSpcValue">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>31</y>
+       <width>61</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>000000</string>
+     </property>
+     <property name="maxLength">
+      <number>6</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="sendSpcLabel">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>30</y>
+       <width>31</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string> SPC</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="sendPasswordButton">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>30</y>
+       <width>61</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Send</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="sendPasswordValue">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>31</y>
+       <width>121</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>FFFFFFFFFFFFFFFF</string>
+     </property>
+     <property name="maxLength">
+      <number>16</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="sendPasswordLabel">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>30</y>
+       <width>61</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Password</string>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
+     </property>
+     <property name="indent">
+      <number>-1</number>
+     </property>
+    </widget>
    </widget>
-   <widget class="QPushButton" name="sendPasswordButton">
+   <widget class="QGroupBox" name="modeGroupBox">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>60</y>
-      <width>51</width>
-      <height>29</height>
+      <x>540</x>
+      <y>40</y>
+      <width>291</width>
+      <height>80</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
-    <property name="text">
-     <string>Send</string>
+    <property name="title">
+     <string>Switch Mode</string>
     </property>
-   </widget>
-   <widget class="QLineEdit" name="sendSpcValue">
-    <property name="geometry">
-     <rect>
-      <x>51</x>
-      <y>61</y>
-      <width>61</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>000000</string>
-    </property>
-    <property name="maxLength">
-     <number>6</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="sendSpcLabel">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>65</y>
-      <width>31</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string> SPC</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="sendPasswordValue">
-    <property name="geometry">
-     <rect>
-      <x>249</x>
-      <y>61</y>
-      <width>121</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>FFFFFFFFFFFFFFFF</string>
-    </property>
-    <property name="maxLength">
-     <number>16</number>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="sendSpcButton">
-    <property name="geometry">
-     <rect>
-      <x>112</x>
-      <y>60</y>
-      <width>51</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Send</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="sendPasswordLabel">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>65</y>
-      <width>61</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Password</string>
-    </property>
-    <property name="wordWrap">
-     <bool>false</bool>
-    </property>
-    <property name="indent">
-     <number>-1</number>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="sendPhoneModeButton">
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>60</y>
-      <width>51</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Send</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="phoneModeLabel">
-    <property name="geometry">
-     <rect>
-      <x>629</x>
-      <y>65</y>
-      <width>31</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Mode</string>
-    </property>
-    <property name="wordWrap">
-     <bool>false</bool>
-    </property>
-    <property name="indent">
-     <number>-1</number>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="phoneModeValue">
-    <property name="geometry">
-     <rect>
-      <x>669</x>
-      <y>61</y>
-      <width>101</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <item>
-     <property name="text">
-      <string>OFFLINE_A</string>
+    <widget class="QPushButton" name="sendPhoneModeButton">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>30</y>
+       <width>61</width>
+       <height>29</height>
+      </rect>
      </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>OFFLINE_D</string>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
      </property>
-    </item>
-    <item>
      <property name="text">
-      <string>RESET</string>
+      <string>Send</string>
      </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>FTM</string>
+    </widget>
+    <widget class="QComboBox" name="phoneModeValue">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>201</width>
+       <height>27</height>
+      </rect>
      </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>ONLINE</string>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
      </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>LPM</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>POWER_OFF</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>MAX</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QPushButton" name="clearLogButton">
-    <property name="geometry">
-     <rect>
-      <x>679</x>
-      <y>650</y>
-      <width>71</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Clear Log</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="saveLogButton">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>650</y>
-      <width>71</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Save Log</string>
-    </property>
+     <item>
+      <property name="text">
+       <string>OFFLINE_A</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>OFFLINE_D</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RESET</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FTM</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ONLINE</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>LPM</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>POWER_OFF</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MAX</string>
+      </property>
+     </item>
+    </widget>
    </widget>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>843</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEFS">
+    <property name="title">
+     <string>EFS</string>
+    </property>
+    <addaction name="actionEfsHello"/>
+    <addaction name="actionEfsGetDeviceInfo"/>
+    <addaction name="actionEfsQuery"/>
+    <addaction name="separator"/>
+    <addaction name="actionEfsExtractFactoryImage"/>
+    <addaction name="actionEfsMakeGoldenCopy"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEFS"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionEfsExtractFactoryImage">
+   <property name="text">
+    <string>Extract Factory Image</string>
+   </property>
+  </action>
+  <action name="actionEfsMakeGoldenCopy">
+   <property name="text">
+    <string>Make Golden Copy</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionEfsHello">
+   <property name="text">
+    <string>Send Hello for Parameters</string>
+   </property>
+  </action>
+  <action name="actionEfsGetDeviceInfo">
+   <property name="text">
+    <string>Get Device Info</string>
+   </property>
+  </action>
+  <action name="actionEfsQuery">
+   <property name="text">
+    <string>Query Device</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

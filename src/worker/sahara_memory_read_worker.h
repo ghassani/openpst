@@ -17,7 +17,7 @@
 
 using namespace serial;
 
-namespace openpst {
+namespace OpenPST {
 
 
 	struct sahara_memory_read_worker_request {
@@ -26,7 +26,8 @@ namespace openpst {
 		size_t			size;
 		size_t			outSize;
 		size_t			lastChunkSize;
-		std::string		outFilePath;		
+		size_t			stepSize;
+		std::string		outFilePath;
 	};
 	
 	class SaharaMemoryReadWorker : public QThread

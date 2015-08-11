@@ -11,7 +11,7 @@
 
 #include "streaming_dload_read_worker.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 StreamingDloadReadWorker::StreamingDloadReadWorker(StreamingDloadSerial& port, streaming_dload_read_worker_request request, QObject *parent) :
     port(port),
@@ -50,7 +50,7 @@ void StreamingDloadReadWorker::run()
 
 	if (request.size <= request.stepSize) {
 
-		if (port.readAddress(request.address, request.stepSize, file, request.outSize, request.stepSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
+		if (port.readAddress(request.address, request.stepSize, file, request.outSize, request.stepSize) != kStreamingDloadSuccess) {
 			file.close();
 			emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, request.address));
 			return;
@@ -65,7 +65,7 @@ void StreamingDloadReadWorker::run()
 		do {
 			size_t chunkOutSize = 0;
 
-			if (port.readAddress((address + request.outSize), request.stepSize, file, chunkOutSize, request.stepSize) != STREAMING_DLOAD_OPERATION_SUCCESS) {
+			if (port.readAddress((address + request.outSize), request.stepSize, file, chunkOutSize, request.stepSize) != kStreamingDloadSuccess) {
 				file.close();
 				emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, (address + request.outSize)));
 				return;
@@ -83,4 +83,3 @@ void StreamingDloadReadWorker::run()
 
 	emit complete(request);
 }
-

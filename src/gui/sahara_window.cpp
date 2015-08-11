@@ -11,15 +11,18 @@
 
 #include "sahara_window.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 SaharaWindow::SaharaWindow(QWidget *parent) :
-QMainWindow(parent),
-ui(new Ui::SaharaWindow),
-port("", 115200),
-memoryReadWorker(nullptr),
-imageTransferWorker(nullptr)
+	QMainWindow(parent),
+	ui(new Ui::SaharaWindow),
+	port("", 115200),
+	memoryReadWorker(nullptr),
+	imageTransferWorker(nullptr)
 {
+	qRegisterMetaType<sahara_memory_read_worker_request>("sahara_memory_read_worker_request");
+	qRegisterMetaType<sahara_image_transfer_worker_request>("sahara_image_transfer_worker_request");
+
 	ui->setupUi(this);
 
 	ui->writeHelloSwitchModeValue->addItem("", -1);
@@ -62,8 +65,6 @@ imageTransferWorker(nullptr)
 	QObject::connect(ui->saveLogButton, SIGNAL(clicked()), this, SLOT(saveLog()));
 	QObject::connect(ui->cancelOperationButton, SIGNAL(clicked()), this, SLOT(cancelOperation()));
 
-	qRegisterMetaType<sahara_memory_read_worker_request>("sahara_memory_read_worker_request");
-	qRegisterMetaType<sahara_image_transfer_worker_request>("sahara_image_transfer_worker_request");
 
 }
 
@@ -107,7 +108,7 @@ void SaharaWindow::updatePortList()
 			device.port.c_str(),
 			device.hardware_id.c_str(),
 			device.description.c_str()
-			));
+		));
 
 		ui->portList->addItem(tmp, device.port.c_str());
 	}
@@ -128,6 +129,7 @@ void SaharaWindow::connectToPort()
 
 	std::vector<serial::PortInfo> devices = serial::list_ports();
 	std::vector<serial::PortInfo>::iterator iter = devices.begin();
+	
 	while (iter != devices.end()) {
 		serial::PortInfo device = *iter++;
 		if (selected.compare(device.port.c_str(), Qt::CaseInsensitive) == 0) {
@@ -135,7 +137,7 @@ void SaharaWindow::connectToPort()
 			break;
 		}
 	}
-
+	
 	if (!currentPort.port.length()) {
 		log("Invalid Port Type");
 		return;
@@ -150,11 +152,12 @@ void SaharaWindow::connectToPort()
 	}
 	catch (serial::IOException e) {
 		log(tmp.sprintf("Error Connecting To Port %s", currentPort.port.c_str()));
-		log(e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
+		log(e.getErrorNumber() == 13 ? "Permission Denied" : e.what());
 		return;
 	}
 
 	log(tmp.sprintf("Connected to %s", currentPort.port.c_str()));
+
 	ui->portDisconnectButton->setEnabled(true);
 }
 
@@ -175,20 +178,17 @@ void SaharaWindow::readHello()
 		return disconnectPort();
 	}
 
-	ui->deviceStateModeValue->setText(port.getNamedMode(port.deviceState.mode));
-
 	QString tmp;
 	log(tmp.sprintf("Device In Mode: %s", port.getNamedMode(port.deviceState.mode)));
-	ui->deviceStateVersionValue->setText(tmp.sprintf("%i", port.deviceState.version));
-	ui->deviceStateMinVersionValue->setText(tmp.sprintf("%i", port.deviceState.minVersion));
-	ui->deviceStatePreferredMaxSizeValue->setText(tmp.sprintf("%i", port.deviceState.maxCommandPacketSize));
+	log(tmp.sprintf("Version: %i", port.deviceState.version));
+	log(tmp.sprintf("Minimum Version: %i", port.deviceState.minVersion));
+	log(tmp.sprintf("Max Command Packet Size: %i", port.deviceState.maxCommandPacketSize));
 
 	int index = ui->writeHelloSwitchModeValue->findData(port.deviceState.mode);
 
 	if (index != -1) {
 		ui->writeHelloSwitchModeValue->setCurrentIndex(index);
 	}
-
 }
 
 /**
@@ -215,21 +215,18 @@ void SaharaWindow::writeHello()
 		return disconnectPort();
 	}
 
-	ui->deviceStateModeValue->setText(port.getNamedMode(port.deviceState.mode));
-
 	if (isSwitchMode) {
 		log(tmp.sprintf("Device switching modes: %s", port.getNamedMode(mode)));
 	}
 
 	if (port.deviceState.mode == SAHARA_MODE_IMAGE_TX_PENDING) {
-		ui->deviceStateRequestedImageValue->setText(port.getNamedRequestedImage(port.readState.imageId));
 		log(tmp.sprintf("Device requesting %du bytes of image 0x%02X - %s", port.readState.size, port.readState.imageId, port.getNamedRequestedImage(port.readState.imageId)));
 	}
 
 	if (port.deviceState.mode == SAHARA_MODE_MEMORY_DEBUG) {
 		log(tmp.sprintf("Memory table located at 0x%08X with size of %lu bytes", port.memoryState.memoryTableAddress, port.memoryState.memoryTableLength));
 
-		uint8_t* memoryTableData = NULL;
+		uint8_t* memoryTableData = nullptr;
 		size_t memoryTableSize = 0;
 
 		if (!port.readMemory(port.memoryState.memoryTableAddress, port.memoryState.memoryTableLength, &memoryTableData, memoryTableSize)) {
@@ -245,7 +242,7 @@ void SaharaWindow::writeHello()
 
 		for (int i = 0; i < totalRegions; i++) {
 			entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
-			log(tmp.sprintf("%s (%s) - Address: %08X Size: %u", entry->name, entry->filename, entry->address, entry->size));
+			log(tmp.sprintf("%s (%s) - Address: 0x%08X Size: %i", entry->name, entry->filename, entry->address, entry->size));
 		}
 
 		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Memory Table", tmp.sprintf("Pull all %d files referenced in the memory table?", totalRegions));
@@ -276,7 +273,7 @@ void SaharaWindow::writeHello()
 					memoryReadWorkerRequest.address = entry->address;
 					memoryReadWorkerRequest.size = entry->size;
 					memoryReadWorkerRequest.outFilePath = outFile.toStdString();
-
+					memoryReadWorkerRequest.stepSize = SAHARA_MAX_MEMORY_REQUEST_SIZE;
 					memoryReadQueue.push_back(memoryReadWorkerRequest);
 
 				}
@@ -383,12 +380,11 @@ void SaharaWindow::sendImage()
 
 	imageTransferWorker = new SaharaImageTransferWorker(port, request, this);
 	connect(imageTransferWorker, &SaharaImageTransferWorker::chunkDone, this, &SaharaWindow::imageTransferChunkDoneHandler, Qt::QueuedConnection);
-	connect(imageTransferWorker, &SaharaImageTransferWorker::complete, this, &SaharaWindow::imageTransferCompleteHandler);
-	connect(imageTransferWorker, &SaharaImageTransferWorker::error, this, &SaharaWindow::imageTransferErrorHandler);
+	connect(imageTransferWorker, &SaharaImageTransferWorker::complete,	this, &SaharaWindow::imageTransferCompleteHandler);
+	connect(imageTransferWorker, &SaharaImageTransferWorker::error,		this, &SaharaWindow::imageTransferErrorHandler);
 	connect(imageTransferWorker, &SaharaImageTransferWorker::finished, imageTransferWorker, &QObject::deleteLater);
 
 	imageTransferWorker->start();
-
 }
 
 /**
@@ -417,7 +413,6 @@ void SaharaWindow::switchMode()
 	}
 
 	log(tmp.sprintf("Device In Mode: %s", port.getNamedMode(port.deviceState.mode)));
-	ui->deviceStateModeValue->setText(port.getNamedMode(port.deviceState.mode));
 }
 
 /**
@@ -433,40 +428,36 @@ void SaharaWindow::sendClientCommand()
 
 	uint16_t requestedCommand = ui->clientCommandValue->currentData().toUInt();
 
-	uint8_t* readData = NULL;
+	uint8_t* readData = nullptr;
 	size_t readDataSize = 0;
 	QString tmp;
 
 	if (!port.sendClientCommand(requestedCommand, &readData, readDataSize)) {
-		log("Error Sending Client Comand");
+		log(tmp.sprintf("Error Sending Client Comand: %s", port.getNamedErrorStatus(port.lastError.status)));
 		return disconnectPort();
 	}
 
-	if (readData != NULL && readDataSize > 0) {
+	if (readData != nullptr && readDataSize > 0) {
 
 		if (requestedCommand == SAHARA_EXEC_CMD_OEM_PK_HASH_READ) {
 			sahara_oem_pk_hash_rx_t* resp = (sahara_oem_pk_hash_rx_t*)readData;
 			hexdump(resp->hash, sizeof(sahara_oem_pk_hash_rx_t), tmp, false);
 			log(tmp.sprintf("OEM Public Key Hash Hex:\n %s", tmp.toStdString().c_str()));
-		}
-		else if (requestedCommand == SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL) {
+		} else if (requestedCommand == SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL) {
 			sahara_sbl_version_rx_t* resp = (sahara_sbl_version_rx_t*)readData;
 			log(tmp.sprintf("SBL SW Version: %u", resp->version));
-		}
-		else if (requestedCommand == SAHARA_EXEC_CMD_SERIAL_NUM_READ) {
+		} else if (requestedCommand == SAHARA_EXEC_CMD_SERIAL_NUM_READ) {
 			sahara_serial_number_rx_t* resp = (sahara_serial_number_rx_t*)readData;
 			log(tmp.sprintf("Serial Number: %u - %08X", resp->serial, resp->serial));
-		}
-		else if (requestedCommand == SAHARA_EXEC_CMD_MSM_HW_ID_READ) {
+		} else if (requestedCommand == SAHARA_EXEC_CMD_MSM_HW_ID_READ) {
 			sahara_msm_hw_id_rx_t* resp = (sahara_msm_hw_id_rx_t*)readData;
 			log(tmp.sprintf("Unknown ID 1: %u", resp->unknown1));
 			log(tmp.sprintf("Unknown ID 2: %u", resp->unknown2));
 			log(tmp.sprintf("MSM HW ID: %u - %08X", resp->msmId, resp->msmId));
-		}
-		else {
+		} else {
 			log(tmp.sprintf("========\nDumping Data For Command: 0x%02x - %s - %lu Bytes\n========\n\n",
 				requestedCommand, port.getNamedClientCommand(requestedCommand), readDataSize
-				));
+			));
 			tmp.clear();
 			log(tmp);
 		}
@@ -527,12 +518,6 @@ void SaharaWindow::disconnectPort()
 {
 	port.close();
 	log("Port Closed");
-	ui->deviceStateVersionValue->setText("Waiting Hello");
-	ui->deviceStateMinVersionValue->setText("Waiting Hello");
-	ui->deviceStatePreferredMaxSizeValue->setText("Waiting Hello");
-	ui->deviceStateRequestedImageValue->setText("None");
-	ui->memoryReadAddressValue->setText("");
-	ui->memoryReadSizeValue->setText("");
 	ui->portDisconnectButton->setEnabled(false);
 }
 
@@ -558,9 +543,23 @@ void SaharaWindow::memoryRead()
 	}
 
 	uint32_t address = std::stoul(ui->memoryReadAddressValue->text().toStdString().c_str(), nullptr, 16);
-	uint32_t size = std::stoul(ui->memoryReadSizeValue->text().toStdString().c_str(), nullptr, 10);
+	size_t size		 = std::stoul(ui->memoryReadSizeValue->text().toStdString().c_str(), nullptr, 10);
+	size_t stepSize  = std::stoul(ui->memoryReadStepSizeValue->text().toStdString().c_str(), nullptr, 10);
+
+	if (size <= 0) {
+		log("Invalid Size");
+		return;
+	} else if (stepSize <= 0) {
+		log("Invalid Size");
+		return;
+	}
 
 	QString tmp;
+	
+	if (stepSize > SAHARA_MAX_MEMORY_REQUEST_SIZE) {
+		stepSize = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+		ui->memoryReadStepSizeValue->setText(tmp.sprintf("%i", stepSize));
+	}
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Read Data"), "", tr("Binary Files (*.bin)"));
 
@@ -576,7 +575,7 @@ void SaharaWindow::memoryRead()
 	memoryReadWorkerRequest.address = address;
 	memoryReadWorkerRequest.size = size;
 	memoryReadWorkerRequest.outFilePath = fileName.toStdString();
-
+	memoryReadWorkerRequest.stepSize = stepSize;
 	memoryReadQueue.push_front(memoryReadWorkerRequest);
 
 	memoryReadStartThread();
@@ -600,7 +599,7 @@ void SaharaWindow::memoryReadCompleteHandler(sahara_memory_read_worker_request r
 
 	log(tmp.sprintf("Memory read complete. Contents dumped to %s. Final size is %lu bytes", request.outFilePath.c_str(), request.outSize));
 
-	memoryReadWorker = NULL;
+	memoryReadWorker = nullptr;
 
 	memoryReadStartThread();
 }
@@ -618,7 +617,7 @@ void SaharaWindow::memoryReadChunkErrorHandler(sahara_memory_read_worker_request
 		return;
 	}
 
-	memoryReadWorker = NULL;
+	memoryReadWorker = nullptr;
 
 	memoryReadStartThread();
 }
@@ -671,7 +670,7 @@ void SaharaWindow::imageTransferCompleteHandler(sahara_image_transfer_worker_req
 
 	log(tmp.sprintf("Successfully transfered %s", request.imagePath.c_str()));
 
-	memoryReadWorker = NULL;
+	memoryReadWorker = nullptr;
 
 	enableControls();
 
@@ -691,13 +690,13 @@ void SaharaWindow::imageTransferErrorHandler(sahara_image_transfer_worker_reques
 
 	enableControls();
 
-	imageTransferWorker = NULL;
+	imageTransferWorker = nullptr;
 }
 
 void SaharaWindow::cancelOperation()
 {
 
-	if (NULL != memoryReadWorker && memoryReadWorker->isRunning()) {
+	if (nullptr != memoryReadWorker && memoryReadWorker->isRunning()) {
 		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
 
 		if (userResponse == QMessageBox::Yes) {
@@ -716,7 +715,7 @@ void SaharaWindow::cancelOperation()
 			log("Memory read cancelled");
 		}
 	}
-	else if (NULL != imageTransferWorker && imageTransferWorker->isRunning()) {
+	else if (nullptr != imageTransferWorker && imageTransferWorker->isRunning()) {
 		QMessageBox::StandardButton userResponse = QMessageBox::question(this, "Confirm", "Really cancel operation?");
 
 		if (userResponse == QMessageBox::Yes) {

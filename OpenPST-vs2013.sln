@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sahara", "vs2013\sahara.vcxproj", "{8559A43B-F6EF-42C8-9FB1-1503841605FA}"
 	ProjectSection(ProjectDependencies) = postProject
+		{076D4926-771D-4B94-BA24-DF3252D35E90} = {076D4926-771D-4B94-BA24-DF3252D35E90}
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "streaming_dload", "vs2013\streaming_dload.vcxproj", "{9CC24546-B9FC-48CA-873D-5A21DB455999}"
 	ProjectSection(ProjectDependencies) = postProject
+		{076D4926-771D-4B94-BA24-DF3252D35E90} = {076D4926-771D-4B94-BA24-DF3252D35E90}
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
 	EndProjectSection
 EndProject
@@ -17,6 +19,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serial", "vs2013\serial.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qcdm", "vs2013\qcdm.vcxproj", "{4281C819-8DAF-4A09-AF5C-D2BDFC9464AD}"
 	ProjectSection(ProjectDependencies) = postProject
+		{076D4926-771D-4B94-BA24-DF3252D35E90} = {076D4926-771D-4B94-BA24-DF3252D35E90}
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
 	EndProjectSection
 EndProject
@@ -24,10 +27,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mbn_tool", "vs2013\mbn_tool
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extras", "extras", "{65BCA580-F8F4-4E2A-916A-B5A3BA312A67}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lgadbserial", "extra\lgadbserial\lgadbserial.vcxproj", "{5218F14D-2F8C-47B1-92CC-CE0323CB4315}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lgserialshell", "extra\lgserialshell\lgserialshell.vcxproj", "{5218F14D-2F8C-47B1-92CC-CE0323CB4315}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openpst-lib", "vs2013\libopenpst.vcxproj", "{076D4926-771D-4B94-BA24-DF3252D35E90}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{E7621910-CB74-4938-90DE-D6BF987F530A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,11 +119,25 @@ Global
 		{5218F14D-2F8C-47B1-92CC-CE0323CB4315}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{5218F14D-2F8C-47B1-92CC-CE0323CB4315}.Release|Win32.ActiveCfg = Release|Win32
 		{5218F14D-2F8C-47B1-92CC-CE0323CB4315}.Release|x64.ActiveCfg = Release|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Debug|Win32.ActiveCfg = Debug|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Debug|Win32.Build.0 = Debug|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Debug|x64.ActiveCfg = Debug|x64
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Debug|x64.Build.0 = Debug|x64
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|Win32.ActiveCfg = Release|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|Win32.Build.0 = Release|Win32
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|x64.ActiveCfg = Release|x64
+		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {E7621910-CB74-4938-90DE-D6BF987F530A}
 		{5218F14D-2F8C-47B1-92CC-CE0323CB4315} = {65BCA580-F8F4-4E2A-916A-B5A3BA312A67}
+		{076D4926-771D-4B94-BA24-DF3252D35E90} = {E7621910-CB74-4938-90DE-D6BF987F530A}
 	EndGlobalSection
 EndGlobal

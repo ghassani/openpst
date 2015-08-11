@@ -11,9 +11,7 @@
 
 #include "mbn_tool_window.h"
 
-using namespace openpst;
-
-MbnToolWindow::MbnToolWindow(QWidget *parent) :
+OpenPST::MbnToolWindow::MbnToolWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MbnToolWindow)
 {
@@ -26,13 +24,13 @@ MbnToolWindow::MbnToolWindow(QWidget *parent) :
 	QObject::connect(ui->readx509ChainButton, SIGNAL(clicked()), this, SLOT(readX509Chain()));
 }
 
-MbnToolWindow::~MbnToolWindow()
+OpenPST::MbnToolWindow::~MbnToolWindow()
 {
     delete ui;
 }
 
 
-void MbnToolWindow::browseForFile()
+void OpenPST::MbnToolWindow::browseForFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Select Image To Inspect", "", "Image Files (*.mbn *.bin *.img)");
 
@@ -41,7 +39,7 @@ void MbnToolWindow::browseForFile()
     }
 }
 
-void MbnToolWindow::loadFile()
+void OpenPST::MbnToolWindow::loadFile()
 {
     QString tmp;
     QString fileName = ui->filePathInput->text();
@@ -149,7 +147,7 @@ void MbnToolWindow::loadFile()
     }
 }
 
-void MbnToolWindow::extractSegment(int segment)
+void OpenPST::MbnToolWindow::extractSegment(int segment)
 {
 	QString tmp;
 	QString fileName = ui->filePathInput->text();
@@ -242,54 +240,54 @@ void MbnToolWindow::extractSegment(int segment)
 }
 
 
-void MbnToolWindow::readCode()
+void OpenPST::MbnToolWindow::readCode()
 {
 	return extractSegment(MBN_SEGMENT_CODE);
 }
 
-void MbnToolWindow::readSignature()
+void OpenPST::MbnToolWindow::readSignature()
 {
 	return extractSegment(MBN_SEGMENT_SIGNATURE);
 }
 
-void MbnToolWindow::readX509Chain()
+void OpenPST::MbnToolWindow::readX509Chain()
 {
 	return extractSegment(MBN_SEGMENT_X509_CHAIN_CERTIFICATE);
 }
 
 /**
- * @brief MbnToolWindow::log
+ * @brief OpenPST::MbnToolWindow::log
  * @param message
  */
-void MbnToolWindow::log(const char* message)
+void OpenPST::MbnToolWindow::log(const char* message)
 {
     ui->log->appendPlainText(message);
 }
 
 /**
- * @brief MbnToolWindow::log
+ * @brief OpenPST::MbnToolWindow::log
  * @param message
  */
-void MbnToolWindow::log(std::string message)
+void OpenPST::MbnToolWindow::log(std::string message)
 {
     ui->log->appendPlainText(message.c_str());
 }
 
 /**
- * @brief MbnToolWindow::log
+ * @brief OpenPST::MbnToolWindow::log
  * @param message
  */
-void MbnToolWindow::log(QString message)
+void OpenPST::MbnToolWindow::log(QString message)
 {
     ui->log->appendPlainText(message);
 }
 
-bool MbnToolWindow::isValidHeader(uint8_t* data)
+bool OpenPST::MbnToolWindow::isValidHeader(uint8_t* data)
 {
 	return isEightyByteHeader(data) || isFourtyByteHeader(data);
 }
 
-bool MbnToolWindow::isEightyByteHeader(uint8_t* data)
+bool OpenPST::MbnToolWindow::isEightyByteHeader(uint8_t* data)
 {
 	eighty_byte_mbn_header_t* header = (eighty_byte_mbn_header_t*)data;
 
@@ -300,7 +298,7 @@ bool MbnToolWindow::isEightyByteHeader(uint8_t* data)
 	return false;
 }
 
-bool MbnToolWindow::isFourtyByteHeader(uint8_t* data)
+bool OpenPST::MbnToolWindow::isFourtyByteHeader(uint8_t* data)
 {
 	fourty_byte_mbn_header_t* header = (fourty_byte_mbn_header_t*)data;
 

@@ -21,11 +21,11 @@ std::string hexToString(char *input, int length) {
     std::string result;
 
     for (int i = 0; i < length; i++) {
-    #ifdef _WIN32
+#ifdef _WIN32
         sprintf_s(outputBuffer, "%c", hex_trans_display[input[i]]);
-    #else
+#else
         sprintf(outputBuffer, "%c", hex_trans_display[input[i]]);
-    #endif
+#endif
 
     result.append(outputBuffer);
     }
@@ -44,7 +44,11 @@ std::string bytesToHex(unsigned char* input, int size, bool byteswap) {
   if (byteswap) {
     for (int i = size; i >= 0; i--) {
         char buffer[2];
+#ifdef _WIN32
+		sprintf_s(buffer, "%02x", input[i]);
+#else
         sprintf(buffer, "%02x", input[i]);
+#endif
         result.append(buffer);
     }
   } else {

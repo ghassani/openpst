@@ -25,7 +25,7 @@ namespace Ui {
 class MbnToolWindow;
 }
 
-namespace openpst{
+namespace OpenPST{
 	class MbnToolWindow : public QMainWindow
 	{
 		Q_OBJECT

@@ -17,7 +17,7 @@
 
 using namespace serial;
 
-namespace openpst {
+namespace OpenPST {
 
 	struct streaming_dload_stream_write_worker_request {
 		uint32_t		address;

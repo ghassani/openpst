@@ -17,52 +17,69 @@
 #include <QVariant>
 #include <QFileDialog>
 #include "ui_qcdm_window.h"
-#include "qc/diag_nv.h"
+#include "about_dialog.h"
+#include "qc/dm.h"
+#include "qc/dm_nv.h"
+#include "qc/dm_efs.h"
+#include "qc/dm_efs_manager.h"
 #include "serial/qcdm_serial.h"
 #include "util/convert.h"
-
 
 namespace Ui {
     class QcdmWindow;
 }
 
-namespace openpst {
+namespace OpenPST {
+	
+	enum LOGTYPE {
+		LOGTYPE_DEBUG = 0,
+		LOGTYPE_ERROR = -1,
+		LOGTYPE_INFO = 1,
+		LOGTYPE_WARNING = 2
+	};
+
     class QcdmWindow : public QMainWindow
     {
-        Q_OBJECT
+        
+		Q_OBJECT
 
     public:
         explicit QcdmWindow(QWidget *parent = 0);
         ~QcdmWindow();
 
         public slots:
-        void UpdatePortList();
-        void ConnectToPort();
-        void DisconnectPort();
+			void UpdatePortList();
+			void ConnectToPort();
+			void DisconnectPort();
+			void DisableUiButtons();
+			void EnableUiButtons();
+			void SendSpc();
+			void SendPassword();
+			void ReadImei();
+			void ReadMeid();
+			void WriteMeid();
+			void ReadNam();
+			void WriteNam();
+			void ReadNvItem();
+			void ReadSpc();
+			void WriteSpc();
+			void ReadSubscription();
+			void WriteSubscription();
+			void SendPhoneMode();
+			void SpcTextChanged(QString value);
+			void ProbeSubsys();
+			void EfsHello();
+			void EfsGetDeviceInfo();
+			void EfsListDirectories();
+			void EfsQuery();
+			void EfsExtractFactoryImage();
+			void EfsMakeGoldenCopy();
+			void EfsReadAll();
+			void ClearLog();
+			void SaveLog();
 
-        void DisableUiButtons();
-        void EnableUiButtons();
+			void About();
 
-        void SendSpc();
-        void SendPassword();
-
-        void ReadImei();
-        void ReadMeid();
-        void WriteMeid();
-        void ReadNam();
-        void WriteNam();
-        void ReadNvItem();
-        void ReadSpc();
-        void WriteSpc();
-        void ReadSubscription();
-        void WriteSubscription();
-
-        void SendPhoneMode();
-
-        void SpcTextChanged(QString value);
-
-        void ClearLog();
-        void SaveLog();
 
     private:
         void ReadMdn();
@@ -86,7 +103,10 @@ namespace openpst {
         void ReadHdrAnLongUserId();
         void ReadHdrAnLongPassword();
         void ReadHdrAnPppUserId();
-        void ReadHdrAnPppPassword();
+		void ReadHdrAnPppPassword();
+
+		void EfsAddTreeNodes(QTreeWidgetItem* parent, std::vector<DmEfsNode>& entries);
+
 
         QString FixedEmptyTrim(QString input);
 
@@ -95,13 +115,11 @@ namespace openpst {
         void log(int type, QString message);
 
         Ui::QcdmWindow *ui;
-        openpst::QcdmSerial port;
+        OpenPST::QcdmSerial port;
         serial::PortInfo currentPort;
+		OpenPST::DmEfsManager efsManager;
+		AboutDialog *aboutDialog;
 
-        int LOGTYPE_DEBUG = 0;
-        int LOGTYPE_ERROR = -1;
-        int LOGTYPE_INFO = 1;
-        int LOGTYPE_WARNING = 2;
 
     };
 }

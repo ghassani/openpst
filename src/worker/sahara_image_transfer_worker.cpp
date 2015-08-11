@@ -11,7 +11,7 @@
 
 #include "sahara_image_transfer_worker.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 SaharaImageTransferWorker::SaharaImageTransferWorker(SaharaSerial& port, sahara_image_transfer_worker_request request, QObject *parent) :
 	port(port),

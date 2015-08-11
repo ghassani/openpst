@@ -2,7 +2,7 @@
 # PLACEHOLDER
 #-------------------------------------------------
 
-CONFIG += C++11
+CONFIG += C++11 staticlib
 
 TARGET = serial
 

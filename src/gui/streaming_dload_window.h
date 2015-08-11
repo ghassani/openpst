@@ -26,7 +26,7 @@ namespace Ui {
 class StreamingDloadWindow;
 }
 
-namespace openpst{
+namespace OpenPST{
 	class StreamingDloadWindow : public QMainWindow
 	{
 
@@ -208,7 +208,7 @@ namespace openpst{
 
 		private:
 			Ui::StreamingDloadWindow *ui;
-			openpst::StreamingDloadSerial port;
+			StreamingDloadSerial port;
 			serial::PortInfo currentPort;
 			StreamingDloadReadWorker* readWorker;
 			StreamingDloadStreamWriteWorker* streamWriteWorker;

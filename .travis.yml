@@ -16,9 +16,7 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install g++-4.8 qt54tools qt54creator
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-  
+
 script:
-  - /opt/qt54/bin/qt54-env.sh 
-  - /opt/qt54/bin/qmake -makefile -o ./build/Makefile OpenPST.pro 
-  - cd build && make
+  - make travis
 

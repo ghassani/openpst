@@ -35,7 +35,7 @@ namespace Ui {
 	class SaharaWindow;
 }
 
-namespace openpst {
+namespace OpenPST {
 
 	class SaharaWindow : public QMainWindow
 	{

@@ -6,28 +6,9 @@
       <Extensions>ui</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Generated Files">
-      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
-    </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Source Files\src">
-      <UniqueIdentifier>{f83fe8c0-6823-4866-a494-728ff322f361}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\gui">
-      <UniqueIdentifier>{c5b5913e-53a8-4a9e-a5ab-14455467822b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\util">
-      <UniqueIdentifier>{418b7b40-805a-4171-bd05-97d6c747ee1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\qc">
-      <UniqueIdentifier>{be7c4c7a-0a63-4d05-b004-b0d829279c37}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\serial">
-      <UniqueIdentifier>{22d0370f-47ca-47e2-be7d-071aadf79800}</UniqueIdentifier>
     </Filter>
     <Filter Include="Form Files\resources">
       <UniqueIdentifier>{437402e3-c808-4bd8-86db-63fe7c93548d}</UniqueIdentifier>
@@ -47,69 +28,62 @@
     <Filter Include="Header Files\src">
       <UniqueIdentifier>{6c41fa2b-f306-4ebd-ac3a-834c054f5ccc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\src\qc">
-      <UniqueIdentifier>{5e052fd4-d9d2-4352-94a6-8249cfc34f54}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\src\include">
       <UniqueIdentifier>{6c6de087-666f-415e-8f2a-e064d47eb79f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\src\util">
-      <UniqueIdentifier>{981121ae-26a7-45b8-b942-aba62b33c4f1}</UniqueIdentifier>
+    <Filter Include="Source Files\gui">
+      <UniqueIdentifier>{c5b5913e-53a8-4a9e-a5ab-14455467822b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\src\gui">
+    <Filter Include="Header Files\gui">
       <UniqueIdentifier>{f93779e5-404d-4259-9715-d26c95ca9f51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\src\serial">
-      <UniqueIdentifier>{aa515566-5f39-4436-a30c-52ff549fc5b5}</UniqueIdentifier>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{4f7f9db1-e99c-4d94-8b20-0f6068805cc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{4c5e016a-83f6-4ea3-b28e-45b96c5bde6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <ParseFiles>true</ParseFiles>
     </Filter>
     <Filter Include="Generated Files\Debug_Win32">
-      <UniqueIdentifier>{4e39203f-1a3b-4a3c-8136-55fff863e427}</UniqueIdentifier>
+      <UniqueIdentifier>{1cd31c2e-b789-4ecc-b5cb-eb71424ca24d}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Debug_x64">
-      <UniqueIdentifier>{0775d6de-42a7-4441-99a7-eb3ae6370bbb}</UniqueIdentifier>
+      <UniqueIdentifier>{3b046449-b904-41f5-9b17-93ddb1ed4d19}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Release_Win32">
-      <UniqueIdentifier>{d6a2adb0-e325-4dac-83ab-9f90fd868961}</UniqueIdentifier>
+      <UniqueIdentifier>{04a979aa-6360-4a8d-8a88-22d5a1a8339e}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Release_x64">
-      <UniqueIdentifier>{8b388333-a5c5-48db-8ef8-d68f5554aeb8}</UniqueIdentifier>
+      <UniqueIdentifier>{3c972540-ddf3-47ae-a1b5-bf0739c675c3}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\util\endian.cpp">
-      <Filter>Source Files\src\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\hexdump.cpp">
-      <Filter>Source Files\src\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\sleep.cpp">
-      <Filter>Source Files\src\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\gui\qcdm_window.cpp">
-      <Filter>Source Files\src\gui</Filter>
+      <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\serial\qcdm_serial.cpp">
-      <Filter>Source Files\src\serial</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\qc\hdlc.cpp">
-      <Filter>Source Files\src\qc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\qc\crc.cpp">
-      <Filter>Source Files\src\qc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\serial\hdlc_serial.cpp">
-      <Filter>Source Files\src\serial</Filter>
+    <ClCompile Include="..\src\gui\application.cpp">
+      <Filter>Source Files\gui</Filter>
     </ClCompile>
     <ClCompile Include="..\src\qcdm.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\hexdump.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\about_dialog.cpp">
+      <Filter>Source Files\gui</Filter>
     </ClCompile>
     <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_window.cpp">
       <Filter>Generated Files\Debug_Win32</Filter>
@@ -123,11 +97,17 @@
     <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_window.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\gui\application.cpp">
-      <Filter>Source Files\src\gui</Filter>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_about_dialog.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\util\convert.cpp">
-      <Filter>Source Files\src\util</Filter>
+    <ClCompile Include="..\build\x64-Debug\generated\moc_about_dialog.cpp">
+      <Filter>Generated Files\Debug_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_about_dialog.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Release\generated\moc_about_dialog.cpp">
+      <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,49 +117,28 @@
     <ClInclude Include="..\src\include\win_inttypes.h">
       <Filter>Header Files\src\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\serial\hdlc_serial.h">
-      <Filter>Header Files\src\serial</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\gui\application.h">
-      <Filter>Header Files\src\gui</Filter>
+      <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\util\convert.h">
-      <Filter>Header Files\src\util</Filter>
+    <ClInclude Include="..\src\util\hexdump.h">
+      <Filter>Source Files\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\resources\ui\qcdm_window.ui">
       <Filter>Form Files\resources\ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\src\util\sleep.h">
-      <Filter>Header Files\src\util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\serial\qcdm_serial.h">
-      <Filter>Header Files\src\serial</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\src\gui\qcdm_window.h">
-      <Filter>Header Files\src\gui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\qc\hdlc.h">
-      <Filter>Header Files\src\qc</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\qc\diag_nv.h">
-      <Filter>Header Files\src\qc</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\qc\diag.h">
-      <Filter>Header Files\src\qc</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\qc\crc.h">
-      <Filter>Header Files\src\qc</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\util\endian.h">
-      <Filter>Header Files\src\util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\src\util\hexdump.h">
-      <Filter>Header Files\src\util</Filter>
+      <Filter>Header Files\gui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\src\include\definitions.h">
       <Filter>Header Files\src\include</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\resources\ui\about_dialog.ui">
+      <Filter>Form Files\resources\ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\src\gui\about_dialog.h">
+      <Filter>Header Files\gui</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

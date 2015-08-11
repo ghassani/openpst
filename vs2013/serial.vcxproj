@@ -77,12 +77,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\build\$(Platform)-$(Configuration)\lib\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <IntDir>$(OutDir)\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <IntDir>$(OutDir)\$(ProjectName)\</IntDir>
     <OutDir>..\build\$(Platform)-$(Configuration)\lib\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.lib</TargetExt>

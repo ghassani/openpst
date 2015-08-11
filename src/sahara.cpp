@@ -19,9 +19,9 @@
  */
 int main(int argc, char *argv[])
 {
-	openpst::Application application(argc, argv, "sahara_");
+	OpenPST::Application application(argc, argv, "sahara_");
 
-	openpst::SaharaWindow window;
+	OpenPST::SaharaWindow window;
 
 	window.show();
 

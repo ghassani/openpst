@@ -19,9 +19,9 @@
  */
 int main(int argc, char *argv[])
 {
-	openpst::Application application(argc, argv, "streaming_dload_");
+	OpenPST::Application application(argc, argv, "streaming_dload_");
 
-	openpst::StreamingDloadWindow window;
+	OpenPST::StreamingDloadWindow window;
 	
 	window.show();
 

@@ -20,9 +20,9 @@
 int main(int argc, char *argv[])
 {
 
-	openpst::Application application(argc, argv, "mbn_tool_");
+	OpenPST::Application application(argc, argv, "mbn_tool_");
 
-	openpst::MbnToolWindow window;
+	OpenPST::MbnToolWindow window;
 
 	window.show();
 

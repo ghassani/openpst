@@ -75,12 +75,10 @@
     <ClInclude Include="..\..\src\include\definitions.h" />
     <ClInclude Include="..\..\src\include\win_inttypes.h" />
     <ClInclude Include="..\..\src\include\win_stdint.h" />
-    <ClInclude Include="..\..\src\qc\crc.h" />
     <ClInclude Include="..\..\src\qc\hdlc.h" />
     <ClInclude Include="..\..\src\util\hexdump.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\qc\crc.cpp" />
     <ClCompile Include="..\..\src\qc\hdlc.cpp" />
     <ClCompile Include="..\..\src\util\hexdump.cpp" />
     <ClCompile Include="..\hdlc_test.cpp" />

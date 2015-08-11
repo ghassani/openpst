@@ -30,9 +30,6 @@
     <ClInclude Include="..\..\src\qc\hdlc.h">
       <Filter>app-src\qc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\qc\crc.h">
-      <Filter>app-src\qc</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\util\hexdump.cpp">
@@ -42,8 +39,5 @@
       <Filter>app-src\qc</Filter>
     </ClCompile>
     <ClCompile Include="..\hdlc_test.cpp" />
-    <ClCompile Include="..\..\src\qc\crc.cpp">
-      <Filter>app-src\qc</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

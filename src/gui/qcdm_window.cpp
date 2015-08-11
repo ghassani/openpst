@@ -12,12 +12,13 @@
 
 #include "qcdm_window.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 QcdmWindow::QcdmWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QcdmWindow),
-    port("", 115200)
+    port("", 115200),
+	efsManager(port)
 {
     ui->setupUi(this);
 
@@ -51,7 +52,30 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 
     QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(SendPhoneMode()));
 
-    QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(SpcTextChanged(QString)));
+	QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(SpcTextChanged(QString)));
+
+	
+	QObject::connect(ui->probeSubsysButton, SIGNAL(clicked()), this, SLOT(ProbeSubsys()));
+
+
+
+	// EFS Tab
+	QObject::connect(ui->efsListDirectoriesButton, SIGNAL(clicked()), this, SLOT(EfsListDirectories()));
+	QObject::connect(ui->efsReadAllButton, SIGNAL(clicked()), this, SLOT(EfsReadAll()));
+	
+	// File Action Menu
+	//QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT());
+
+	// EFS Action Menu 
+	QObject::connect(ui->actionEfsHello, SIGNAL(triggered()), this, SLOT(EfsHello()));
+	QObject::connect(ui->actionEfsGetDeviceInfo, SIGNAL(triggered()), this, SLOT(EfsGetDeviceInfo()));
+	QObject::connect(ui->actionEfsQuery, SIGNAL(triggered()), this, SLOT(EfsQuery()));
+	QObject::connect(ui->actionEfsExtractFactoryImage, SIGNAL(triggered()), this, SLOT(EfsExtractFactoryImage()));
+	QObject::connect(ui->actionEfsMakeGoldenCopy, SIGNAL(triggered()), this, SLOT(EfsMakeGoldenCopy()));
+
+	// Help Action Menu
+	QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(About()));
+
 }
 
 /**
@@ -59,7 +83,6 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 */
 QcdmWindow::~QcdmWindow()
 {
-    this->close();
     delete ui;
 }
 
@@ -1189,6 +1212,303 @@ void QcdmWindow::EnableUiButtons() {
     ui->sendPhoneModeButton->setEnabled(true);
     ui->sendSpcButton->setEnabled(true);
     ui->sendPasswordButton->setEnabled(true);
+}
+
+void QcdmWindow::ProbeSubsys()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_INFO, "Connect to port first");
+		return;
+	}
+
+	QString tmp;
+
+	size_t txSize, rxSize;
+
+	qcdm_subsys_header_t packet = {};
+	packet.subsysCommand = 0x00;
+
+	uint8_t buffer[DIAG_MAX_PACKET_SIZE];
+
+	log(LOGTYPE_INFO, tmp.sprintf("Starting with new subsys command 0x%02X", DIAG_SUBSYS_CMD_F));
+
+	for (int i = 0; i < DIAG_SUBSYS_LAST; i++) {
+
+		packet.command = DIAG_SUBSYS_CMD_VER_2_F;
+		packet.subsysCommand = (uint16_t)i;
+
+		txSize = port.write((uint8_t*)&packet, sizeof(packet));
+
+		if (!txSize) {
+			log(LOGTYPE_ERROR, tmp.sprintf("Error writing to device on old subsys id %d", i));
+			continue;
+		}
+
+		rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
+
+		if (!rxSize) {
+			log(LOGTYPE_ERROR, tmp.sprintf("Error reading from device on old subsys id %d", i));
+			continue;
+		}
+
+		if (buffer[0] != 0x13) {
+			log(LOGTYPE_INFO, tmp.sprintf("Subsys id found %d on old", i));
+		}
+
+		packet.command = DIAG_SUBSYS_CMD_VER_2_F;
+
+		txSize = port.write((uint8_t*)&packet, sizeof(packet));
+
+		if (!txSize) {
+			log(LOGTYPE_ERROR, tmp.sprintf("Error writing to device on new subsys id %d", i));
+			continue;
+		}
+
+		rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
+
+		if (!rxSize) {
+			log(LOGTYPE_ERROR, tmp.sprintf("Error reading from device onnew  subsys id %d", i));
+			continue;
+		}
+
+		if (buffer[0] != 0x13) {
+			log(LOGTYPE_INFO, tmp.sprintf("Subsys id found %d on new", i));
+		}
+
+	}
+}
+
+/**
+* @brief QcdmWindow::EfsHello
+*/
+void QcdmWindow::EfsHello() {
+	
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+	
+	QString tmp; 
+	diag_subsys_efs_hello_rx_t response;
+
+	if (!efsManager.hello(response)) {
+		log(LOGTYPE_ERROR, "Error sending hello");
+	}
+	
+	log(LOGTYPE_INFO, tmp.sprintf("Command: 0x%02X - %d", response.header.command, response.header.command));
+	log(LOGTYPE_INFO, tmp.sprintf("Subsys ID: 0x%02X - %d", response.header.subsysId, response.header.subsysId));
+	log(LOGTYPE_INFO, tmp.sprintf("Subsys Command: 0x%02X - %d", response.header.subsysCommand, response.header.subsysCommand));
+	log(LOGTYPE_INFO, tmp.sprintf("Target Packet Window Size: %d", response.targetPacketWindowSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Target Packet Window Size in Bytes: %d", response.targetPacketWindowByteSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Host Packet Window Size: %d", response.hostPacketWindowSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Host Packet Window Size in Bytes: %d", response.hostPacketWindowByteSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Directory Iterator Window Size: %d", response.dirIteratorWindowSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Directory Iterator Window Size in Bytes: %d", response.dirIteratorWindowByteSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Version: %d", response.version));
+	log(LOGTYPE_INFO, tmp.sprintf("Min Version: %d", response.minVersion));
+	log(LOGTYPE_INFO, tmp.sprintf("Feature Bits: 0x%04X", response.featureBits));
+}
+
+/**
+* @brief QcdmWindow::EfsGetDeviceInfo
+*/
+void QcdmWindow::EfsGetDeviceInfo() {
+
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+
+	diag_subsys_efs_device_info_rx_t response = {};
+
+	if (!efsManager.getDeviceInfo(response)) {
+		log(LOGTYPE_ERROR, "Error getting device info");
+		return;
+	}
+
+	QString tmp;
+	log(LOGTYPE_INFO, tmp.sprintf("Command: 0x%02X - %d", response.header.command, response.header.command));
+	log(LOGTYPE_INFO, tmp.sprintf("Subsys ID: 0x%02X - %d", response.header.subsysId, response.header.subsysId));
+	log(LOGTYPE_INFO, tmp.sprintf("Subsys Command: 0x%02X - %d", response.header.subsysCommand, response.header.subsysCommand));
+	log(LOGTYPE_INFO, tmp.sprintf("Error: %d", response.error));
+	log(LOGTYPE_INFO, tmp.sprintf("Total Number of Blocks: %d", response.totalNumberOfBlocks));
+	log(LOGTYPE_INFO, tmp.sprintf("Pages Per Block: %d", response.pagesPerBlock));
+	log(LOGTYPE_INFO, tmp.sprintf("Page Size: %d bytes", response.pageSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Total Page Size: %d", response.totalPageSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Maker ID: %d", response.makerId));
+	log(LOGTYPE_INFO, tmp.sprintf("Device ID: %d", response.deviceId));
+	log(LOGTYPE_INFO, tmp.sprintf("Device Type: %d", response.deviceType));
+	log(LOGTYPE_INFO, tmp.sprintf("Device Name: %s", response.name));
+}
+
+/**
+* @brief QcdmWindow::EfsQuery
+*/
+void QcdmWindow::EfsQuery() {
+	//efsQueryButton
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+
+	diag_subsys_efs_query_rx_t response = {};
+
+	if (!efsManager.query(response)) {
+		log(LOGTYPE_ERROR, "Error querying for efs settings");
+		return;
+	}
+
+	QString tmp;
+	log(LOGTYPE_INFO, tmp.sprintf("Command: 0x%02X - %d", response.header.command, response.header.command));
+	log(LOGTYPE_INFO, tmp.sprintf("Subsys ID: 0x%02X - %d", response.header.subsysId, response.header.subsysId));
+	log(LOGTYPE_INFO, tmp.sprintf("Subsys Command: 0x%02X - %d", response.header.subsysCommand, response.header.subsysCommand));
+	log(LOGTYPE_INFO, tmp.sprintf("Max File Name Length: %d", response.maxFilenameLength));
+	log(LOGTYPE_INFO, tmp.sprintf("Max Path Name Length: %d", response.mapPathnameLength));
+	log(LOGTYPE_INFO, tmp.sprintf("Max Symlink Depth: %d", response.maxSymlinkDepth));
+	log(LOGTYPE_INFO, tmp.sprintf("Max File Size: %d", response.maxFileSize));
+	log(LOGTYPE_INFO, tmp.sprintf("Max Directories: %d", response.maxDirectories));
+	log(LOGTYPE_INFO, tmp.sprintf("Max Mounts: %d", response.maxMounts));
+}
+
+
+
+/**
+* @brief QcdmWindow::EfsListDirectories
+*/
+void QcdmWindow::EfsListDirectories() {
+
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+
+	QString tmp;
+
+	std::string rootDir = "/";
+	std::vector<DmEfsNode> contents;
+
+	if (!efsManager.readDir(rootDir, contents, true)){
+		log(LOGTYPE_ERROR, "Error Reading From Directory /");
+		return;
+	}
+	
+	ui->efsDirectoryTree->clear();
+
+	log(LOGTYPE_INFO, tmp.sprintf("Directory / containts %d files", contents.size()));
+	
+	QTreeWidgetItem *rootNode = new QTreeWidgetItem(ui->efsDirectoryTree);
+	rootNode->setText(0, "/");
+	
+	EfsAddTreeNodes(rootNode, contents);
+}
+/**
+* @brief QcdmWindow::EfsReadAll
+*/
+void QcdmWindow::EfsReadAll()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+
+	if (!efsManager.read("/SUPL/Cert0", "C:\\Users\\Gassan\\Desktop\\Cert0") != efsManager.kDmEfsSuccess) {
+		log(LOGTYPE_ERROR, "Error reading file");
+	}
+}
+
+/**
+* @brief QcdmWindow::EfsExtractFactoryImage
+*/
+void QcdmWindow::EfsExtractFactoryImage()
+{	
+	
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+
+	std::vector<uint8_t> data;
+
+	if (efsManager.factoryImagePrepare() == efsManager.kDmEfsSuccess) {
+		
+		if (efsManager.factoryImageStart() == efsManager.kDmEfsSuccess) {
+			
+			if (efsManager.factoryImageRead(data) == efsManager.kDmEfsSuccess) {
+				
+			} else {
+				log(LOGTYPE_ERROR, "Error Reading");
+			}
+
+		} else {
+			log(LOGTYPE_ERROR, "Error Starting");
+		}
+
+	} else {
+		log(LOGTYPE_ERROR, "Error Preparing");
+	}
+
+
+}
+void QcdmWindow::EfsMakeGoldenCopy()
+{
+	if (!port.isOpen()) {
+		log(LOGTYPE_ERROR, "Connect to a port first");
+		return;
+	}
+	
+	if (efsManager.makeGoldenCopy("/") != efsManager.kDmEfsSuccess) {
+		log(LOGTYPE_ERROR, "Error Making Golden Copy Request");
+		return;
+	}
+
+	log(LOGTYPE_INFO, "Golden Copy Generating. Device should restart upon successfuly generation.");
+}
+
+void QcdmWindow::EfsAddTreeNodes(QTreeWidgetItem* parent, std::vector<DmEfsNode>& entries)
+{
+	QString tmp;
+
+	for (auto entry : entries) {
+		QTreeWidgetItem *treeNode = new QTreeWidgetItem(parent);
+		
+		treeNode->setText(0, entry.getName().c_str());
+
+		if (entry.isFile()) {
+			treeNode->setText(1, "File");
+		} else if (entry.isDir()) {
+			treeNode->setText(1, "Directory");
+		} else if (entry.isLink()) {
+			treeNode->setText(1, "Link");
+		} else if (entry.isImmovable()) {
+			treeNode->setText(1, "Immovable");
+		} else {
+			treeNode->setText(1, "Unknown");
+		}
+
+		treeNode->setText(2, tmp.sprintf("%lu", entry.getSize()));
+		treeNode->setText(3, tmp.sprintf("%04X", entry.getMode()));
+		treeNode->setText(4, tmp.sprintf("%lu", entry.getATime()));
+		treeNode->setText(5, tmp.sprintf("%lu", entry.getMTime()));
+		treeNode->setText(6, tmp.sprintf("%lu", entry.getCTime()));
+
+		//treeNode->setData(0, 0, entry.getPath().c_str());
+
+		if (entry.hasChildren()) {
+			EfsAddTreeNodes(treeNode, entry.getChildren());
+		}
+	}
+}
+
+void QcdmWindow::About()
+{
+	aboutDialog = new AboutDialog(this);
+	
+	aboutDialog->show();
+	aboutDialog->raise();
+	aboutDialog->activateWindow();
+
+	//AboutDialog dialog(this);
+	//dialog.exec(); 
 }
 
 /**

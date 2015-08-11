@@ -11,7 +11,7 @@
 
 #include "streaming_dload_stream_write_worker.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 StreamingDloadStreamWriteWorker::StreamingDloadStreamWriteWorker(StreamingDloadSerial& port, streaming_dload_stream_write_worker_request request, QObject *parent) :
     port(port),
@@ -58,7 +58,7 @@ void StreamingDloadStreamWriteWorker::run()
 
 		file.read((char*)fileBuffer, fileSize);
 
-		if (port.streamWrite(request.address, fileBuffer, fileSize, request.unframed) != STREAMING_DLOAD_OPERATION_SUCCESS) {
+		if (port.streamWrite(request.address, fileBuffer, fileSize, request.unframed) != kStreamingDloadSuccess) {
 			file.close();
 			emit error(request, tmp.sprintf("Error writing %lu bytes starting at address 0x%04X", fileSize, request.address));
 			return;
@@ -73,7 +73,7 @@ void StreamingDloadStreamWriteWorker::run()
 
 			file.read((char*)fileBuffer, writeSize);
 
-			if (port.streamWrite((address + request.outSize), fileBuffer, writeSize, request.unframed) != STREAMING_DLOAD_OPERATION_SUCCESS) {
+			if (port.streamWrite((address + request.outSize), fileBuffer, writeSize, request.unframed) != kStreamingDloadSuccess) {
 				file.close();
 				emit error(request, tmp.sprintf("Error writing %lu bytes starting at address 0x%04X", writeSize, (address + request.outSize)));
 				return;

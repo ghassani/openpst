@@ -17,17 +17,25 @@
 #include "include/definitions.h"
 #include "serial/serial.h"
 #include "serial/hdlc_serial.h"
-#include "qc/diag.h"
-#include "qc/qcdm_nv_response_def.h"
-#include "qc/qcdm_packet_types.h"
-#include "qc/diag_nv.h"
-#include "qc/hdlc.h"
+#include "qc/dm.h"
+#include "qc/dm_nv.h"
 #include "util/hexdump.h"
 
-namespace openpst {
+namespace OpenPST {
     class QcdmSerial : public HdlcSerial {
         public:
-            QcdmSerial(std::string port, int baudrate = 115200);
+			/**
+			* @brief QcdmSerial - Constructor
+			*
+			* @param std::string port
+			* @param int baudrate
+			* @param serial::Timeout - Timeout, defaults to 1000ms
+			*/
+			QcdmSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+
+			/**
+			* @brief ~QcdmSerial - Destructor
+			*/
             ~QcdmSerial();
 
             /**
@@ -97,7 +105,7 @@ namespace openpst {
             */
             int getLgSpc(uint8_t** response);
 
-            uint8_t buffer[DIAG_MAX_RX_PKT_SIZ];
+            uint8_t buffer[DIAG_MAX_PACKET_SIZE];
             size_t lastRxSize,
                    lastTxSize;
     };

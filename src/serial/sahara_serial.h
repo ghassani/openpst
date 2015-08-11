@@ -21,32 +21,71 @@
 #include <iostream>
 #include <fstream>
 
-namespace openpst {
-
-	enum SAHARA_OPERATION_RESULT {
-		SAHARA_OPERATION_IO_ERROR	= -1,
-		SAHARA_OPERATION_ERROR		= 0,
-		SAHARA_OPERATION_SUCCESS	= 1
-	};
+namespace OpenPST {
 
 	class SaharaSerial : public serial::Serial {
+		
+		enum kSaharaOperationResult {
+			kSaharaIOError = -1,
+			kSaharaError = 0,
+			kSaharaSuccess = 1
+		};
+
+		uint8_t* buffer;
+		size_t bufferSize;
 
 		public:
-			SaharaSerial(std::string port, int baudrate = 115200);
+			sahara_hello_rx_t deviceState;
+			sahara_read_data_rx_t readState;
+			sahara_memory_debug_rx_t memoryState;
+			sahara_transfer_response_rx_t lastError;
 
+			/**
+			* @brief SaharaSerial
+			*
+			* @param std::string port
+			* @param int baudrate
+			* @param serial::Timeout - Timeout, defaults to 1000ms
+			*/
+			SaharaSerial(std::string port, int baudrate = 115200, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+			
+			/**
+			* @brief ~SaharaSerial
+			*/
 			~SaharaSerial();
 
 			/**
-			 * @brief sendPacket Sends a generic packet
-			 * @param sahara_packet_t packet
-			 * @return size_t - The amount of bytes written
-			 */
-			size_t sendPacket(sahara_packet_t* packet);
+			* @brief write
+			* @overload Serial:: write(uint8_t *data, size_t size)
+			* @return size_t
+			*/
+			size_t write(uint8_t *data, size_t size);
 
 			/**
-			 * @brief readHello
-			 * @return int
-			 */
+			* @brief read
+			* @overload Serial::read(uint8_t *buf, size_t size)
+			* @return size_t
+			*/
+			size_t read(uint8_t *buf, size_t size);
+
+			/**
+			* @brief write
+			* @overload Serial::write(std::vector<uint8_t> &data)
+			* @return size_t
+			*/
+			size_t write(std::vector<uint8_t> &data);
+
+			/**
+			* @brief read
+			* @overload Serial::read(std::vector<uint8_t> &buffer, size_t size)
+			* @return size_t
+			*/
+			size_t read(std::vector<uint8_t> &buffer, size_t size);
+
+			/**
+			* @brief readHello - Always start a session by reading hello
+			* @return int
+			*/
 			int readHello();
 
 			/**
@@ -132,21 +171,24 @@ namespace openpst {
 			*/
 			int readMemory(uint32_t address, size_t size, std::ofstream& out, size_t& outSize);
 
+
+			/**
+			* @brief sendDone - Sends the done command. In emergency mode this will
+			*					 transition to the uploaded programmer
+			* @return int
+			*/
+			int sendDone();
+			
 			/**
 			 * @brief sendReset
 			 * @return int
 			 */
 			int sendReset();
 
-			/**
-			 * @brief sendDone - Sends the done command. In emergency mode this will 
-			 *					 transition to the uploaded programmer 
-			 * @return int
-			 */
-			int sendDone();
 
 			/**
-			 * @brief sendDone
+			 * @brief close
+			 * @overload Serial::close
 			 * @return void
 			 */
 			void close();
@@ -179,16 +221,16 @@ namespace openpst {
 			 */
 			const char* getNamedRequestedImage(uint32_t imageId);
 
-			sahara_hello_rx_t deviceState;
-			sahara_read_data_rx_t readState;
-			sahara_memory_debug_rx_t memoryState;
-			sahara_transfer_response_rx_t lastError;
 
-			uint8_t* buffer;
-			size_t bufferSize;
-			size_t lastRxSize,
-				   lastTxSize;
 		private:
+
+			/**
+			* @brief isValidResponse - Check a response is the expected response by command
+			* @param uint32_t expectedResponseCommand
+			* @param uint8_t* data
+			* @param size_t dataSize
+			* @return bool
+			*/
 			bool isValidResponse(uint32_t expectedResponseCommand, uint8_t* data, size_t dataSize);
 	};
 }

@@ -10,7 +10,7 @@
 */
 #include "streaming_dload_window.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QMainWindow(parent),

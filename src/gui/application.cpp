@@ -10,10 +10,10 @@
 
 #include "application.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 Application::Application(int argc, char *argv[], const char* translatorPrefix) :
-QApplication(argc, argv)
+	QApplication(argc, argv)
 {
 
 #if defined (_WIN32) && defined (DEBUG)

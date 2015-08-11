@@ -12,15 +12,17 @@
 
 #include "qcdm_serial.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 /**
- * @brief QcdmSerial::QcdmSerial
- * @param port
- * @param baudrate
- */
-QcdmSerial::QcdmSerial(std::string port, int baudrate) :
-    HdlcSerial (port, baudrate)
+* @brief QcdmSerial
+*
+* @param std::string port
+* @param int baudrate
+* @param serial::Timeout - Timeout, defaults to 1000ms
+*/
+QcdmSerial::QcdmSerial(std::string port, int baudrate, serial::Timeout timeout) :
+    HdlcSerial (port, baudrate, timeout)
 {
 
 }
@@ -54,7 +56,7 @@ int QcdmSerial::sendSpc(const char* spc)
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -95,7 +97,7 @@ int QcdmSerial::sendPassword(const char* password)
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -128,7 +130,7 @@ int QcdmSerial::sendPhoneMode(uint8_t mode)
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -163,7 +165,7 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
         return DIAG_CMD_TX_FAIL;
     }
 
-        lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+        lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -215,7 +217,7 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -249,7 +251,7 @@ int QcdmSerial::sendHtcNvUnlock(uint8_t** response)
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -281,7 +283,7 @@ int QcdmSerial::sendLgNvUnlock(uint8_t** response)
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");
@@ -313,7 +315,7 @@ int QcdmSerial::getLgSpc(uint8_t** response)
         return DIAG_CMD_TX_FAIL;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_RX_PKT_SIZ);
+    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
     if (!lastRxSize) {
         printf("Device did not respond\n");

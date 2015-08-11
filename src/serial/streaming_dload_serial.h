@@ -22,14 +22,8 @@
 #include "qc/streaming_dload.h"
 #include "qc/hdlc.h"
 
-namespace openpst {
+namespace OpenPST {
 
-	enum STREAMING_DLOAD_OPERATION_RESULT {
-		STREAMING_DLOAD_OPERATION_IO_ERROR = -1,
-		STREAMING_DLOAD_OPERATION_ERROR = 0,
-		STREAMING_DLOAD_OPERATION_SUCCESS = 1
-	}; 
-	
 	struct streaming_dload_device_state {
 		uint8_t openMode;
 		uint8_t openMultiMode;
@@ -39,6 +33,13 @@ namespace openpst {
 	}; 
 	
 	class StreamingDloadSerial : public HdlcSerial {
+		
+		enum kStreamingDloadOperationResult {
+			kStreamingDloadIOError	= -1,
+			kStreamingDloadError	= 0,
+			kStreamingDloadSuccess	= 1
+		}; 
+	
 		public:
 			/**
 			* @brief holds the current device state data
@@ -46,15 +47,16 @@ namespace openpst {
 			streaming_dload_device_state state;
 
 			/**
-			* @brief StreamingDloadSerial() - Constructor
+			* @brief StreamingDloadSerial() 
 			*
 			* @param std::string port - The device to connect to
 			* @param int baudrate - Defaults to 115200
+			* @param serial::Timeout - Timeout, defaults to 1000ms
 			*/
-			StreamingDloadSerial(std::string port, int baudrate = 115200);
+			StreamingDloadSerial(std::string port, int baudrate, serial::Timeout timeout);
             
 			/**
-			* @brief ~StreamingDloadSerial() - Deconstructor
+			* @brief ~StreamingDloadSerial()
 			*/
 			~StreamingDloadSerial();
 

@@ -16,7 +16,7 @@
 #include <windows.h>
 #endif
 
-namespace openpst {
+namespace OpenPST {
 	class Application : public QApplication {
 		public:
 			Application(int argc, char *argv[], const char* translationPrefix);

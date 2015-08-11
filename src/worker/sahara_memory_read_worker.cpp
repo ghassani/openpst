@@ -11,7 +11,7 @@
 
 #include "sahara_memory_read_worker.h"
 
-using namespace openpst;
+using namespace OpenPST;
 
 SaharaMemoryReadWorker::SaharaMemoryReadWorker(SaharaSerial& port, sahara_memory_read_worker_request request, QObject *parent) :
 	port(port),
@@ -44,22 +44,24 @@ void SaharaMemoryReadWorker::run()
 		return;
 	}
 
-	if (request.size > 100000) {
-		
-		size_t requestSize = 100000;
+	if (request.stepSize > SAHARA_MAX_MEMORY_REQUEST_SIZE) {
+		request.stepSize = SAHARA_MAX_MEMORY_REQUEST_SIZE;
+	}
 
+	if (request.size > request.stepSize) {
+		
 		do {
 
 			// change read size if on the last chunk
-			if ((request.size - request.outSize) < requestSize) {
-				requestSize = (request.size - request.outSize);
+			if ((request.size - request.outSize) < request.stepSize) {
+				request.stepSize = (request.size - request.outSize);
 			}
 
 			uint32_t address = request.address + request.outSize;
 
-			if (!port.readMemory(address, requestSize, file, request.lastChunkSize)) {
+			if (!port.readMemory(address, request.stepSize, file, request.lastChunkSize)) {
 				file.close();
-				emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", requestSize, address));
+				emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", request.stepSize, address));
 				return;
 			}
 						
@@ -71,11 +73,13 @@ void SaharaMemoryReadWorker::run()
 		} while (request.outSize < request.size && !cancelled);
 
 	} else {
+		
 		if (!port.readMemory(request.address, request.size, file, request.lastChunkSize)) {
 			file.close();
 			emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", request.size, request.address));
 			return;
 		}
+
 		request.outSize += request.lastChunkSize;
 		request.lastAddress = request.address;
 
@@ -85,5 +89,7 @@ void SaharaMemoryReadWorker::run()
 	file.close();
 
 	emit complete(request);
+
+	return;
 }
 

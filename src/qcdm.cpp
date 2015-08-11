@@ -20,9 +20,9 @@
 */
 int main(int argc, char *argv[])
 {
-	openpst::Application application(argc, argv, "qcdm_");
+	OpenPST::Application application(argc, argv, "qcdm_");
 
-	openpst::QcdmWindow window;
+	OpenPST::QcdmWindow window;
 
 	window.show();
 
