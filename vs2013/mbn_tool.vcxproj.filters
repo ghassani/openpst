@@ -28,6 +28,9 @@
     <ClCompile Include="..\src\gui\application.cpp">
       <Filter>Source Files\src\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\qrc_mbn_tool.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_inttypes.h">
@@ -61,6 +64,9 @@
     </CustomBuild>
     <CustomBuild Include="..\src\util\hexdump.h">
       <Filter>Header Files\src\util</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\resources\mbn_tool.qrc">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -128,5 +134,30 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\resources\images\folder.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\resources\images\file.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\resources\images\file-2x.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\resources\images\folder-2x.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\resources\images\link-intact.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\resources\images\link-intact-2x.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

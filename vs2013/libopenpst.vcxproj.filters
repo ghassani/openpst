@@ -95,9 +95,6 @@
     <ClInclude Include="..\src\util\sleep.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\definitions.h">
-      <Filter>Header Files\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\win_inttypes.h">
       <Filter>Header Files\include</Filter>
     </ClInclude>
@@ -133,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="..\src\qc\dm_efs_node.h">
       <Filter>Header Files\qc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\definitions.h">
+      <Filter>Header Files\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
