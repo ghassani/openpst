@@ -142,7 +142,7 @@ int SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t minVersion
 	size_t lastTxSize, 
 		   lastRxSize;
 
-	sahara_hello_tx_t packet = {};
+	SaharaHelloResponse packet = {};
 	memcpy(&packet, (uint8_t*)&deviceState, sizeof(packet));
 	packet.header.command = SAHARA_HELLO_RESPONSE;
 	packet.status = status;
@@ -227,7 +227,7 @@ int SaharaSerial::switchMode(uint32_t mode)
 		getNamedMode(mode)
 	);
 
-	sahara_command_switch_mode_tx_t packet;
+	SaharaSwitchModeRequest packet;
 	packet.header.command = SAHARA_COMMAND_SWITCH_MODE;
 	packet.header.size = sizeof(packet);
 	packet.mode = mode;
@@ -293,7 +293,7 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 		command, getNamedClientCommand(command)
 	);
 
-	sahara_command_execute_tx_t packet;
+	SaharaClientCommandRequest packet;
 	packet.header.command = SAHARA_COMMAND_EXECUTE;
 	packet.header.size = sizeof(packet);
 	packet.command = command;
@@ -316,11 +316,11 @@ int SaharaSerial::sendClientCommand(uint32_t command, uint8_t** responseData, si
 		return 0;
 	}
 
-	sahara_command_execute_response_rx_t* execResponse = (sahara_command_execute_response_rx_t*)buffer;
+	SaharaClientCommandResponse* execResponse = (SaharaClientCommandResponse*)buffer;
 
-	sahara_command_execute_data_tx_t execData;
+	SaharaClientCommandExecuteDataRequest execData;
 	execData.header.command = SAHARA_COMMAND_EXECUTE_DATA;
-	execData.header.size = sizeof(sahara_command_execute_data_tx_t);
+	execData.header.size = sizeof(SaharaClientCommandExecuteDataRequest);
 	execData.command = command;
 
 	uint8_t* cmdResponseData = new uint8_t[execResponse->size];
@@ -539,7 +539,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 
 	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
 
-	sahara_memory_read_tx_t packet;
+	SaharaMemoryReadRequest packet;
 	packet.header.command = SAHARA_MEMORY_READ;
 	packet.header.size = sizeof(packet);
 
@@ -669,7 +669,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, std::ofstream& out, 
 
 	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
 
-	sahara_memory_read_tx_t packet;
+	SaharaMemoryReadRequest packet;
 	packet.header.command = SAHARA_MEMORY_READ;
 	packet.header.size = sizeof(packet);
 
@@ -731,7 +731,7 @@ int SaharaSerial::sendDone()
 		return 0;
 	}
 
-	sahara_done_tx_t packet;
+	SaharaDoneRequest packet;
 	packet.header.command = SAHARA_DONE;
 	packet.header.size = sizeof(packet);
 
@@ -767,7 +767,7 @@ int SaharaSerial::sendReset()
 	}
 
 	size_t txSize, rxSize;
-	sahara_reset_tx_t packet;
+	SaharaResetRequest packet;
 	packet.header.command = SAHARA_RESET;
 	packet.header.size = sizeof(packet);
 
@@ -828,8 +828,8 @@ void SaharaSerial::close()
 bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* data, size_t dataSize)
 {
 	if (expectedResponseCommand == data[0]) {
-		if (expectedResponseCommand == SAHARA_END_OF_IMAGE_TRANSFER && dataSize == sizeof(sahara_transfer_response_rx_t)) {
-			memcpy(&lastError, data, sizeof(sahara_transfer_response_rx_t));
+		if (expectedResponseCommand == SAHARA_END_OF_IMAGE_TRANSFER && dataSize == sizeof(SaharaEndImageTransferResponse)) {
+			memcpy(&lastError, data, sizeof(SaharaEndImageTransferResponse));
 		}
 		return true;
 	} else if (dataSize == 0) {
@@ -837,9 +837,9 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* da
 	}
 
 	if (data[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
-		sahara_transfer_response_rx_t* error = (sahara_transfer_response_rx_t*)data;
+		SaharaEndImageTransferResponse* error = (SaharaEndImageTransferResponse*)data;
 		if (error->status != 0x00 && expectedResponseCommand != SAHARA_READ_DATA) {
-			memcpy(&lastError, error, sizeof(sahara_transfer_response_rx_t));
+			memcpy(&lastError, error, sizeof(SaharaEndImageTransferResponse));
 			LOGD("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
 			// we need to reset after an error and disconnect to prepare for another transfer if needed
 			sendReset();

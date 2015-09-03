@@ -13,7 +13,7 @@
 
 using namespace OpenPST;
 
-SaharaImageTransferWorker::SaharaImageTransferWorker(SaharaSerial& port, sahara_image_transfer_worker_request request, QObject *parent) :
+SaharaImageTransferWorker::SaharaImageTransferWorker(SaharaSerial& port, SaharaImageTransferWorkerRequest request, QObject *parent) :
 	port(port),
 	request(request),
 	QThread(parent)

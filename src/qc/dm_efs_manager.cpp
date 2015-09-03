@@ -162,7 +162,15 @@ int DmEfsManager::query(diag_subsys_efs_query_rx_t& response)
 	return kDmEfsSuccess; 
 }
 
-
+/**
+* @brief DmEfsManager::open - Open a file for r/rw
+*
+* @param std::string path - full path to the file
+* @param int32_t mode - Mode to open file, standard open flags apply
+* @param int32_t& - fp of opened file on success
+*
+* @return int
+*/
 int DmEfsManager::open(std::string path, int32_t flags, int32_t mode, int32_t& fp)
 {
 	
@@ -197,6 +205,13 @@ int DmEfsManager::open(std::string path, int32_t flags, int32_t mode, int32_t& f
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::close - Close a file
+*
+* @param int32_t - fp of file
+*
+* @return int
+*/
 int DmEfsManager::close(int32_t fp)
 {
 	if (!port.isOpen()) {
@@ -223,6 +238,16 @@ int DmEfsManager::close(int32_t fp)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::read - Read from a file to a data buffer
+*
+* @param int32_t - fp of file
+* @param size_t size - amount of data to read
+* @param uint32_t offset - offset in file to start reading at
+* @param std::vector<uint8_t>& - Data read
+*
+* @return int
+*/
 int DmEfsManager::read(int32_t fp, size_t size, uint32_t offset, std::vector<uint8_t>& data)
 {
 	if (!port.isOpen()) {
@@ -259,6 +284,14 @@ int DmEfsManager::read(int32_t fp, size_t size, uint32_t offset, std::vector<uin
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::read - Read from a file to a file
+*
+* @param std::string - Remote path to read
+* @param std::string - Local path to write
+*
+* @return int
+*/
 int DmEfsManager::read(std::string path, std::string outPath)
 {
 	if (!port.isOpen()) {
@@ -296,27 +329,79 @@ int DmEfsManager::read(std::string path, std::string outPath)
 
 	close(fp);
 
-	std::ofstream out(outPath.c_str(), std::ios::binary | std::ios::out || ios::trunc);
+	std::ofstream out(outPath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 
 	if (!out.is_open()) {
 		return kDmEfsIOError;
 	}
 
-	out.write(reinterpret_cast<char*>(&data), data.size());
+	out.write(reinterpret_cast<char*>(&data[0]), data.size());
 
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::write - Write to a file
+*
+* @param int32_t - fp of file
+* @param uint8_t* - data to write
+* @param size_t amount - amount of data to write
+* @paramuint32_t offset - offset in file to start writing at
+*
+* @return int
+*/
 int DmEfsManager::write(int32_t fp, uint8_t* data, size_t amount, uint32_t offset)
 {
 	return 0;
 }
 
-int DmEfsManager::symlink(std::string path, std::string newPath)
+/**
+* @brief DmEfsManager::symlink - Create a symlink
+*
+* @param std::string path - Full path to file
+* @param std::string newpath - Full path to the link
+*
+* @return int
+*/
+int DmEfsManager::symlink(std::string path, std::string linkPath)
 {
-	return 0;
+	if (!port.isOpen()) {
+		return kDmEfsIOError;
+	}
+
+	size_t packetSize = sizeof(diag_subsys_efs_create_link_tx_t) + path.size() + linkPath.size();
+	diag_subsys_efs_create_link_tx_t* packet = (diag_subsys_efs_create_link_tx_t*) new uint8_t[packetSize]();
+
+	packet->header = getHeader(DIAG_EFS_SYMLINK);
+	std::memcpy(packet->path, path.c_str(), path.size());
+	std::memcpy((packet->path + path.size() + 1), linkPath.c_str(), linkPath.size());
+
+	int commandResult = sendCommand(DIAG_EFS_SYMLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
+
+	delete packet;
+
+	if (commandResult != kDmEfsSuccess) {
+		return commandResult;
+	}
+
+	diag_subsys_efs_create_link_rx_t* response = (diag_subsys_efs_create_link_rx_t*)buffer;
+
+	if (response->error) {
+		LOGE("Error creating link from %s to %s\n", path.c_str(), linkPath.c_str());
+		return kDmEfsError;
+	}
+
+	return kDmEfsSuccess; 
 }
 
+/**
+* @brief DmEfsManager::readSimlink - Read a symlink path
+*
+* @param std::string path - Full path to file
+* @param std::string& out - String with the links real location
+*
+* @return int
+*/
 int DmEfsManager::readSimlink(std::string path, std::string& out)
 {
 	if (!port.isOpen()) {
@@ -348,6 +433,13 @@ int DmEfsManager::readSimlink(std::string path, std::string& out)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::unlink - Delete a file
+*
+* @param std::string path - Full path to file
+*
+* @return int
+*/
 int DmEfsManager::unlink(std::string path)
 {
 	
@@ -378,6 +470,14 @@ int DmEfsManager::unlink(std::string path)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::mkdir - Create a directory
+*
+* @param std::string path - Full path to directory to create
+* @param int16_t mode - Mode to create directory (chmod)
+*
+* @return int
+*/
 int DmEfsManager::mkdir(std::string path, int16_t mode)
 {
 	if (!port.isOpen()) {
@@ -408,6 +508,13 @@ int DmEfsManager::mkdir(std::string path, int16_t mode)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::rmdir - Delete a directory
+*
+* @param std::string path - Full path to directory
+*
+* @return int
+*/
 int DmEfsManager::rmdir(std::string path)
 {
 	if (!port.isOpen()) {
@@ -437,7 +544,14 @@ int DmEfsManager::rmdir(std::string path)
 	return kDmEfsSuccess;
 }
 
-
+/**
+* @brief DmEfsManager::openDir - Open a directory for reading
+*
+* @param std::string path - Full path to file
+* @param uint32_t& dp - Directory pointer to opened directory
+*
+* @return int
+*/
 int DmEfsManager::openDir(std::string path, uint32_t& dp)
 {
 
@@ -462,6 +576,7 @@ int DmEfsManager::openDir(std::string path, uint32_t& dp)
 	diag_subsys_efs_open_dir_rx_t* response = (diag_subsys_efs_open_dir_rx_t*)buffer;
 
 	if (response->error) {
+		LOGE("Error opening directory %s - Error: %08X\n", path.c_str(), response->error);
 		return kDmEfsError;
 	}
 
@@ -470,46 +585,71 @@ int DmEfsManager::openDir(std::string path, uint32_t& dp)
 	return kDmEfsSuccess; 
 }
 
-int DmEfsManager::closeDir(uint32_t dp)
-{
-
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
-
-	diag_subsys_efs_close_dir_tx_t packet = {
-		getHeader(DIAG_EFS_CLOSEDIR),
-		dp
-	};
-
-	int commandResult = sendCommand(DIAG_EFS_CLOSEDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
-	
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
-
-	diag_subsys_efs_close_dir_rx_t* response = (diag_subsys_efs_close_dir_rx_t*)buffer;
-
-	if (response->error) {
-		return kDmEfsError;
-	}
-
-	return kDmEfsSuccess; 
-}
-
+/**
+* @brief DmEfsManager::readDir - Read a directory contents, optionally recursively
+*
+* @param std:;string path - Full path to file
+* @param std::vector<DmEfsNode>& - DmEfsNode vector to populate the tree
+* @param bool - read recursively
+*
+* @return int
+*/
 int DmEfsManager::readDir(std::string path, std::vector<DmEfsNode>& contents, bool recursive)
 {
 	if (!port.isOpen()) {
 		return kDmEfsIOError;
 	}
 
+	size_t txSize, rxSize;
 	uint32_t dp;
 
-	if (int openResult = openDir(path, dp) != kDmEfsSuccess) {
+	int openResult = openResult = openDir(path, dp);
+
+	if (openResult != kDmEfsSuccess) {
 		return openResult;
 	}
 
-	int readResult = readDir(dp, contents);
+	diag_subsys_efs_read_dir_tx_t packet = {};
+	packet.header = getHeader(DIAG_EFS_READDIR);
+	packet.dp = dp;
+	packet.sequenceNumber = 1;
+
+	do {
+
+		int commandResult = sendCommand(DIAG_EFS_READDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+		if (commandResult != kDmEfsSuccess) {
+			if (closeDir(dp) != kDmEfsSuccess) {
+				LOGI("Error closing directory %s\n", path.c_str());
+			}
+			return commandResult;
+		}
+
+		diag_subsys_efs_read_dir_rx_t* response = (diag_subsys_efs_read_dir_rx_t*)buffer;
+
+		if (response->sequenceNumber != packet.sequenceNumber) {
+			LOGI("Invalid readDir Sequence Received\n");
+		}
+
+		if (response->error) {
+			LOGE("Error Reading %s/%s. Error: %08X\n", path.c_str(), response->name, response->error);
+		}
+
+		if (strlen(response->name) == 0) {
+			break; // end
+		}
+	
+		DmEfsNode node(path, response);
+
+		contents.insert(contents.end(), node);
+
+		packet.sequenceNumber++;
+
+	} while (true);
+
+	if (closeDir(dp) != kDmEfsSuccess) {
+		LOGI("Error closing directory %s\n", path.c_str());
+	}
 
 	if (recursive) {
 		for (auto &node : contents) {
@@ -517,29 +657,30 @@ int DmEfsManager::readDir(std::string path, std::vector<DmEfsNode>& contents, bo
 
 				std::string checkPath = path;
 
-				if (0 != path.compare("/")) {
-					checkPath.append("/");
-				}
-
-				checkPath.append(node.getName());
-
-				printf("Parent Path: %s Check Path: %s\n", path.c_str(), checkPath.c_str());
-
-				if (readDir(checkPath, node.getChildren(), recursive) != kDmEfsSuccess) {
-					printf("Error Reading Dir\n");
-					continue;
+				checkPath.append(node.name).append("/");
+		
+				if (readDir(checkPath, node.children, recursive) != kDmEfsSuccess) {
+					LOGE("Error on recursive readDir for %s\n", checkPath.c_str());
+					node.error = 0x000001;
 				}
 			}
 		}
 	}
 
-	closeDir(dp);
-
-	return readResult;
+	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::readDir - Read a directory contents
+*
+* @param uint32_t dp - dp from openDir operation
+* @param std::vector<DmEfsNode>& - DmEfsNode vector to populate the tree
+*
+* @return int
+*/
 int DmEfsManager::readDir(uint32_t dp, std::vector<DmEfsNode>& contents)
 {
+
 	if (!port.isOpen()) {
 		return kDmEfsIOError;
 	}
@@ -552,23 +693,27 @@ int DmEfsManager::readDir(uint32_t dp, std::vector<DmEfsNode>& contents)
 	packet.sequenceNumber = 1;
 			
 	do {
+		int commandResult = sendCommand(DIAG_EFS_READDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-		txSize = port.write((uint8_t*)&packet, sizeof(packet));
-
-		if (!txSize) {
-			return kDmEfsIOError;
+		if (commandResult != kDmEfsSuccess) {
+			if (closeDir(dp) != kDmEfsSuccess) {
+				LOGI("Error closing directory dp %d\n", dp);
+			}
+			return commandResult;
 		}
-
-		rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
-
-		if (!rxSize) {
-			return kDmEfsIOError;
-		}
-
+		
 		diag_subsys_efs_read_dir_rx_t* response = (diag_subsys_efs_read_dir_rx_t*)buffer;
 
-		if (response->error || response->sequenceNumber != packet.sequenceNumber || strlen(response->name) == 0) {
-			break;
+		if (response->sequenceNumber != packet.sequenceNumber) {
+			LOGI("Invalid sequence received in read directory response\n");
+		}
+
+		if (response->error) {
+			LOGE("Error reading directory fp %s. Error %08X\n", response->name, response->error);
+		}
+
+		if (strlen(response->name) == 0) {
+			break; // end
 		}
 
 		DmEfsNode node("", response);
@@ -582,7 +727,47 @@ int DmEfsManager::readDir(uint32_t dp, std::vector<DmEfsNode>& contents)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::closeDir - Close a open directory.
+*
+* @param uint32_t dp - Directory pointer to opened directory
+*/
+int DmEfsManager::closeDir(uint32_t dp)
+{
 
+	if (!port.isOpen()) {
+		return kDmEfsIOError;
+	}
+
+	diag_subsys_efs_close_dir_tx_t packet = {
+		getHeader(DIAG_EFS_CLOSEDIR),
+		dp
+	};
+
+	int commandResult = sendCommand(DIAG_EFS_CLOSEDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+	if (commandResult != kDmEfsSuccess) {
+		return commandResult;
+	}
+
+	diag_subsys_efs_close_dir_rx_t* response = (diag_subsys_efs_close_dir_rx_t*)buffer;
+
+	if (response->error) {
+		LOGE("Error closing directory %d - Error: %08X\n", dp, response->error);
+		return kDmEfsError;
+	}
+
+	return kDmEfsSuccess;
+}
+
+/**
+* @brief DmEfsManager::rename - Rename a file or directory
+*
+* @param std::string path
+* @param std::string newPath
+*
+* @return int
+*/
 int DmEfsManager::rename(std::string path, std::string newPath)
 {
 	if (!port.isOpen()) {
@@ -607,12 +792,21 @@ int DmEfsManager::rename(std::string path, std::string newPath)
 	diag_subsys_efs_access_rx_t* response = (diag_subsys_efs_access_rx_t*)buffer;
 
 	if (response->error) {
+		LOGE("Error renaming %s to %s\n", path.c_str(), newPath.c_str());
 		return kDmEfsError;
 	}
 
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief DmEfsManager::stat - Stat a file or directory by path
+*
+* @param std::string path
+* @param diag_subsys_efs_stat_rx_t& response
+*
+* @return int
+*/
 int DmEfsManager::stat(std::string path, diag_subsys_efs_stat_rx_t& response)
 {
 if (!port.isOpen()) {
@@ -644,6 +838,14 @@ if (!port.isOpen()) {
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief lstat - Stat a link by path
+*
+* @param std::string path
+* @param diag_subsys_efs_lstat_rx_t& response
+*
+* @return int
+*/
 int DmEfsManager::lstat(std::string path, diag_subsys_efs_lstat_rx_t& response)
 {
 	if (!port.isOpen()) {
@@ -675,6 +877,14 @@ int DmEfsManager::lstat(std::string path, diag_subsys_efs_lstat_rx_t& response)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief fstat - Stat a file by fp
+*
+* @param std::string path
+* @param diag_subsys_efs_lstat_rx_t& response
+*
+* @return int
+*/
 int DmEfsManager::fstat(int32_t fp, diag_subsys_efs_fstat_rx_t& response)
 {
 	if (!port.isOpen()) {
@@ -702,6 +912,14 @@ int DmEfsManager::fstat(int32_t fp, diag_subsys_efs_fstat_rx_t& response)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief chmod - Change file permissions
+*
+* @param std::string path
+* @param int16_t mode
+*
+* @return int
+*/
 int DmEfsManager::chmod(std::string path, int16_t mode)
 {
 	if (!port.isOpen()) {
@@ -732,6 +950,14 @@ int DmEfsManager::chmod(std::string path, int16_t mode)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief statfs - Stat the filesystem
+*
+* @param std::string path
+* @param diag_subsys_efs_statfs_rx_t& response
+*
+* @return int
+*/
 int DmEfsManager::statfs(std::string path, diag_subsys_efs_statfs_rx_t& response)
 {
 	if (!port.isOpen()) {
@@ -759,6 +985,14 @@ int DmEfsManager::statfs(std::string path, diag_subsys_efs_statfs_rx_t& response
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief access - Check access permissions for a path
+*
+* @param std::string path
+* @param char checkPermissionBits
+*
+* @return int
+*/
 int DmEfsManager::access(std::string path, char checkPermissionBits)
 {
 	if (!port.isOpen()) {
@@ -789,11 +1023,23 @@ int DmEfsManager::access(std::string path, char checkPermissionBits)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief getFactoryImage - Get EFS factory image
+*
+* @param std::ofstream& out
+*
+* @return int
+*/
 int DmEfsManager::getFactoryImage(std::ofstream& out)
 {
-	return  0;
+	return  kDmEfsError;
 }
 
+/**
+* @brief factoryImageStart - Start transfer of factory image
+*
+* @return int
+*/
 int DmEfsManager::factoryImageStart()
 {
 	if (!port.isOpen()) {
@@ -814,7 +1060,11 @@ int DmEfsManager::factoryImageStart()
 	return kDmEfsSuccess;
 }
 
-
+/**
+* @brief factoryImageStart - Start transfer of factory image
+*
+* @return int
+*/
 int DmEfsManager::factoryImageRead(std::vector<uint8_t>& data)
 {
 	if (!port.isOpen()) {
@@ -843,7 +1093,11 @@ int DmEfsManager::factoryImageRead(std::vector<uint8_t>& data)
 	return kDmEfsSuccess;
 }
 
-
+/**
+* @brief factoryImageEnd - End transfer of factory image
+*
+* @return int
+*/
 int DmEfsManager::factoryImageEnd()
 {
 	if (!port.isOpen()) {
@@ -864,7 +1118,11 @@ int DmEfsManager::factoryImageEnd()
 	return kDmEfsSuccess;
 }
 
-
+/**
+* @brief factoryImagePrepare - Prepare for transfer of factory image
+*
+* @return int
+*/
 int DmEfsManager::factoryImagePrepare()
 {
 	if (!port.isOpen()) {
@@ -886,6 +1144,15 @@ int DmEfsManager::factoryImagePrepare()
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief chown - Change file or directory ownership
+*
+* @param std::string path
+* @param int32_t uid
+* @param int32_t gid
+*
+* @return int
+*/
 int DmEfsManager::chown(std::string path, int32_t uid, int32_t gid)
 {
 	if (!port.isOpen()) {
@@ -917,7 +1184,15 @@ int DmEfsManager::chown(std::string path, int32_t uid, int32_t gid)
 	return kDmEfsSuccess;
 }
 
-
+/**
+* @brief setQuota - Limit the size of a directory for a group
+*
+* @param std::string path
+* @param int32_t gid
+* @param size_t size
+*
+* @return int
+*/
 int DmEfsManager::setQuota(std::string path, int32_t gid, size_t size)
 {
 	if (!port.isOpen()) {
@@ -949,6 +1224,14 @@ int DmEfsManager::setQuota(std::string path, int32_t gid, size_t size)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief getGroupInfo - Get information about a group for a path
+*
+* @param std::string path
+* @param int32_t gid
+*
+* @return int
+*/
 int DmEfsManager::getGroupInfo(std::string path, int32_t gid)
 {
 	if (!port.isOpen()) {
@@ -979,7 +1262,15 @@ int DmEfsManager::getGroupInfo(std::string path, int32_t gid)
 	return kDmEfsSuccess;
 }
 
-int DmEfsManager::deltree(std::string path)
+/**
+* @brief deltree - Delete a directory tree
+*
+* @param std::string path
+* @param int32_t sequence
+*
+* @return int
+*/
+int DmEfsManager::deltree(std::string path, int sequence)
 {
 	if (!port.isOpen()) {
 		return kDmEfsIOError;
@@ -989,7 +1280,7 @@ int DmEfsManager::deltree(std::string path)
 	diag_subsys_efs_deltree_tx_t* packet = (diag_subsys_efs_deltree_tx_t*) new uint8_t[packetSize]();
 
 	packet->header = getHeader(DIAG_EFS_DELTREE);
-	packet->sequence = 1;
+	packet->sequence = sequence;
 	std::memcpy(packet->path, path.c_str(), path.size());
 
 	int commandResult = sendCommand(DIAG_EFS_DELTREE, reinterpret_cast<uint8_t*>(packet), packetSize);
@@ -1002,13 +1293,22 @@ int DmEfsManager::deltree(std::string path)
 
 	diag_subsys_efs_deltree_rx_t* response = (diag_subsys_efs_deltree_rx_t*)buffer;
 
-	if (response->error || response->sequence != 1) {
+	if (response->error || response->sequence != sequence) {
 		return kDmEfsError;
 	}
-	
+
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief truncate - Truncate a file by path
+*
+* @param std::string path
+* @param size_t amount
+* @param int32_t sequence
+*
+* @return int
+*/
 int DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 {
 	if (!port.isOpen()) {
@@ -1039,6 +1339,15 @@ int DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief ftruncate - Truncate a file by fp
+*
+* @param int32_t fp
+* @param size_t amount
+* @param int32_t sequence
+*
+* @return int
+*/
 int DmEfsManager::ftruncate(int32_t fp, size_t amount, int32_t sequence)
 {
 	if (!port.isOpen()) {
@@ -1078,7 +1387,7 @@ int DmEfsManager::statfsV2(diag_subsys_efs_statfs_v2_rx_t& response, int32_t seq
 		sequence
 	};
 
-	int commandResult = sendCommand(DIAG_EFS_MD5SUM, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+	int commandResult = sendCommand(DIAG_EFS_STATVFS_V2, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
 	if (commandResult != kDmEfsSuccess) {
 		return commandResult;
@@ -1095,6 +1404,14 @@ int DmEfsManager::statfsV2(diag_subsys_efs_statfs_v2_rx_t& response, int32_t seq
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief md5sum - Get MD5 Sum for a file.
+*
+* @param std::string path
+* @param int32_t sequence
+*
+* @return int
+*/
 int DmEfsManager::md5sum(std::string path, std::string& hash, int32_t sequence)
 {
 	if (!port.isOpen()) {
@@ -1122,15 +1439,29 @@ int DmEfsManager::md5sum(std::string path, std::string& hash, int32_t sequence)
 		return kDmEfsError;
 	}
 
-	uint8_t hex[2];
+	std::stringstream ss;
+	ss << std::hex << std::setw(2) << std::setfill('0'); 
 	for (int i = 0; i < 16; i++) {
-		sprintf((char *)hex, "%02x", response->hash[i]);
-		hash.append((char*)hex);
+		ss << (int)response->hash[i];
 	}
+	
+	std::string tmp = ss.str();
+	std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
+
+	hash.clear();
+	hash.append(ss.str());
 
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief formatHotplugDevice - Format a hot plug device
+*
+* @param std::string path
+* @param int32_t sequence
+*
+* @return int
+*/
 int DmEfsManager::formatHotplugDevice(std::string path, int32_t sequence)
 {
 	if (!port.isOpen()) {
@@ -1161,6 +1492,14 @@ int DmEfsManager::formatHotplugDevice(std::string path, int32_t sequence)
 	return kDmEfsSuccess;
 }
 
+/**
+* @brief shred - Erase obsolete data
+*
+* @param std::string path
+* @param int32_t sequence
+*
+* @return int
+*/
 int DmEfsManager::shred(std::string path, int32_t sequence)
 {
 	if (!port.isOpen()) {
@@ -1222,25 +1561,109 @@ int DmEfsManager::makeGoldenCopy(std::string path, int32_t sequence)
 	return kDmEfsSuccess;
 }
 
-int DmEfsManager::openFilesystemImage()
+
+int DmEfsManager::openFilesystemImage(std::string path, uint8_t imageType, int32_t& handle, int32_t sequence)
 {
-	return 0;
+	if (!port.isOpen()) {
+		return kDmEfsIOError;
+	}
+
+	size_t packetSize = sizeof(diag_subsys_efs_fs_image_open_tx_t) + path.size();
+	diag_subsys_efs_fs_image_open_tx_t* packet = (diag_subsys_efs_fs_image_open_tx_t*) new uint8_t[packetSize]();
+
+	packet->header = getHeader(DIAG_EFS_FILESYSTEM_IMAGE_OPEN);
+	packet->sequence = sequence;
+	packet->imageType = imageType;
+	std::memcpy(packet->path, path.c_str(), path.size());
+
+	int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_OPEN, reinterpret_cast<uint8_t*>(packet), packetSize);
+
+	delete packet;
+
+	if (commandResult != kDmEfsSuccess) {
+		return commandResult;
+	}
+
+	diag_subsys_efs_fs_image_open_rx_t* response = (diag_subsys_efs_fs_image_open_rx_t*)buffer;
+
+	if (response->error || response->sequence != sequence) {
+		return kDmEfsError;
+	}
+
+	handle = response->handle;
+
+	return kDmEfsSuccess;
 }
 
-int DmEfsManager::readFilesystemImage()
+int DmEfsManager::readFilesystemImage(int32_t handle, std::vector<uint8_t>& data, int32_t sequence)
 {
-	return 0;
+	if (!port.isOpen()) {
+		return kDmEfsIOError;
+	}
+
+	diag_subsys_efs_fs_image_read_tx_t packet = {
+		getHeader(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE),
+		sequence,
+		handle
+	};
+
+	int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_READ, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+	if (commandResult != kDmEfsSuccess) {
+		return commandResult;
+	}
+
+	diag_subsys_efs_fs_image_read_rx_t* response = (diag_subsys_efs_fs_image_read_rx_t*)buffer;
+
+	if (response->error || response->sequence != sequence) {
+		return kDmEfsError;
+	}
+
+	data.reserve(data.size() + response->length);
+
+	data.insert(data.end(), response->data, response->data + response->length);
+	
+	return kDmEfsSuccess;
 }
 
-int DmEfsManager::closeFilesystemImage()
+int DmEfsManager::closeFilesystemImage(int32_t handle, int32_t sequence)
 {
-	return 0;
+	if (!port.isOpen()) {
+		return kDmEfsIOError;
+	}
+
+	diag_subsys_efs_fs_image_close_tx_t packet = {
+		getHeader(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE),
+		sequence,
+		handle
+	};
+
+	int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+	if (commandResult != kDmEfsSuccess) {
+		return commandResult;
+	}
+
+	diag_subsys_efs_fs_image_open_rx_t* response = (diag_subsys_efs_fs_image_open_rx_t*)buffer;
+
+	if (response->error || response->sequence != sequence) {
+		return kDmEfsError;
+	}
+
+	return kDmEfsSuccess;
 }
 
 
-qcdm_subsys_header_t DmEfsManager::getHeader(uint16_t command)
+/**
+* @brief getHeader - Used internally to quickly assemble a packet header
+*
+* @param uint16_t - The command to create the header data for
+*
+* @return QcdmSubsysHeader
+*/
+QcdmSubsysHeader DmEfsManager::getHeader(uint16_t command)
 {
-	qcdm_subsys_header_t header = {
+	QcdmSubsysHeader header = {
 		getSubsystemCommand(),
 		getSubsystemId(),
 		command
@@ -1249,35 +1672,17 @@ qcdm_subsys_header_t DmEfsManager::getHeader(uint16_t command)
 	return header;
 }
 
-bool DmEfsManager::isValidResponse(uint16_t command, uint8_t* data, size_t size)
-{
-	if (size == 0) {
-		return false;
-	}
-
-	qcdm_subsys_header_t* header = (qcdm_subsys_header_t*)data;
-
-	if (header->command != getSubsystemCommand() || 
-		header->subsysId != getSubsystemId() ||
-		header->subsysCommand != command
-	) {		
-		switch (header->command) {
-			case DIAG_BAD_CMD_F:
-				LOGE("Error: Bad Command\n");
-				break;
-			case DIAG_BAD_PARM_F:
-				LOGE("Error: Bad Parameter\n");
-				break;
-			case DIAG_BAD_LEN_F:
-				LOGE("Error: Bad Length\n");
-				break;
-		}
-		return false;
-	}
-
-	return true;
-}
-
+/**
+* @brief sendCommand - Same as sendCommand(uint16_t command) but does not construct a packet,
+*						just writes the raw data and validates the response
+*
+*
+* @param uint16_t - The basic packet command to send as well as expected response command
+* @param uint8_t* - Opaque data pointer to validate against
+* @param size_t - Size of the data
+*
+* @return int
+*/
 
 int DmEfsManager::sendCommand(uint16_t command)
 {
@@ -1285,11 +1690,22 @@ int DmEfsManager::sendCommand(uint16_t command)
 		return kDmEfsIOError;
 	}
 
-	qcdm_subsys_header_t packet = getHeader(command);
+	QcdmSubsysHeader packet = getHeader(command);
 
 	return sendCommand(command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 }
 
+/**
+* @brief sendCommand - Same as sendCommand(uint16_t command) but does not construct a packet,
+*						just writes the raw data (hdlc encoded for you) and validates the response
+*
+*
+* @param uint16_t - The expected response command
+* @param uint8_t* - Opaque data pointer to validate against
+* @param size_t - Size of the data
+*
+* @return int
+*/
 int DmEfsManager::sendCommand(uint16_t command, uint8_t* data, size_t dataSize)
 {
 	if (!port.isOpen()) {
@@ -1300,28 +1716,66 @@ int DmEfsManager::sendCommand(uint16_t command, uint8_t* data, size_t dataSize)
 		if (!port.write(data, dataSize)) {
 			return kDmEfsIOError;
 		}
-	} catch (serial::IOException e) {
+	}
+	catch (serial::IOException e) {
 		return kDmEfsIOError;
 	}
-	
 
-	
 	size_t rxSize;
-	
+
 	try {
 		rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
-		
+
 		if (!rxSize) {
 			return kDmEfsIOError;
 		}
-	} catch (serial::IOException e) {
+	}
+	catch (serial::IOException e) {
 		return kDmEfsIOError;
 	}
-
 
 	if (!isValidResponse(command, buffer, rxSize)) {
 		return kDmEfsError;
 	}
 
 	return kDmEfsSuccess;
+}
+
+/**
+* @brief isValidResponse - used internally to validate responses
+*
+*
+* @param uint16_t - The expected response command
+* @param uint8_t* - Opaque data pointer to validate against
+* @param size_t - Size of the data
+*
+* @return bool
+*/
+bool DmEfsManager::isValidResponse(uint16_t command, uint8_t* data, size_t size)
+{
+	if (size == 0) {
+		return false;
+	}
+
+	QcdmSubsysHeader* header = (QcdmSubsysHeader*)data;
+
+	if (header->command != getSubsystemCommand() || 
+		header->subsysId != getSubsystemId() ||
+		header->subsysCommand != command
+	) {		
+		switch (header->command) {
+			case DIAG_BAD_CMD_F:
+				LOGE("Error: Bad Command Subsys Command %d - %04X\n", command, command);
+				break;
+			case DIAG_BAD_PARM_F:
+				LOGE("Error: Bad Parameter Subsys Command %d - %04X\n", command, command);
+				break;
+			case DIAG_BAD_LEN_F:
+				LOGE("Error: Bad Length Subsys Command %d - %04X\n", command, command);
+				break;
+		}
+		return false;
+	}
+
+	return true;
 }

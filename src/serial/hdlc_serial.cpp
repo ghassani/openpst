@@ -131,7 +131,7 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 
 	size_t bytesWritten = Serial::write(data);
 
-	hexdump_rx(&data[0], bytesWritten);
+	hexdump_tx(&data[0], bytesWritten);
 
 	return bytesWritten;
 }

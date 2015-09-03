@@ -19,28 +19,24 @@
 
 namespace OpenPST {
 
-	using namespace std;
-
-
 	class DmEfsNode {
-
-		protected:
-			std::string name; 
+		public:
+			std::string name;
 			std::string path;
-			int type;
+			uint32_t error;
+			int32_t type;
 			int32_t mode;
 			size_t size;
 			time_t atime;
 			time_t mtime;
 			time_t ctime;
 			std::vector<DmEfsNode> children;
-			
-		public:
+
 			/**
 			* @brief - Constructor
 			*/
 			DmEfsNode(std::string path, diag_subsys_efs_read_dir_rx_t* data);
-			
+
 			/**
 			* @brief - Constructor
 			*/
@@ -55,46 +51,34 @@ namespace OpenPST {
 			* @brief Copy Constructor
 			*/
 			DmEfsNode(const DmEfsNode& copy);
-			
+
 			/**
 			* @brief isDir
+			*
+			* @return bool
 			*/
 			bool isDir();
 
 			/**
 			* @brief isFile
+			*
+			* @return bool
 			*/
 			bool isFile();
 
 			/**
 			* @brief isLink
+			*
+			* @return bool
 			*/
 			bool isLink();
 
 			/**
 			* @brief isImmovable
+			*
+			* @return bool
 			*/
 			bool isImmovable();
-
-			std::string getPath();
-
-			std::string getName();
-
-			int32_t getMode();
-
-			size_t getSize();
-
-			time_t getATime();
-
-			time_t getMTime();
-
-			time_t getCTime();
-
-			bool hasChildren();
-
-			std::vector<DmEfsNode>& getChildren();
-
-			void addChild(DmEfsNode child);
 
 	};
 }

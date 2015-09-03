@@ -93,8 +93,13 @@ enum DIAG_EFS_DEVICE_TYPES {
 	DIAG_EFS_DEVICE_TYPE_NAND = 0x01
 };
 
+enum DIAG_EFS_FILESYSTEM_IMAGE_TYPES {
+	DIAG_EFS_FILESYSTEM_IMAGE_TAR = 0,  
+	DIAG_EFS_FILESYSTEM_IMAGE_ZIP = 1
+};
+
 PACKED(typedef struct diag_subsys_efs_hello_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t targetPacketWindowSize;		// Window size in packets for sends from phone
 	uint32_t targetPacketWindowByteSize;	// Window size in bytes for sends from phone
 	uint32_t hostPacketWindowSize;			// Window size in packets for sends from host
@@ -108,7 +113,7 @@ PACKED(typedef struct diag_subsys_efs_hello_tx_t{
 }) diag_subsys_efs_hello_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_hello_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t targetPacketWindowSize;		// Window size in packets for sends from phone
 	uint32_t targetPacketWindowByteSize;	// Window size in bytes for sends from phone
 	uint32_t hostPacketWindowSize;			// Window size in packets for sends from host
@@ -125,11 +130,11 @@ PACKED(typedef struct diag_subsys_efs_hello_rx_t{
 * Query Command
 */
 PACKED(typedef struct diag_subsys_efs_query_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 }) diag_subsys_efs_query_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_query_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t maxFilenameLength;
 	int32_t mapPathnameLength;
 	int32_t maxSymlinkDepth;
@@ -142,14 +147,14 @@ PACKED(typedef struct diag_subsys_efs_query_rx_t{
 * Open File Command
 */
 PACKED(typedef struct diag_subsys_efs_open_file_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t flags;
 	int32_t mode;
 	char path[1];
 }) diag_subsys_efs_open_file_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_open_file_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 	int32_t error;
 }) diag_subsys_efs_open_file_rx_t;
@@ -158,12 +163,12 @@ PACKED(typedef struct diag_subsys_efs_open_file_rx_t{
 * Close File Command
 */
 PACKED(typedef struct diag_subsys_efs_close_file_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 }) diag_subsys_efs_close_file_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_close_file_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_close_file_rx_t;
 
@@ -171,14 +176,14 @@ PACKED(typedef struct diag_subsys_efs_close_file_rx_t{
 * Read File Command
 */
 PACKED(typedef struct diag_subsys_efs_read_file_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 	uint32_t size;
 	uint32_t offset;
 }) diag_subsys_efs_read_file_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_read_file_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 	uint32_t offset;
 	int32_t bytesRead;
@@ -190,14 +195,14 @@ PACKED(typedef struct diag_subsys_efs_read_file_rx_t{
 * Write File Command
 */
 PACKED(typedef struct diag_subsys_efs_write_file_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 	uint32_t offset;
 	uint8_t data[1];
 }) diag_subsys_efs_write_file_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_write_file_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 	uint32_t offset;
 	int32_t bytesWritten;
@@ -208,13 +213,13 @@ PACKED(typedef struct diag_subsys_efs_write_file_rx_t{
 * Create Symlink Command
 */
 PACKED(typedef struct diag_subsys_efs_create_link_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 	char newPath[1];
 }) diag_subsys_efs_create_link_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_create_link_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_create_link_rx_t;
 
@@ -222,12 +227,12 @@ PACKED(typedef struct diag_subsys_efs_create_link_rx_t{
 * Read Symlink Command
 */
 PACKED(typedef struct diag_subsys_efs_read_link_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_read_link_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_read_link_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	char path[1];
 }) diag_subsys_efs_read_link_rx_t;
@@ -236,12 +241,12 @@ PACKED(typedef struct diag_subsys_efs_read_link_rx_t{
 * Unlink Command
 */
 PACKED(typedef struct diag_subsys_efs_unlink_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_unlink_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_unlink_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_unlink_rx_t;
 
@@ -249,13 +254,13 @@ PACKED(typedef struct diag_subsys_efs_unlink_rx_t{
 * Create Directory Command
 */
 PACKED(typedef struct diag_subsys_efs_mkdir_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int16_t mode;
 	char path[1];
 }) diag_subsys_efs_mkdir_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_mkdir_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_mkdir_rx_t;
 
@@ -263,12 +268,12 @@ PACKED(typedef struct diag_subsys_efs_mkdir_rx_t{
 * Remove Directory Command
 */
 PACKED(typedef struct diag_subsys_efs_rmdir_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_rmdir_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_rmdir_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_rmdir_rx_t;
 
@@ -276,12 +281,12 @@ PACKED(typedef struct diag_subsys_efs_rmdir_rx_t{
 * Open Directory Command
 */
 PACKED(typedef struct diag_subsys_efs_open_dir_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_open_dir_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_open_dir_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t dp;
 	int32_t error;
 }) diag_subsys_efs_open_dir_rx_t;
@@ -290,13 +295,13 @@ PACKED(typedef struct diag_subsys_efs_open_dir_rx_t{
 * Read Directory Command
 */
 PACKED(typedef struct diag_subsys_efs_read_dir_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t dp;
 	int32_t sequenceNumber;
 }) diag_subsys_efs_read_dir_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_read_dir_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t dp;
 	int32_t sequenceNumber;
 	int32_t error;
@@ -313,12 +318,12 @@ PACKED(typedef struct diag_subsys_efs_read_dir_rx_t{
 * Close Directory Command
 */
 PACKED(typedef struct diag_subsys_efs_close_dir_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t dp;
 }) diag_subsys_efs_close_dir_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_close_dir_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_close_dir_rx_t;
 
@@ -326,13 +331,13 @@ PACKED(typedef struct diag_subsys_efs_close_dir_rx_t{
 * Rename Command
 */
 PACKED(typedef struct diag_subsys_efs_rename_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 	char newPath[1];
 }) diag_subsys_efs_rename_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_rename_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_rename_rx_t;
 
@@ -340,12 +345,12 @@ PACKED(typedef struct diag_subsys_efs_rename_rx_t{
 * Stat Command
 */
 PACKED(typedef struct diag_subsys_efs_stat_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_stat_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_stat_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	int32_t mode;
 	int32_t size;
@@ -359,12 +364,12 @@ PACKED(typedef struct diag_subsys_efs_stat_rx_t{
 * Lstat Command
 */
 PACKED(typedef struct diag_subsys_efs_lstat_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_lstat_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_lstat_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	int32_t mode;
 	int32_t atime;
@@ -376,12 +381,12 @@ PACKED(typedef struct diag_subsys_efs_lstat_rx_t{
 * Fstat Command
 */
 PACKED(typedef struct diag_subsys_efs_fstat_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t fp;
 }) diag_subsys_efs_fstat_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_fstat_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	int32_t mode;
 	int32_t size;
@@ -395,13 +400,13 @@ PACKED(typedef struct diag_subsys_efs_fstat_rx_t{
 * CHMOD Command
 */
 PACKED(typedef struct diag_subsys_efs_chmod_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int16_t mode;
 	char path[1];
 }) diag_subsys_efs_chmod_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_chmod_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_chmod_rx_t;
 
@@ -409,12 +414,12 @@ PACKED(typedef struct diag_subsys_efs_chmod_rx_t{
 * Statfs Command
 */
 PACKED(typedef struct diag_subsys_efs_statfs_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char path[1];
 }) diag_subsys_efs_statfs_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_statfs_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	int32_t filesystemId;
 	uint8_t filesystemType[8];
@@ -431,13 +436,13 @@ PACKED(typedef struct diag_subsys_efs_statfs_rx_t{
 * Access Command
 */
 PACKED(typedef struct diag_subsys_efs_access_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	char permissionBits;
 	char path[1];
 }) diag_subsys_efs_access_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_access_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_access_rx_t;
 
@@ -445,11 +450,11 @@ PACKED(typedef struct diag_subsys_efs_access_rx_t{
 * Device Info Command
 */
 PACKED(typedef struct diag_subsys_efs_device_info_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 }) diag_subsys_efs_device_info_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_device_info_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	int32_t totalNumberOfBlocks;
 	int32_t pagesPerBlock;
@@ -466,11 +471,11 @@ PACKED(typedef struct diag_subsys_efs_device_info_rx_t{
 * Factory Image Start
 */
 PACKED(typedef struct diag_subsys_efs_factory_image_start_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 }) diag_subsys_efs_factory_image_start_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_factory_image_start_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_factory_image_start_rx_t;
 
@@ -478,7 +483,7 @@ PACKED(typedef struct diag_subsys_efs_factory_image_start_rx_t{
 * Factory Image Read
 */
 PACKED(typedef struct diag_subsys_efs_factory_image_read_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int8_t streamState;
 	int8_t infoClusterSent;
 	int16_t clusterMapSequence;
@@ -486,7 +491,7 @@ PACKED(typedef struct diag_subsys_efs_factory_image_read_tx_t{
 }) diag_subsys_efs_factory_image_read_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_factory_image_read_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	int8_t streamState;
 	int8_t infoClusterSent;
@@ -499,11 +504,11 @@ PACKED(typedef struct diag_subsys_efs_factory_image_read_rx_t{
 * Factory Image End
 */
 PACKED(typedef struct diag_subsys_efs_factory_image_end_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 }) diag_subsys_efs_factory_image_end_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_factory_image_end_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_factory_image_end_rx_t;
 
@@ -511,27 +516,26 @@ PACKED(typedef struct diag_subsys_efs_factory_image_end_rx_t{
 * Factory Image Prepare
 */
 PACKED(typedef struct diag_subsys_efs_factory_image_prepare_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 }) diag_subsys_efs_factory_image_prepare_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_factory_image_prepare_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_factory_image_prepare_rx_t;
 
-
 /**
-* Cown
+* Chown
 */
 PACKED(typedef struct diag_subsys_efs_chown_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t uid;
 	uint32_t gid;
 	uint8_t path[0];
 }) diag_subsys_efs_chown_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_chown_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_chown_rx_t;
 
@@ -539,14 +543,14 @@ PACKED(typedef struct diag_subsys_efs_chown_rx_t{
 * Set Reservation
 */
 PACKED(typedef struct diag_subsys_efs_set_reservation_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t gid;
 	size_t amount;
 	uint8_t path[0];
 }) diag_subsys_efs_set_reservation_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_set_reservation_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_set_reservation_rx_t;
 
@@ -554,14 +558,14 @@ PACKED(typedef struct diag_subsys_efs_set_reservation_rx_t{
 * Set Quota
 */
 PACKED(typedef struct diag_subsys_efs_set_quota_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t gid;
 	size_t amount;
 	uint8_t path[0];
 }) diag_subsys_efs_set_quota_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_set_quota_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 }) diag_subsys_efs_set_quota_rx_t;
 
@@ -569,13 +573,13 @@ PACKED(typedef struct diag_subsys_efs_set_quota_rx_t{
 * Get Group Info
 */
 PACKED(typedef struct diag_subsys_efs_get_group_info_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint32_t gid;
 	uint8_t path[0];
 }) diag_subsys_efs_get_group_info_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_get_group_info_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	int32_t error;
 	uint32_t quotaSize;
 	uint32_t reservationSize;
@@ -586,13 +590,13 @@ PACKED(typedef struct diag_subsys_efs_get_group_info_rx_t{
 * Deltree
 */
 PACKED(typedef struct diag_subsys_efs_deltree_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_deltree_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_deltree_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_deltree_rx_t;
@@ -602,14 +606,14 @@ PACKED(typedef struct diag_subsys_efs_deltree_rx_t{
 * Truncate
 */
 PACKED(typedef struct diag_subsys_efs_truncate_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t length;
 	uint8_t path[0];
 }) diag_subsys_efs_truncate_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_truncate_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_truncate_rx_t;
@@ -618,14 +622,14 @@ PACKED(typedef struct diag_subsys_efs_truncate_rx_t{
 * Ftruncate
 */
 PACKED(typedef struct diag_subsys_efs_ftruncate_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t length;
 	int32_t fp;
 }) diag_subsys_efs_ftruncate_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_ftruncate_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_ftruncate_rx_t;
@@ -634,13 +638,13 @@ PACKED(typedef struct diag_subsys_efs_ftruncate_rx_t{
 * Statfs V2
 */
 PACKED(typedef struct diag_subsys_efs_statfs_v2_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_statfs_v2_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_statfs_v2_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 	uint32_t fsId;
@@ -668,13 +672,13 @@ PACKED(typedef struct diag_subsys_efs_statfs_v2_rx_t{
 * MD5 Sum
 */
 PACKED(typedef struct diag_subsys_efs_md5_sum_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
-	uint8_t path[0];
+	uint8_t path[1];
 }) diag_subsys_efs_md5_sum_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_md5_sum_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 	uint8_t hash[16];
@@ -684,13 +688,13 @@ PACKED(typedef struct diag_subsys_efs_md5_sum_rx_t{
 * Hotplug Format
 */
 PACKED(typedef struct diag_subsys_efs_hotplug_format_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_hotplug_format_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_hotplug_format_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 	uint8_t hash[16];
@@ -700,13 +704,13 @@ PACKED(typedef struct diag_subsys_efs_hotplug_format_rx_t{
 * Shred
 */
 PACKED(typedef struct diag_subsys_efs_shred_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_shred_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_shred_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint16_t results;
 	int32_t error;
@@ -716,13 +720,13 @@ PACKED(typedef struct diag_subsys_efs_shred_rx_t{
 * Hotplug Format
 */
 PACKED(typedef struct diag_subsys_efs_hotplug_device_info_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_hotplug_device_info_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_hotplug_device_info_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 	uint32_t manufacturerId;
@@ -736,13 +740,13 @@ PACKED(typedef struct diag_subsys_efs_hotplug_device_info_rx_t{
 * Sync
 */
 PACKED(typedef struct diag_subsys_efs_sync_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_sync_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_sync_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t token;
 	int32_t error;
@@ -752,14 +756,14 @@ PACKED(typedef struct diag_subsys_efs_sync_rx_t{
 * Sync Get Status
 */
 PACKED(typedef struct diag_subsys_efs_get_sync_status_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t token;
 	uint8_t path[0];
 }) diag_subsys_efs_get_sync_status_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_get_sync_status_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t status;
 	int32_t error;
@@ -770,7 +774,7 @@ PACKED(typedef struct diag_subsys_efs_get_sync_status_rx_t{
 * Truncate64
 */
 PACKED(typedef struct diag_subsys_efs_truncate64_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t lengthLsb;
 	uint32_t lengthMsb;
@@ -778,7 +782,7 @@ PACKED(typedef struct diag_subsys_efs_truncate64_tx_t{
 }) diag_subsys_efs_truncate64_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_truncate64_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_truncate64_rx_t;
@@ -787,7 +791,7 @@ PACKED(typedef struct diag_subsys_efs_truncate64_rx_t{
 * Ftruncate64
 */
 PACKED(typedef struct diag_subsys_efs_ftruncate64_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t lengthLsb;
 	uint32_t lengthMsb;
@@ -795,7 +799,7 @@ PACKED(typedef struct diag_subsys_efs_ftruncate64_tx_t{
 }) diag_subsys_efs_ftruncate64_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_ftruncate64_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_ftruncate64_rx_t;
@@ -804,7 +808,7 @@ PACKED(typedef struct diag_subsys_efs_ftruncate64_rx_t{
 * Lseek64
 */
 PACKED(typedef struct diag_subsys_efs_lseek64_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int whence;
 	uint32_t lengthLsb;
@@ -813,7 +817,7 @@ PACKED(typedef struct diag_subsys_efs_lseek64_tx_t{
 }) diag_subsys_efs_lseek64_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_lseek64_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 	uint32_t offsetLsb;
@@ -824,13 +828,13 @@ PACKED(typedef struct diag_subsys_efs_lseek64_rx_t{
 * Make golden copy
 */
 PACKED(typedef struct diag_subsys_efs_make_golden_copy_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t path[0];
 }) diag_subsys_efs_make_golden_copy_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_make_golden_copy_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_make_golden_copy_rx_t;
@@ -839,14 +843,14 @@ PACKED(typedef struct diag_subsys_efs_make_golden_copy_rx_t{
 * File System Image Open
 */
 PACKED(typedef struct diag_subsys_efs_fs_image_open_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint8_t imageType; // fs_diag_filesystem_image_type
 	uint8_t path[0];
 }) diag_subsys_efs_fs_image_open_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_fs_image_open_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t handle;
 	int32_t error;
@@ -856,13 +860,13 @@ PACKED(typedef struct diag_subsys_efs_fs_image_open_rx_t{
 * File System Image Read
 */
 PACKED(typedef struct diag_subsys_efs_fs_image_read_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t handle; 
 }) diag_subsys_efs_fs_image_read_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_fs_image_read_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint16_t length;
 	int32_t error;
@@ -873,13 +877,13 @@ PACKED(typedef struct diag_subsys_efs_fs_image_read_rx_t{
 * File System Image Close
 */
 PACKED(typedef struct diag_subsys_efs_fs_image_close_tx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t handle;
 }) diag_subsys_efs_fs_image_close_tx_t;
 
 PACKED(typedef struct diag_subsys_efs_fs_image_close_rx_t{
-	qcdm_subsys_header_t header;
+	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
 }) diag_subsys_efs_fs_image_close_rx_t;

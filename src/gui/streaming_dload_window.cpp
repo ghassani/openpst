@@ -92,8 +92,8 @@ StreamingDloadWindow::StreamingDloadWindow(QWidget *parent) :
 	QObject::connect(ui->writeFileBrowseButton, SIGNAL(clicked()), this, SLOT(browseForWriteFile()));
 	QObject::connect(ui->streamWriteButton, SIGNAL(clicked()), this, SLOT(streamWrite()));
 
-	qRegisterMetaType<streaming_dload_read_worker_request>("streaming_dload_read_worker_request");
-	qRegisterMetaType<streaming_dload_stream_write_worker_request>("streaming_dload_stream_write_worker_request");
+	qRegisterMetaType<StreamingDloadReadWorkerRequest>("StreamingDloadReadWorkerRequest");
+	qRegisterMetaType<StreamingDloadStreamWriteWorkerRequest>("StreamingDloadStreamWriteWorkerRequest");
 	
 	updatePortList();
 }
@@ -488,7 +488,7 @@ void StreamingDloadWindow::read()
 
 	log(tmp.sprintf("Attempting Read %lu bytes starting from address 0x%08X to file %s", size, address, fileName.toStdString().c_str()));
 
-	streaming_dload_read_worker_request request;	
+	StreamingDloadReadWorkerRequest request;	
 	request.address = address;
 	request.size = size;
 	request.stepSize = stepSize;
@@ -547,7 +547,7 @@ void StreamingDloadWindow::streamWrite()
 	
 	file.close();
 
-	streaming_dload_stream_write_worker_request request;
+	StreamingDloadStreamWriteWorkerRequest request;
 	request.address = address;
 	request.filePath = filePath.toStdString();
 	request.unframed = ui->unframedWriteCheckbox->isChecked();
@@ -576,7 +576,7 @@ void StreamingDloadWindow::streamWrite()
 /**
 * @brief StreamingDloadWindow::readChunkReadyHandler
 */
-void StreamingDloadWindow::readChunkReadyHandler(streaming_dload_read_worker_request request)
+void StreamingDloadWindow::readChunkReadyHandler(StreamingDloadReadWorkerRequest request)
 {
 	// update progress bar
 	QString tmp;
@@ -587,7 +587,7 @@ void StreamingDloadWindow::readChunkReadyHandler(streaming_dload_read_worker_req
 /**
 * @brief StreamingDloadWindow::readCompleteHandler
 */
-void StreamingDloadWindow::readCompleteHandler(streaming_dload_read_worker_request request)
+void StreamingDloadWindow::readCompleteHandler(StreamingDloadReadWorkerRequest request)
 {
 	QString tmp;
 
@@ -601,7 +601,7 @@ void StreamingDloadWindow::readCompleteHandler(streaming_dload_read_worker_reque
 /**
 * @brief StreamingDloadWindow::readChunkErrorHandler
 */
-void StreamingDloadWindow::readChunkErrorHandler(streaming_dload_read_worker_request request, QString msg)
+void StreamingDloadWindow::readChunkErrorHandler(StreamingDloadReadWorkerRequest request, QString msg)
 {
 	log(msg);
 
@@ -766,7 +766,7 @@ void StreamingDloadWindow::cancelOperation()
 /**
 * @brief StreamingDloadWindow::streamWriteSegmentCompleteHandler
 */
-void StreamingDloadWindow::streamWriteChunkCompleteHandler(streaming_dload_stream_write_worker_request request)
+void StreamingDloadWindow::streamWriteChunkCompleteHandler(StreamingDloadStreamWriteWorkerRequest request)
 {
 	// update progress bar
 	QString tmp;
@@ -777,7 +777,7 @@ void StreamingDloadWindow::streamWriteChunkCompleteHandler(streaming_dload_strea
 /**
 * @brief StreamingDloadWindow::streamWriteCompleteHandler
 */
-void StreamingDloadWindow::streamWriteCompleteHandler(streaming_dload_stream_write_worker_request request)
+void StreamingDloadWindow::streamWriteCompleteHandler(StreamingDloadStreamWriteWorkerRequest request)
 {
 	QString tmp;
 
@@ -791,7 +791,7 @@ void StreamingDloadWindow::streamWriteCompleteHandler(streaming_dload_stream_wri
 /**
 * @brief StreamingDloadWindow::streamWriteErrorHandler
 */
-void StreamingDloadWindow::streamWriteErrorHandler(streaming_dload_stream_write_worker_request request, QString msg)
+void StreamingDloadWindow::streamWriteErrorHandler(StreamingDloadStreamWriteWorkerRequest request, QString msg)
 {
 	log(msg);
 

@@ -153,33 +153,33 @@ namespace OpenPST{
 			* @brief readChunkReadyHandler - callback function to update UI when a read chunk is ready. 
 			*								 used to increment the progress bar
 			*/
-			void readChunkReadyHandler(streaming_dload_read_worker_request request);
+			void readChunkReadyHandler(StreamingDloadReadWorkerRequest request);
 
 			/**
 			* @brief readCompleteHandler - callback function to update UI when the read worker completes the request
 			*/
-			void readCompleteHandler(streaming_dload_read_worker_request request);
+			void readCompleteHandler(StreamingDloadReadWorkerRequest request);
 
 			/**
 			* @brief readChunkErrorHandler - callback function to update UI when the read worker encounters an error
 			*/
-			void readChunkErrorHandler(streaming_dload_read_worker_request request, QString msg);
+			void readChunkErrorHandler(StreamingDloadReadWorkerRequest request, QString msg);
 			
 			/**
 			* @brief streamWriteChunkCompleteHandler - callback function to update UI when a stream write chunk has been written. 
 			*										used to increment the progress bar
 			*/
-			void streamWriteChunkCompleteHandler(streaming_dload_stream_write_worker_request request);
+			void streamWriteChunkCompleteHandler(StreamingDloadStreamWriteWorkerRequest request);
 
 			/**
 			* @brief streamWriteCompleteHandler - callback function to update UI when a stream write worker completes the request
 			*/
-			void streamWriteCompleteHandler(streaming_dload_stream_write_worker_request request);
+			void streamWriteCompleteHandler(StreamingDloadStreamWriteWorkerRequest request);
 
 			/**
 			* @brief streamWriteErrorHandler - callback function to update UI when a stream write worker encounters an error
 			*/
-			void streamWriteErrorHandler(streaming_dload_stream_write_worker_request request, QString msg);
+			void streamWriteErrorHandler(StreamingDloadStreamWriteWorkerRequest request, QString msg);
 
 			/**
 			* @brief cancelOperation - Cancels any currently running workers

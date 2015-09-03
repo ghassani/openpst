@@ -13,7 +13,7 @@
 
 using namespace OpenPST;
 
-SaharaMemoryReadWorker::SaharaMemoryReadWorker(SaharaSerial& port, sahara_memory_read_worker_request request, QObject *parent) :
+SaharaMemoryReadWorker::SaharaMemoryReadWorker(SaharaSerial& port, SaharaMemoryReadWorkerRequest request, QObject *parent) :
 	port(port),
 	request(request),
 	QThread(parent)

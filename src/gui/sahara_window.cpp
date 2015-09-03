@@ -20,8 +20,8 @@ SaharaWindow::SaharaWindow(QWidget *parent) :
 	memoryReadWorker(nullptr),
 	imageTransferWorker(nullptr)
 {
-	qRegisterMetaType<sahara_memory_read_worker_request>("sahara_memory_read_worker_request");
-	qRegisterMetaType<sahara_image_transfer_worker_request>("sahara_image_transfer_worker_request");
+	qRegisterMetaType<SaharaMemoryReadWorkerRequest>("SaharaMemoryReadWorkerRequest");
+	qRegisterMetaType<SaharaImageTransferWorkerRequest>("SaharaImageTransferWorkerRequest");
 
 	ui->setupUi(this);
 
@@ -234,14 +234,14 @@ void SaharaWindow::writeHello()
 			return;
 		}
 
-		int totalRegions = memoryTableSize / sizeof(sahara_memory_table_entry_t);
+		int totalRegions = memoryTableSize / sizeof(SaharaMemoryTableEntry);
 
 		log(tmp.sprintf("Memory table references %d locations", totalRegions));
 
-		sahara_memory_table_entry_t* entry;
+		SaharaMemoryTableEntry* entry;
 
 		for (int i = 0; i < totalRegions; i++) {
-			entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
+			entry = (SaharaMemoryTableEntry*)&memoryTableData[i*sizeof(SaharaMemoryTableEntry)];
 			log(tmp.sprintf("%s (%s) - Address: 0x%08X Size: %i", entry->name, entry->filename, entry->address, entry->size));
 		}
 
@@ -255,7 +255,7 @@ void SaharaWindow::writeHello()
 			if (dumpPath.length()) {
 				log("\n\n");
 				for (int i = 0; i < totalRegions; i++) {
-					entry = (sahara_memory_table_entry_t*)&memoryTableData[i*sizeof(sahara_memory_table_entry_t)];
+					entry = (SaharaMemoryTableEntry*)&memoryTableData[i*sizeof(SaharaMemoryTableEntry)];
 
 					if (entry->size > 1000000) { // confirm files larger than 1mb
 						QMessageBox::StandardButton largeFileUserResponse = QMessageBox::question(this, "Confirm Large File", tmp.sprintf("Pull large file %s (%lu bytes) or skip it?", entry->filename, entry->size));
@@ -269,7 +269,7 @@ void SaharaWindow::writeHello()
 					outFile.sprintf("%s/%s", dumpPath.toStdString().c_str(), entry->filename);
 
 					// queue a read request
-					sahara_memory_read_worker_request memoryReadWorkerRequest;
+					SaharaMemoryReadWorkerRequest memoryReadWorkerRequest;
 					memoryReadWorkerRequest.address = entry->address;
 					memoryReadWorkerRequest.size = entry->size;
 					memoryReadWorkerRequest.outFilePath = outFile.toStdString();
@@ -349,7 +349,7 @@ void SaharaWindow::sendImage()
 		return;
 	}
 
-	sahara_image_transfer_worker_request request;
+	SaharaImageTransferWorkerRequest request;
 	request.imageType = port.readState.imageId;
 	request.imagePath = fileName.toStdString();
 	request.offset = port.readState.offset;
@@ -440,17 +440,17 @@ void SaharaWindow::sendClientCommand()
 	if (readData != nullptr && readDataSize > 0) {
 
 		if (requestedCommand == SAHARA_EXEC_CMD_OEM_PK_HASH_READ) {
-			sahara_oem_pk_hash_rx_t* resp = (sahara_oem_pk_hash_rx_t*)readData;
-			hexdump(resp->hash, sizeof(sahara_oem_pk_hash_rx_t), tmp, false);
+			SaharaOemPkHashResponse* resp = (SaharaOemPkHashResponse*)readData;
+			hexdump(resp->hash, sizeof(SaharaOemPkHashResponse), tmp, false);
 			log(tmp.sprintf("OEM Public Key Hash Hex:\n %s", tmp.toStdString().c_str()));
 		} else if (requestedCommand == SAHARA_EXEC_CMD_GET_SOFTWARE_VERSION_SBL) {
-			sahara_sbl_version_rx_t* resp = (sahara_sbl_version_rx_t*)readData;
+			SaharaSblVersionResponse* resp = (SaharaSblVersionResponse*)readData;
 			log(tmp.sprintf("SBL SW Version: %u", resp->version));
 		} else if (requestedCommand == SAHARA_EXEC_CMD_SERIAL_NUM_READ) {
-			sahara_serial_number_rx_t* resp = (sahara_serial_number_rx_t*)readData;
+			SaharaSerialNumberResponse* resp = (SaharaSerialNumberResponse*)readData;
 			log(tmp.sprintf("Serial Number: %u - %08X", resp->serial, resp->serial));
 		} else if (requestedCommand == SAHARA_EXEC_CMD_MSM_HW_ID_READ) {
-			sahara_msm_hw_id_rx_t* resp = (sahara_msm_hw_id_rx_t*)readData;
+			SaharaMsmHwIdResponse* resp = (SaharaMsmHwIdResponse*)readData;
 			log(tmp.sprintf("Unknown ID 1: %u", resp->unknown1));
 			log(tmp.sprintf("Unknown ID 2: %u", resp->unknown2));
 			log(tmp.sprintf("MSM HW ID: %u - %08X", resp->msmId, resp->msmId));
@@ -571,7 +571,7 @@ void SaharaWindow::memoryRead()
 	log(tmp.sprintf("Reading %lu bytes from address 0x%08X", size, address));
 
 	// queue a read request and setup the worker
-	sahara_memory_read_worker_request memoryReadWorkerRequest;
+	SaharaMemoryReadWorkerRequest memoryReadWorkerRequest;
 	memoryReadWorkerRequest.address = address;
 	memoryReadWorkerRequest.size = size;
 	memoryReadWorkerRequest.outFilePath = fileName.toStdString();
@@ -581,7 +581,7 @@ void SaharaWindow::memoryRead()
 	memoryReadStartThread();
 }
 
-void SaharaWindow::memoryReadChunkReadyHandler(sahara_memory_read_worker_request request)
+void SaharaWindow::memoryReadChunkReadyHandler(SaharaMemoryReadWorkerRequest request)
 {
 	// update progress bar
 	QString tmp;
@@ -589,7 +589,7 @@ void SaharaWindow::memoryReadChunkReadyHandler(sahara_memory_read_worker_request
 	ui->progressBarTextLabel->setText(tmp.sprintf("%lu / %lu bytes", ui->progressBar->value(), request.size));
 }
 
-void SaharaWindow::memoryReadCompleteHandler(sahara_memory_read_worker_request request)
+void SaharaWindow::memoryReadCompleteHandler(SaharaMemoryReadWorkerRequest request)
 {
 	QString tmp;
 
@@ -604,7 +604,7 @@ void SaharaWindow::memoryReadCompleteHandler(sahara_memory_read_worker_request r
 	memoryReadStartThread();
 }
 
-void SaharaWindow::memoryReadChunkErrorHandler(sahara_memory_read_worker_request request, QString msg)
+void SaharaWindow::memoryReadChunkErrorHandler(SaharaMemoryReadWorkerRequest request, QString msg)
 {
 	if (memoryReadQueue.size()) { // in case it was cancelled, would have been emptied
 		memoryReadQueue.pop_front();
@@ -630,7 +630,7 @@ void SaharaWindow::memoryReadStartThread()
 		return;
 	}
 
-	sahara_memory_read_worker_request request = memoryReadQueue.front();
+	SaharaMemoryReadWorkerRequest request = memoryReadQueue.front();
 	QString tmp;
 
 	// setup progress bar
@@ -653,7 +653,7 @@ void SaharaWindow::memoryReadStartThread()
 }
 
 
-void SaharaWindow::imageTransferChunkDoneHandler(sahara_image_transfer_worker_request request)
+void SaharaWindow::imageTransferChunkDoneHandler(SaharaImageTransferWorkerRequest request)
 {
 	// update progress bar
 	QString tmp;
@@ -664,7 +664,7 @@ void SaharaWindow::imageTransferChunkDoneHandler(sahara_image_transfer_worker_re
 /**
 * @brief imageTransferCompleteHandler
 */
-void SaharaWindow::imageTransferCompleteHandler(sahara_image_transfer_worker_request request)
+void SaharaWindow::imageTransferCompleteHandler(SaharaImageTransferWorkerRequest request)
 {
 	QString tmp;
 
@@ -684,7 +684,7 @@ void SaharaWindow::imageTransferCompleteHandler(sahara_image_transfer_worker_req
 /**
 * @brief imageTransferErrorHandler
 */
-void SaharaWindow::imageTransferErrorHandler(sahara_image_transfer_worker_request request, QString msg)
+void SaharaWindow::imageTransferErrorHandler(SaharaImageTransferWorkerRequest request, QString msg)
 {
 	log(msg);
 

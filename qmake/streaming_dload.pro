@@ -20,13 +20,7 @@ VPATH += $$PWD/../
 
 SOURCES += \
     src/util/hexdump.cpp \
-    src/util/endian.cpp \
-    src/util/sleep.cpp \
-    src/qc/hdlc.cpp \
-    src/qc/crc.cpp \
     src/gui/streaming_dload_window.cpp \
-    src/serial/hdlc_serial.cpp \
-    src/serial/streaming_dload_serial.cpp \
     src/worker/streaming_dload_read_worker.cpp \
     src/worker/streaming_dload_stream_write_worker.cpp \
     src/gui/application.cpp \
@@ -34,22 +28,17 @@ SOURCES += \
 
 HEADERS  += \
     src/include/definitions.h \
-    src/qc/streaming_dload.h \
-    src/qc/crc.h \
-    src/qc/hdlc.h \
     src/util/hexdump.h \
-    src/util/endian.h \
-    src/util/sleep.h \
     src/gui/streaming_dload_window.h \
-    src/serial/streaming_dload_serial.h \
     src/worker/streaming_dload_read_worker.h \
     src/worker/streaming_dload_stream_write_worker.h \
-    src/gui/application.h \
-    src/serial/hdlc_serial.h
+    src/gui/application.h
 
 
 FORMS  += resources/ui/streaming_dload_window.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/release/  -llibopenpst
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/debug/ -llibopenpst
-else:unix: LIBS += -L$$OUT_PWD/ -llibopenpst
+RESOURCES = resources/streaming_dload.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/release/  -llibopenpst -lserial
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/debug/ -llibopenpst -lserial
+else:unix: LIBS += -L$$OUT_PWD/ -llibopenpst -lserial

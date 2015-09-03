@@ -128,20 +128,20 @@ enum SAHARA_STATUS_CODE {
 };
 
 /**
-* sahara_header_t
+* SaharaHeader
 *
 * The header all transmissions use
 * with the exception of a few
 */
-typedef struct sahara_header_t {
+typedef struct SaharaHeader {
     uint32_t command;
     uint32_t size;
-} sahara_header_t;
+} SaharaHeader;
 
-typedef struct sahara_packet_t {
-    sahara_header_t header;
+typedef struct SaharaAbstractPacket {
+    SaharaHeader header;
     uint32_t parameters[2];
-} sahara_packet_t;
+} SaharaAbstractPacket;
 
 /**
 * sahara_hello_response_t
@@ -153,13 +153,13 @@ typedef struct sahara_packet_t {
 * using sahara protocol
 */
 typedef struct{ // 0x01
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t version;
     uint32_t minVersion;
     uint32_t maxCommandPacketSize;
     uint32_t mode;
     uint32_t reserved[6];
-} sahara_hello_rx_t;
+} SaharaHelloRequest;
 
 /**
 * sahara_hello_response_t
@@ -168,172 +168,170 @@ typedef struct{ // 0x01
 * in response to the initial hello packet
 */
 typedef struct { // 0x02
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t version;
     uint32_t minVersion;
     uint32_t status; // ok or error
     uint32_t mode;
     uint32_t reserved[6];
-} sahara_hello_tx_t;
+} SaharaHelloResponse;
 
 /**
-* sahara_read_data_rx_t
+* SaharaReadDataRequest
 *
 * When the device sends this packet
 * it is requesting a file and an initial
 * chunk of the file for validation
 */
 typedef struct { // 0x03
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t imageId;
     uint32_t offset;
     uint32_t size;
-} sahara_read_data_rx_t;
+} SaharaReadDataRequest;
 
 /**
-* sahara_transfer_response_rx_t
+* SaharaEndImageTransferResponse
 *
 * When an error is encountered or an image transfer has
 * ended.
-*
-* Not sure, but if response if 0 then everything went ok; proceed to next command
 */
 typedef struct { // 0x04
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t file;
     uint32_t status;
-} sahara_transfer_response_rx_t;
+} SaharaEndImageTransferResponse;
 
 /*
-* sahara_done_tx_t
+* SaharaDoneRequest
 *
-* Sent to the device in response to a successful sahara_transfer_response_rx_t
+* Sent to the device in response to a successful SaharaEndImageTransferResponse
 */
 typedef struct { // 0x05
-    sahara_header_t header;
-} sahara_done_tx_t;
+    SaharaHeader header;
+} SaharaDoneRequest;
 
 /*
-* sahara_done_rx_t
+* SaharaDoneResponse
 *
-* Received from the device after sending sahara_done_tx_t
+* Received from the device after sending SaharaDoneRequest
 */
 typedef struct { // 0x06
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t imageTxStatus; // 0 pending, 1 complete
-} sahara_done_rx_t;
+} SaharaDoneResponse;
 
 /*
-* sahara_reset_tx_t
+* SaharaResetRequest
 */
 typedef struct { // 0x07
-    sahara_header_t header;
-} sahara_reset_tx_t;
+    SaharaHeader header;
+} SaharaResetRequest;
 
 /*
-* sahara_reset_rx_t
+* SaharaResetResponse
 */
 typedef struct { // 0x08
-    sahara_header_t header;
-} sahara_reset_rx_t;
+    SaharaHeader header;
+} SaharaResetResponse;
 
 
 typedef struct { // 0x09
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t memoryTableAddress;
 	uint32_t memoryTableLength;
-} sahara_memory_debug_rx_t;
+} SaharaMemoryDebugRequest;
 
 
 typedef struct { // 0x0a
-  sahara_header_t header;
+  SaharaHeader header;
   uint32_t address;
   uint32_t size;
-} sahara_memory_read_tx_t;
+} SaharaMemoryReadRequest;
 
 /**
-* sahara_command_ready_rx_t
+* SaharaCommandReadyResponse
 *
 * Received from the device when in or switching to client
-* command mode. ready to take a command (sahara_command_execute_tx_t)
+* command mode. ready to take a command (SaharaClientCommandRequest)
 *
 */
 typedef struct { // 0x0b
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t imageTxStatus; // 0 pending, 1 complete
-} sahara_command_ready_rx_t;
+} SaharaCommandReadyResponse;
 
 /**
-* sahara_command_switch_mode_tx_t
+* SaharaSwitchModeRequest
 *
 * Sent to the device to switch modes when in client command mode.
 *
-* Device should respond with sahara_hello_rx_t
+* Device should respond with SaharaHelloRequest
 */
 typedef struct { // 0x0c
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t mode;
-} sahara_command_switch_mode_tx_t;
+} SaharaSwitchModeRequest;
 
 /**
-* sahara_command_execute_tx_t
+* SaharaClientCommandRequest
 *
 * Execute a client command
 *
 * If the command is invalid you will receive
-* sahara_transfer_response_rx_t
+* SaharaEndImageTransferResponse
 */
 typedef struct { // 0x0d
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t command;
-} sahara_command_execute_tx_t;
+} SaharaClientCommandRequest;
 
 
 /**
-* sahara_command_execute_response_rx_t
+* SaharaClientCommandResponse
 *
-* Received from the device in response to sahara_command_execute_tx_t
+* Received from the device in response to SaharaClientCommandRequest
 * with the size of the data expected back from the command execution
 *
 */
 typedef struct { // 0x0e
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t command;
     uint32_t size;
-} sahara_command_execute_response_rx_t;
+} SaharaClientCommandResponse;
 
 /**
-* sahara_command_execute_data_tx_t
+* SaharaClientCommandExecuteDataRequest
 *
-* Sent in response to sahara_command_execute_response_rx_t
+* Sent in response to SaharaClientCommandResponse
 * indicating we are ready to receive the data of n size
-* defined in sahara_command_execute_response_rx_t
+* defined in SaharaClientCommandResponse
 *
 * After sent, read the size of data from the device
 */
 typedef struct { // 0x0f
-    sahara_header_t header;
+    SaharaHeader header;
     uint32_t command;
-} sahara_command_execute_data_tx_t;
+} SaharaClientCommandExecuteDataRequest;
 
 /**
  *
- * sahara_memory_debug_64_tx_t
+ * SaharaMemoryDebug64Request
  */
 typedef struct { // 0x10
-    sahara_header_t header;
-    uint64_t address;
-    uint64_t size;
-} sahara_memory_debug_64_tx_t;
+    SaharaHeader header;
+	uint32_t memoryTableAddress;
+	uint32_t memoryTableLength;
+} SaharaMemoryDebug64Request;
 
 /**
- * sahara_memory_read_64_tx_t
+ * SaharaMemoryRead64Request
  */
 typedef struct { // 0x11
-    sahara_header_t header;
+    SaharaHeader header;
     uint64_t address;
     uint64_t size;
-} sahara_memory_read_64_tx_t;
+} SaharaMemoryRead64Request;
 
 
 /**
@@ -344,7 +342,7 @@ typedef struct {
 	uint16_t unknown1;
 	uint16_t unknown2;
 	uint16_t msmId;
-} sahara_msm_hw_id_rx_t;
+} SaharaMsmHwIdResponse;
 
 /**
 * represents a response from client command
@@ -352,7 +350,7 @@ typedef struct {
 */
 typedef struct {
 	uint32_t serial;
-} sahara_serial_number_rx_t;
+} SaharaSerialNumberResponse;
 
 /**
 * represents a response from client command
@@ -360,7 +358,7 @@ typedef struct {
 */
 typedef struct {
 	uint32_t version;
-} sahara_sbl_version_rx_t;
+} SaharaSblVersionResponse;
 
 /**
 * represents a response from client command
@@ -368,7 +366,7 @@ typedef struct {
 */
 typedef struct {
 	uint8_t hash[32];
-} sahara_oem_pk_hash_rx_t;
+} SaharaOemPkHashResponse;
 
 /**
 * represents a single log entry from client command
@@ -376,22 +374,22 @@ typedef struct {
 */
 typedef struct {
 	uint8_t message[SAHARA_LOG_LENGTH];
-} sahara_debug_log_entry_t;
+} SaharaDebugLogEntry;
 
 /**
 * This structure represents the memory table entry
 * when reading the memory table from the specified address
 * of a SAHARA_MEMORY_DEBUG response
 * 
-* The total number of entries would be response.size / sizeof(sahara_memory_table_entry_t)
+* The total number of entries would be response.size / sizeof(SaharaMemoryTableEntry)
 */
 PACKED(typedef struct {
-	uint32_t unknown1;
-	uint32_t address;
-	uint32_t size;
-	uint8_t name[20];
-	uint8_t filename[20];
-}) sahara_memory_table_entry_t;
+	uint32_t   unknown1;
+	uint32_t   address;
+	uint32_t   size;
+	uint8_t    name[20];
+	uint8_t    filename[20];
+}) SaharaMemoryTableEntry;
 
 
 #endif // _QC_SAHARA_H

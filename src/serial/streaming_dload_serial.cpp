@@ -56,7 +56,7 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 	
 	size_t rxSize, txSize; 
 	std::vector<uint8_t> buffer; 
-	streaming_dload_hello_tx_t hello = {};
+	StreamingDloadHelloRequest hello = {};
 	
 	hello.command = STREAMING_DLOAD_HELLO;
 	memcpy(hello.magic, magic.c_str(), magic.size());
@@ -82,9 +82,9 @@ int StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t 
 		return kStreamingDloadError;
 	}
 			
-	memcpy(&state.hello, &buffer[0], sizeof(streaming_dload_hello_rx_header_t));
+	memcpy(&state.hello, &buffer[0], sizeof(StreamingDloadHelloResponseHeader));
 	
-	int dataStartIndex = sizeof(streaming_dload_hello_rx_header_t);
+	int dataStartIndex = sizeof(StreamingDloadHelloResponseHeader);
 
 	// parse the packet and get the things that are not obvious without calculation
 	// flashIdenfier, windowSize, numberOfSectors, sectorSizes, featureBits
@@ -116,7 +116,7 @@ int StreamingDloadSerial::sendUnlock(std::string code)
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer; 
-	streaming_dload_unlock_tx_t packet;
+	StreamingDloadUnlockRequest packet;
 	
 	packet.command = STREAMING_DLOAD_UNLOCK;
 	packet.code = std::stoul(code.c_str(), nullptr, 16);
@@ -159,7 +159,7 @@ int StreamingDloadSerial::setSecurityMode(uint8_t mode)
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
 
-	streaming_dload_security_mode_tx_t packet;
+	StreamingDloadSecurityModeRequest packet;
 	packet.command = STREAMING_DLOAD_SECURITY_MODE;
 	packet.mode = mode;
 
@@ -199,7 +199,7 @@ int StreamingDloadSerial::sendNop()
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
-	streaming_dload_nop_tx_t packet;
+	StreamingDloadNopRequest packet;
 	packet.command = STREAMING_DLOAD_NOP;
 	packet.identifier = std::rand();
 
@@ -221,7 +221,7 @@ int StreamingDloadSerial::sendNop()
 		return kStreamingDloadError;
 	}
 
-	streaming_dload_nop_rx_t* resp = (streaming_dload_nop_rx_t*)&buffer[0];
+	StreamingDloadNopResponse* resp = (StreamingDloadNopResponse*)&buffer[0];
 
 	if (resp->identifier != packet.identifier) {
 		LOGD("Received NOP response but identifier did not match\n");
@@ -245,7 +245,7 @@ int StreamingDloadSerial::sendReset()
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
 	
-	streaming_dload_reset_tx_t packet;
+	StreamingDloadResetRequest packet;
 	packet.command = STREAMING_DLOAD_RESET;
 
 	txSize = write((uint8_t*)&packet, sizeof(packet));
@@ -283,7 +283,7 @@ int StreamingDloadSerial::sendPowerOff()
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
-	streaming_dload_reset_tx_t packet;
+	StreamingDloadResetRequest packet;
 	packet.command = STREAMING_DLOAD_POWER_OFF;
 
 	txSize = write((uint8_t*)&packet, sizeof(packet));
@@ -322,7 +322,7 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 	
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer; 
-	streaming_dload_get_ecc_state_tx_t packet;
+	StreamingDloadGetEccStateRequest packet;
 	packet.command = STREAMING_DLOAD_GET_ECC_STATE;
 
 	txSize = write((uint8_t*)&packet, sizeof(packet));
@@ -343,7 +343,7 @@ int StreamingDloadSerial::readEcc(uint8_t& statusOut)
 		return kStreamingDloadError;
 	}
 
-	streaming_dload_get_ecc_state_rx_t* resp = (streaming_dload_get_ecc_state_rx_t*)&buffer[0];
+	StreamingDloadGetEccStateResponse* resp = (StreamingDloadGetEccStateResponse*)&buffer[0];
 	
 	statusOut = resp->status;
 
@@ -366,7 +366,7 @@ int StreamingDloadSerial::setEcc(uint8_t status)
 	
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer; 
-	streaming_dload_set_ecc_state_tx_t packet;
+	StreamingDloadSetEccStateRequest packet;
 	packet.command = STREAMING_DLOAD_SET_ECC;
 	packet.status = status;
 
@@ -407,7 +407,7 @@ int StreamingDloadSerial::openMode(uint8_t mode)
 	
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer; 	
-	streaming_dload_open_tx_t packet;
+	StreamingDloadOpenRequest packet;
 	packet.command = STREAMING_DLOAD_OPEN;
 	packet.mode = mode;
 
@@ -446,7 +446,7 @@ int StreamingDloadSerial::closeMode()
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer; 
-	streaming_dload_close_tx_t packet;
+	StreamingDloadCloseRequest packet;
 	packet.command = STREAMING_DLOAD_CLOSE;
 
 	txSize = write((uint8_t*)&packet, sizeof(packet));
@@ -487,7 +487,7 @@ int StreamingDloadSerial::openMultiImage(uint8_t imageType)
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
-	streaming_dload_open_multi_image_tx_t packet;
+	StreamingDloadOpenMultiImageRequest packet;
 	packet.command = STREAMING_DLOAD_OPEN_MULTI_IMAGE;
 	packet.type = imageType;
 
@@ -540,10 +540,10 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 
 	dataSize = 0;
 
-	streaming_dload_read_tx_t packet;
+	StreamingDloadReadRequest packet;
 	packet.command = STREAMING_DLOAD_READ;
 
-	streaming_dload_read_rx_t* readRx;
+	StreamingDloadReadResponse* readRx;
 
 	if (stepSize > state.hello.maxPreferredBlockSize) {
 		stepSize = state.hello.maxPreferredBlockSize;
@@ -582,7 +582,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 			outSize = newSize;
 		}
 
-		readRx = (streaming_dload_read_rx_t*)&buffer[0];
+		readRx = (StreamingDloadReadResponse*)&buffer[0];
 
 		if (readRx->address != packet.address) {
 			LOGE("Packet address and response address differ\n");
@@ -626,11 +626,11 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 
 	size_t txSize, rxSize;
 
-	streaming_dload_read_tx_t packet = {};
+	StreamingDloadReadRequest packet = {};
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
-	streaming_dload_read_rx_t* readRx;
+	StreamingDloadReadResponse* readRx;
 
 	if (out.size()) {
 		out.clear();
@@ -673,7 +673,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vect
 			return kStreamingDloadError;
 		}
 
-		readRx = (streaming_dload_read_rx_t*)&tmp[0];
+		readRx = (StreamingDloadReadResponse*)&tmp[0];
 
 		if (readRx->address != packet.address) {
 			LOGE("Packet address and response address differ\n");
@@ -722,7 +722,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::ofst
 
 	size_t txSize, rxSize;
 
-	streaming_dload_read_tx_t packet = {};
+	StreamingDloadReadRequest packet = {};
 	packet.command = STREAMING_DLOAD_READ;
 	packet.address = address;
 
@@ -759,7 +759,7 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::ofst
 			return kStreamingDloadError;
 		}
 
-		streaming_dload_read_rx_t* resp = (streaming_dload_read_rx_t*)&tmp;
+		StreamingDloadReadResponse* resp = (StreamingDloadReadResponse*)&tmp;
 	
 		if (resp->address != packet.address) {
 			LOGE("Packet address and response address differ\n");
@@ -823,7 +823,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer;
-	streaming_partition_table_tx_t packet = {};
+	StreamingDloadPartitionTableRequest packet = {};
 
 	packet.command = STREAMING_DLOAD_PARTITION_TABLE;
 	packet.overrideExisting = overwrite;
@@ -849,7 +849,7 @@ int StreamingDloadSerial::writePartitionTable(std::string fileName, uint8_t& out
 		return kStreamingDloadError;
 	}
 
-	streaming_dload_partition_table_rx_t* resp = (streaming_dload_partition_table_rx_t*)&buffer[0];
+	StreamingDloadPartitionTableResponse* resp = (StreamingDloadPartitionTableResponse*)&buffer[0];
 
 	outStatus = resp->status;
 
@@ -867,7 +867,7 @@ int StreamingDloadSerial::streamWrite(uint32_t address, uint8_t* data, size_t da
 	uint8_t packetBuffer[STREAMING_DLOAD_MAX_TX_SIZE] = {};
 	uint8_t responseBuffer[STREAMING_DLOAD_MAX_RX_SIZE] = {};
 
-	streaming_dload_stream_write_tx_t* packet = (streaming_dload_stream_write_tx_t*)packetBuffer;
+	StreamingDloadStreamWriteRequest* packet = (StreamingDloadStreamWriteRequest*)packetBuffer;
 
 	if (dataSize > state.hello.maxPreferredBlockSize) {
 
@@ -899,7 +899,7 @@ int StreamingDloadSerial::streamWrite(uint32_t address, uint8_t* data, size_t da
 				return kStreamingDloadIOError;
 			}
 
-			streaming_dload_stream_write_rx_t* response = (streaming_dload_stream_write_rx_t*) responseBuffer;
+			StreamingDloadStreamWriteResponse* response = (StreamingDloadStreamWriteResponse*) responseBuffer;
 
 			if (response->address != packet->address) {
 				LOGE("Response address %04X differs from requeasted write address %04X\n", response->address, packet->address);
@@ -933,7 +933,7 @@ int StreamingDloadSerial::streamWrite(uint32_t address, uint8_t* data, size_t da
 			return kStreamingDloadError;
 		}
 
-		streaming_dload_stream_write_rx_t* response = (streaming_dload_stream_write_rx_t*)responseBuffer;
+		StreamingDloadStreamWriteResponse* response = (StreamingDloadStreamWriteResponse*)responseBuffer;
 
 		if (response->address != packet->address) {
 			LOGE("Response address %04X differs from requeasted write address %04X\n", response->address, packet->address);
@@ -957,7 +957,7 @@ int StreamingDloadSerial::readQfprom(uint32_t rowAddress, uint32_t addressType)
 
 	size_t txSize, rxSize;
 	std::vector<uint8_t> buffer; 
-	streaming_dload_qfprom_read_tx_t packet;
+	StreamingDloadQfpromReadRequest packet;
 	packet.command = STREAMING_DLOAD_QFPROM_READ;
 	packet.addressType = addressType;
 	packet.rowAddress = rowAddress;
@@ -994,11 +994,11 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
 {
 	if (response[0] != expectedCommand) {
 		if (response[0] == STREAMING_DLOAD_LOG) {
-			streaming_dload_log_rx_t* packet = (streaming_dload_log_rx_t*)response;
+			StreamingDloadLogResponse* packet = (StreamingDloadLogResponse*)response;
 			LOGE("Received Log Response\n");
 			memcpy((uint8_t*)&state.lastLog, packet, responseSize);
 		} else if (response[0] == STREAMING_DLOAD_ERROR) {
-			streaming_dload_error_rx_t* packet = (streaming_dload_error_rx_t*)response;
+			StreamingDloadErrorResponse* packet = (StreamingDloadErrorResponse*)response;
 			LOGE("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code));
 			memcpy((uint8_t*)&state.lastError, packet, responseSize);
 		} else {

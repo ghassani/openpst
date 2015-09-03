@@ -61,7 +61,7 @@ PACKED(typedef struct {
     uint32_t  reserved5;          /* RESERVED */
     uint32_t  reserved6;          /* RESERVED */
     uint32_t  reserved7;          /* RESERVED */
-}) eighty_byte_mbn_header_t;
+}) MbnSblHeader;
 
 PACKED(typedef struct {
   uint32_t image_id;           /**< Identifies the type of image this header
@@ -71,7 +71,7 @@ PACKED(typedef struct {
   uint32_t image_src;          /**< Offset from end of the Boot header where the
                                   image starts. */
   uint32_t image_dest_ptr;     /**< Pointer to location to store image in RAM.
-                                  Also, entry point at which image execution
+                                  Also, ent676ry point at which image execution
                                   begins. */
   uint32_t image_size;         /**< Size of complete image in bytes */
   uint32_t code_size;          /**< Size of code region of image in bytes */
@@ -81,7 +81,7 @@ PACKED(typedef struct {
   uint32_t cert_chain_ptr;     /**< Pointer to the chain of attestation
                                  certificates associated with the image. */
   uint32_t cert_chain_size;    /**< Size of the attestation chain in bytes */
-}) fourty_byte_mbn_header_t;
+}) MbnHeader;
 
 enum MBN_IMAGE {
     MBN_IMAGE_NONE           = 0x00,

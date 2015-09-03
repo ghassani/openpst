@@ -19,7 +19,7 @@ using namespace serial;
 
 namespace OpenPST {
 
-	struct streaming_dload_read_worker_request {
+	struct StreamingDloadReadWorkerRequest {
 		uint32_t		address;
 		size_t			size;
 		size_t			stepSize;
@@ -32,19 +32,19 @@ namespace OpenPST {
 		Q_OBJECT
 
 		public:
-			StreamingDloadReadWorker(StreamingDloadSerial& port, streaming_dload_read_worker_request request, QObject *parent = 0);
+			StreamingDloadReadWorker(StreamingDloadSerial& port, StreamingDloadReadWorkerRequest request, QObject *parent = 0);
 			~StreamingDloadReadWorker();
 			void cancel();
 		protected:
 			StreamingDloadSerial&  port;
-			streaming_dload_read_worker_request request;
+			StreamingDloadReadWorkerRequest request;
 
 			void run() Q_DECL_OVERRIDE;			
 			bool cancelled;
 		signals:
-			void chunkReady(streaming_dload_read_worker_request request);
-			void complete(streaming_dload_read_worker_request request);
-			void error(streaming_dload_read_worker_request request, QString msg);
+			void chunkReady(StreamingDloadReadWorkerRequest request);
+			void complete(StreamingDloadReadWorkerRequest request);
+			void error(StreamingDloadReadWorkerRequest request, QString msg);
 	};
 }
 

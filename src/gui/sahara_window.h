@@ -124,32 +124,32 @@ namespace OpenPST {
 			/**
 			* @brief memoryReadChunkReadyHandler
 			*/
-			void memoryReadChunkReadyHandler(sahara_memory_read_worker_request request);
+			void memoryReadChunkReadyHandler(SaharaMemoryReadWorkerRequest request);
 
 			/**
 			* @brief memoryReadCompleteHandler
 			*/
-			void memoryReadCompleteHandler(sahara_memory_read_worker_request request);
+			void memoryReadCompleteHandler(SaharaMemoryReadWorkerRequest request);
 
 			/**
 			* @brief memoryReadChunkErrorHandler
 			*/
-			void memoryReadChunkErrorHandler(sahara_memory_read_worker_request request, QString msg);
+			void memoryReadChunkErrorHandler(SaharaMemoryReadWorkerRequest request, QString msg);
 
 			/**
 			* @brief imageTransferChunkDoneHandler
 			*/
-			void imageTransferChunkDoneHandler(sahara_image_transfer_worker_request request);
+			void imageTransferChunkDoneHandler(SaharaImageTransferWorkerRequest request);
 
 			/**
 			* @brief imageTransferCompleteHandler
 			*/
-			void imageTransferCompleteHandler(sahara_image_transfer_worker_request request);
+			void imageTransferCompleteHandler(SaharaImageTransferWorkerRequest request);
 
 			/**
 			* @brief imageTransferErrorHandler
 			*/
-			void imageTransferErrorHandler(sahara_image_transfer_worker_request request, QString msg);
+			void imageTransferErrorHandler(SaharaImageTransferWorkerRequest request, QString msg);
 
 		private:
 
@@ -188,7 +188,7 @@ namespace OpenPST {
 			PortInfo currentPort;
 			SaharaMemoryReadWorker* memoryReadWorker;
 			SaharaImageTransferWorker* imageTransferWorker;
-			std::deque<sahara_memory_read_worker_request> memoryReadQueue;
+			std::deque<SaharaMemoryReadWorkerRequest> memoryReadQueue;
 	};
 }
 #endif // _GUI_SAHARA_WINDOW_H

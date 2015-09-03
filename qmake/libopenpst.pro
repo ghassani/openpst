@@ -18,9 +18,12 @@ HEADERS  += \
     src/include/definitions.h \
     src/include/win_inttypes.h \
     src/include/win_stdint.h \
-    src/qc/crc.h \
-    src/qc/diag.h \
-    src/qc/diag_nv.h \
+    src/qc/dm.h \
+    src/qc/dm_nv.h \
+    src/qc/dm_efs.h \
+    src/qc/dm_efs_manager.h \
+    src/qc/dm_efs_node.h \
+    src/qc/dm_nv.h \
     src/qc/dload.h \
     src/qc/hdlc.h \
     src/qc/mbn.h \
@@ -38,7 +41,8 @@ HEADERS  += \
     src/util/sleep.h 
 
 SOURCES += \
-    src/qc/crc.cpp \
+    src/qc/dm_efs_manager.cpp \
+    src/qc/dm_efs_node.cpp \
     src/qc/hdlc.cpp \
     src/serial/hdlc_serial.cpp \
     src/serial/qcdm_serial.cpp \

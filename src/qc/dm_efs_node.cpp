@@ -20,6 +20,7 @@ using namespace OpenPST;
 DmEfsNode::DmEfsNode(std::string path, diag_subsys_efs_read_dir_rx_t* data) :
 	path(path),
 	name(data->name),
+	error(data->error),
 	type(data->entryType),
 	mode(data->mode),
 	size(data->size),
@@ -43,6 +44,7 @@ DmEfsNode::~DmEfsNode()
 DmEfsNode::DmEfsNode(const DmEfsNode& org) :
 	path(org.path),
 	name(org.name),
+	error(org.error),
 	type(org.type),
 	mode(org.mode),
 	size(org.size),
@@ -53,7 +55,6 @@ DmEfsNode::DmEfsNode(const DmEfsNode& org) :
 {
 
 }
-
 
 bool DmEfsNode::isDir()
 {
@@ -73,54 +74,4 @@ bool DmEfsNode::isLink()
 bool DmEfsNode::isImmovable()
 {
 	return type == DIAG_EFS_FILE_TYPE_IMMOVABLE;
-}
-
-std::string DmEfsNode::getPath()
-{
-	return path;
-}
-
-std::string DmEfsNode::getName()
-{
-	return name;
-}
-
-int32_t DmEfsNode::getMode()
-{
-	return mode;
-}
-
-size_t DmEfsNode::getSize()
-{
-	return size;
-}
-
-time_t DmEfsNode::getATime()
-{
-	return atime;
-}
-
-time_t DmEfsNode::getMTime()
-{
-	return mtime;
-}
-
-time_t DmEfsNode::getCTime()
-{
-	return ctime;
-}
-
-std::vector<DmEfsNode>& DmEfsNode::getChildren()
-{
-	return children;
-}
-
-void DmEfsNode::addChild(DmEfsNode child)
-{
-	children.insert(children.end(), child);
-}
-
-bool DmEfsNode::hasChildren()
-{
-	return children.size() > 0 ? true : false;
 }

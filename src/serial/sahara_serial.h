@@ -35,10 +35,10 @@ namespace OpenPST {
 		size_t bufferSize;
 
 		public:
-			sahara_hello_rx_t deviceState;
-			sahara_read_data_rx_t readState;
-			sahara_memory_debug_rx_t memoryState;
-			sahara_transfer_response_rx_t lastError;
+			SaharaHelloRequest deviceState;
+			SaharaReadDataRequest readState;
+			SaharaMemoryDebugRequest memoryState;
+			SaharaEndImageTransferResponse lastError;
 
 			/**
 			* @brief SaharaSerial

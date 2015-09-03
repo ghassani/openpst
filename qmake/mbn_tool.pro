@@ -36,3 +36,4 @@ HEADERS  += \
 
 FORMS  += resources/ui/mbn_tool_window.ui
 
+RESOURCES = resources/mbn_tool.qrc

@@ -20,7 +20,7 @@ using namespace serial;
 namespace OpenPST {
 
 
-	struct sahara_memory_read_worker_request {
+	struct SaharaMemoryReadWorkerRequest {
 		uint32_t		address;
 		uint32_t		lastAddress;
 		size_t			size;
@@ -35,19 +35,19 @@ namespace OpenPST {
 		Q_OBJECT
 
 		public:
-			SaharaMemoryReadWorker(SaharaSerial& port, sahara_memory_read_worker_request request, QObject *parent = 0);
+			SaharaMemoryReadWorker(SaharaSerial& port, SaharaMemoryReadWorkerRequest request, QObject *parent = 0);
 			~SaharaMemoryReadWorker();
 			void cancel();
 		protected:
 			SaharaSerial&  port;
-			sahara_memory_read_worker_request request;
+			SaharaMemoryReadWorkerRequest request;
 
 			void run() Q_DECL_OVERRIDE;			
 			bool cancelled;
 		signals:
-			void chunkReady(sahara_memory_read_worker_request request);
-			void complete(sahara_memory_read_worker_request request);
-			void error(sahara_memory_read_worker_request request, QString msg);
+			void chunkReady(SaharaMemoryReadWorkerRequest request);
+			void complete(SaharaMemoryReadWorkerRequest request);
+			void error(SaharaMemoryReadWorkerRequest request, QString msg);
 	};
 }
 

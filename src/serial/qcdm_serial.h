@@ -20,9 +20,18 @@
 #include "qc/dm.h"
 #include "qc/dm_nv.h"
 #include "util/hexdump.h"
+#include <mutex>
 
 namespace OpenPST {
     class QcdmSerial : public HdlcSerial {
+
+		enum QcdmOpertationResult {
+			kQcdmIOError			= -2,
+			kQcdmRequiresSecurity	= -1,
+			kQcdmError				= 0,
+			kQcdmSuccess			= 1
+		};
+
         public:
 			/**
 			* @brief QcdmSerial - Constructor
@@ -37,6 +46,13 @@ namespace OpenPST {
 			* @brief ~QcdmSerial - Destructor
 			*/
             ~QcdmSerial();
+
+			/**
+			* @brief getVersion
+			* @param QcdmVersionResponse& - response
+			* @return
+			*/
+			int getVersion(QcdmVersionResponse& response);
 
             /**
              * @brief sendSpc
@@ -105,10 +121,24 @@ namespace OpenPST {
             */
             int getLgSpc(uint8_t** response);
 
+			
+
+			int getErrorLog();
+			int clearErrorLog();
+
+
+			std::mutex operationMutex;
             uint8_t buffer[DIAG_MAX_PACKET_SIZE];
             size_t lastRxSize,
                    lastTxSize;
-    };
+
+			
+
+		private:
+			int sendCommand(uint8_t command);
+			int sendCommand(uint8_t command, uint8_t* data, size_t size);
+			bool isValidResponse(uint8_t command, uint8_t* response, size_t size);
+	};
 }
 
 #endif /* _SERIAL_QCDM_SERIAL_H */

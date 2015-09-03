@@ -24,12 +24,11 @@
 #endif
 
 #ifdef DEBUG
-#define DEBUG_ENABLED 1
+#define LOGD(...) do { fprintf(stderr, __VA_ARGS__); } while (0)
 #else
-#define DEBUG_ENABLED 0
+#define LOGD(...) do { } while (0)
 #endif
 
-#define LOGD(...) do { if (DEBUG_ENABLED) fprintf(stderr, __VA_ARGS__); } while (0)
 #define LOGE(...) fprintf(stderr, __VA_ARGS__); 
 #define LOGI(...) fprintf(stdout, __VA_ARGS__); 
 

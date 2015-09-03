@@ -24,27 +24,27 @@
 
 namespace OpenPST {
 
-	struct streaming_dload_device_state {
+	struct StreamingDloadDeviceState {
 		uint8_t openMode;
 		uint8_t openMultiMode;
-		streaming_dload_hello_rx_t hello;
-		streaming_dload_error_rx_t lastError;
-		streaming_dload_log_rx_t   lastLog;
+		StreamingDloadHelloResponse hello;
+		StreamingDloadErrorResponse lastError;
+		StreamingDloadLogResponse   lastLog;
 	}; 
 	
+	enum StreamingDloadOperationResult {
+		kStreamingDloadIOError = -1,
+		kStreamingDloadError = 0,
+		kStreamingDloadSuccess = 1
+	};
+
 	class StreamingDloadSerial : public HdlcSerial {
-		
-		enum kStreamingDloadOperationResult {
-			kStreamingDloadIOError	= -1,
-			kStreamingDloadError	= 0,
-			kStreamingDloadSuccess	= 1
-		}; 
-	
+
 		public:
 			/**
 			* @brief holds the current device state data
 			*/
-			streaming_dload_device_state state;
+			StreamingDloadDeviceState state;
 
 			/**
 			* @brief StreamingDloadSerial() 
@@ -53,7 +53,7 @@ namespace OpenPST {
 			* @param int baudrate - Defaults to 115200
 			* @param serial::Timeout - Timeout, defaults to 1000ms
 			*/
-			StreamingDloadSerial(std::string port, int baudrate, serial::Timeout timeout);
+			StreamingDloadSerial(std::string port, int baudrate = 115200, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
             
 			/**
 			* @brief ~StreamingDloadSerial()

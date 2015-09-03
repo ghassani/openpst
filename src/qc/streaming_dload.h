@@ -168,7 +168,7 @@ PACKED(typedef struct { // 0x01
     uint8_t version;
     uint8_t compatibleVersion;
     uint8_t featureBits;
-}) streaming_dload_hello_tx_t;
+}) StreamingDloadHelloRequest;
 
 PACKED(typedef struct { // 0x02
 	uint8_t  command;
@@ -178,7 +178,7 @@ PACKED(typedef struct { // 0x02
 	uint32_t maxPreferredBlockSize;
 	uint32_t baseFlashAddress;
 	uint8_t  flashIdLength;
-}) streaming_dload_hello_rx_header_t;
+}) StreamingDloadHelloResponseHeader;
 
 PACKED(typedef struct { // 0x02
     uint8_t  command;
@@ -193,119 +193,119 @@ PACKED(typedef struct { // 0x02
     uint16_t numberOfSectors;
     uint16_t sectorSizes[STREAMING_DLOAD_MAX_SECTORS * 4];
 	uint16_t featureBits;
-}) streaming_dload_hello_rx_t;
+}) StreamingDloadHelloResponse;
 
 PACKED(typedef struct { // 0x03
     uint8_t command;
     uint32_t address;
     uint16_t length;
-}) streaming_dload_read_tx_t;
+}) StreamingDloadReadRequest;
 
 PACKED(typedef struct { // 0x04
     uint8_t command;
     uint32_t address;
     uint8_t data[0];
-}) streaming_dload_read_rx_t;
+}) StreamingDloadReadResponse;
 
 PACKED(typedef struct {// 0x05
     uint8_t command;
     uint32_t address;
     uint8_t* data;
-}) streaming_dload_simple_write_tx_t;
+}) StreamingDloadSimpleWriteRequest;
 
 PACKED(typedef struct { // 0x06
     uint8_t command;
     uint32_t address;
-}) streaming_dload_simple_write_rx_t;
+}) StreamingDloadSimpleWriteResponse;
 
 PACKED(typedef struct {// 0x07
     uint8_t command;
     uint32_t address;
 	uint8_t data[0];
-}) streaming_dload_stream_write_tx_t;
+}) StreamingDloadStreamWriteRequest;
 
 PACKED(typedef struct { // 0x08
     uint8_t command;
     uint32_t address;
-}) streaming_dload_stream_write_rx_t;
+}) StreamingDloadStreamWriteResponse;
 
 PACKED(typedef struct {// 0x09
     uint8_t command;
     uint32_t identifier; // this can be any amount of data. its just sent back to us in the response to validate the NOP call
-}) streaming_dload_nop_tx_t;
+}) StreamingDloadNopRequest;
 
 PACKED(typedef struct { // 0x0A
     uint8_t command;
 	uint32_t identifier; // response should have same as in transmitted packet
-}) streaming_dload_nop_rx_t;
+}) StreamingDloadNopResponse;
 
 PACKED(typedef struct {// 0x0B
     uint8_t command;
-}) streaming_dload_reset_tx_t;
+}) StreamingDloadResetRequest;
 
 PACKED(typedef struct { // 0x0C
     uint8_t command;
-}) streaming_dload_reset_rx_t;
+}) StreamingDloadResetResponse;
 
 PACKED(typedef struct { // 0x0D
     uint8_t command;
     uint32_t code;
 	uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
-}) streaming_dload_error_rx_t;
+}) StreamingDloadErrorResponse;
 
 PACKED(typedef struct { // 0x0E
     uint8_t command;
 	uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
-}) streaming_dload_log_rx_t;
+}) StreamingDloadLogResponse;
 
 PACKED(typedef struct { // 0x0F
     uint8_t command;
     uint64_t code;
-}) streaming_dload_unlock_tx_t;
+}) StreamingDloadUnlockRequest;
 
 PACKED(typedef struct { // 0x10
     uint8_t command;
-}) streaming_dload_unlock_rx_t;
+}) StreamingDloadUnlockResponse;
 
 PACKED(typedef struct { // 0x11
     uint8_t command;
-}) streaming_dload_power_off_tx_t;
+}) StreamingDloadPowerOffRequest;
 
 PACKED(typedef struct { // 0x12
     uint8_t command;
-}) streaming_dload_power_off_rx_t;
+}) StreamingDloadPowerOffResponse;
 
 PACKED(typedef struct { // 0x13
     uint8_t command;
     uint8_t mode;
-}) streaming_dload_open_tx_t;
+}) StreamingDloadOpenRequest;
 
 PACKED(typedef struct { // 0x14
     uint8_t command;
-}) streaming_dload_open_rx_t;
+}) StreamingDloadOpenResponse;
 
 PACKED(typedef struct { // 0x15
     uint8_t command;
-}) streaming_dload_close_tx_t;
+}) StreamingDloadCloseRequest;
 
 PACKED(typedef struct { // 0x16
     uint8_t command;
-}) streaming_dload_close_rx_t;
+}) StreamingDloadCloseResponse;
 
 PACKED(typedef struct { // 0x17
     uint8_t command;
     uint8_t mode; // 0x00 - Untrusted, 0x01 - Trusted
-}) streaming_dload_security_mode_tx_t;
+}) StreamingDloadSecurityModeRequest;
 
 PACKED(typedef struct { // 0x18
     uint8_t command;
-}) streaming_dload_security_mode_rx_t;
+}) StreamingDloadSecurityModeResponse;
 
 PACKED(typedef struct { // 0x19
     uint8_t command;
 	uint8_t overrideExisting; // 0x00 no override, 0x01 override existing table
     uint8_t data[512]; // max 512 bytes
-}) streaming_partition_table_tx_t;
+}) StreamingDloadPartitionTableRequest;
 
 
 PACKED(typedef struct { // 0x1A
@@ -314,17 +314,17 @@ PACKED(typedef struct { // 0x1A
                     // 0x1 – Partition table differs, override is accepted
                     // 0x2 – Partition table format not recognized, does not accept override
                     // 0x3 – Erase operation failed
-}) streaming_dload_partition_table_rx_t;
+}) StreamingDloadPartitionTableResponse;
 
 PACKED(typedef struct  { // 0x1B
     uint8_t command;
     uint8_t type;
-}) streaming_dload_open_multi_image_tx_t;
+}) StreamingDloadOpenMultiImageRequest;
 
 PACKED(typedef struct { // 0x1B
 	uint8_t command;
 	uint8_t type;
-}) streaming_dload_open_multi_image_payload_tx_t;
+}) StreamingDloadOpenMultiImageWithPayloadRequest;
 
 PACKED(typedef struct { // 0x1C
 	uint8_t command;
@@ -333,7 +333,7 @@ PACKED(typedef struct { // 0x1C
 					// 0x02 No payload expected, fail
 					// 0x03 Payload required, fail
 					// 0x04 Block 0 write protected, fail
-}) streaming_dload_open_multi_image_rx_t;
+}) StreamingDloadOpenMultiImageResponse;
 
 /*
 * This packet will erase the whole flash. If the operation fails, you may
@@ -341,31 +341,31 @@ PACKED(typedef struct { // 0x1C
 */
 PACKED(typedef struct { // 0x1D
 	uint8_t command;
-}) streaming_dload_erase_flash_tx_t;
+}) StreamingDloadEraseFlashRequest;
 
 PACKED(typedef struct { // 0x1E
 	uint8_t command;
-}) streaming_dload_erase_flash_rx_t;
+}) StreamingDloadEraseFlashResponse;
 
 
 PACKED(typedef struct { // 0x1F
 	uint8_t command;
-}) streaming_dload_get_ecc_state_tx_t;
+}) StreamingDloadGetEccStateRequest;
 
 PACKED(typedef struct { // 0x20
 	uint8_t command;
 	uint8_t status; // 0x00 ECC generation/check disabled
 					// 0x01 ECC generation/check enabled
-}) streaming_dload_get_ecc_state_rx_t;
+}) StreamingDloadGetEccStateResponse;
 
 PACKED(typedef struct { // 0x21
 	uint8_t command;
 	uint8_t status; // 0x00 disable, 0x01 enabled
-}) streaming_dload_set_ecc_state_tx_t;
+}) StreamingDloadSetEccStateRequest;
 
 PACKED(typedef struct { // 0x22
 	uint8_t command;
-}) streaming_dload_set_ecc_state_rx_t;
+}) StreamingDloadSetEccStateResponse;
 
 
 PACKED(typedef struct { // 0x30
@@ -374,24 +374,24 @@ PACKED(typedef struct { // 0x30
 	uint32_t address;
 	uint32_t length;
 	uint8_t* data;
-}) streaming_dload_unframed_stream_write_tx_t;
+}) StreamingDloadUnframedStreamWriteRequest;
 
 PACKED(typedef struct { // 0x31
 	uint8_t command;
 	uint32_t address;
-}) streaming_dload_unframed_stream_write_rx_t;
+}) StreamingDloadUnframedStreamWriteResponse;
 
 PACKED(typedef struct { // 0x32
     uint8_t command;
     uint32_t rowAddress;
     uint32_t lsb;
     uint32_t msb;
-}) streaming_dload_qfprom_write_tx_t;
+}) StreamingDloadQfpromWriteRequest;
 
 PACKED(typedef struct { // 0x33
     uint8_t command;
     uint32_t rowAddress;
-}) streaming_dload_qfprom_write_rx_t;
+}) StreamingDloadQfpromWriteResponse;
 
 
 PACKED(typedef struct { // 0x34
@@ -399,7 +399,7 @@ PACKED(typedef struct { // 0x34
     uint32_t rowAddress;
     uint32_t addressType; // 0x00 - Corrected Reads, 0x01 - Raw Reads
     uint32_t msb;
-}) streaming_dload_qfprom_read_tx_t;
+}) StreamingDloadQfpromReadRequest;
 
 
 PACKED(typedef struct { // 0x35
@@ -407,7 +407,7 @@ PACKED(typedef struct { // 0x35
     uint32_t rowAddress;
     uint32_t lsb;
     uint32_t msb;
-}) streaming_dload_qfprom_read_rx_t;
+}) StreamingDloadQfpromReadResponse;
 
 
 

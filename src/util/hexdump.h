@@ -20,11 +20,26 @@
 #include <QVariant>
 #endif
 
-#define hexdump_tx(data, amount) \
-            do { if (DEBUG_ENABLED && amount > 0) printf("Dumping %lu bytes written\n", amount); hexdump(data, amount); } while (0)
+#define DEBUG
+#define HEXDUMP_PORT_TX
+#define HEXDUMP_PORT_RX
 
+#ifdef HEXDUMP_PORT_TX
+#define hexdump_tx(data, amount) \
+            do { if (amount > 0) printf("Dumping %lu bytes written\n", amount); hexdump(data, amount); } while (0)
+#else
+#define hexdump_tx(data, amount) \
+	        do {} while (0)
+#endif
+
+
+#ifdef HEXDUMP_PORT_RX
 #define hexdump_rx(data, amount) \
-            do { if (DEBUG_ENABLED && amount > 0) printf("Dumping %lu bytes read\n", amount); hexdump(data, amount); } while (0)
+            do { if (amount > 0) printf("Dumping %lu bytes read\n", amount); hexdump(data, amount); } while (0)
+#else
+#define hexdump_rx(data, amount) \
+            do {} while (0)
+#endif
 
 const char hex_trans_dump[] =
     "................................ !\"#$%&'()*+,-./0123456789"

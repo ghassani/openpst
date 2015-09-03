@@ -12,6 +12,7 @@
 #include <QMetaType>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QCommandLineParser>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -24,7 +25,7 @@ namespace OpenPST {
 		private:
 			QTranslator qtTranslator;
 			QTranslator	translator;
-
+			
 #if defined (_WIN32) && defined (DEBUG)
 			FILE* sout;
 			FILE* serr;

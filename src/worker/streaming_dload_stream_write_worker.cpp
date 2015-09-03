@@ -13,7 +13,7 @@
 
 using namespace OpenPST;
 
-StreamingDloadStreamWriteWorker::StreamingDloadStreamWriteWorker(StreamingDloadSerial& port, streaming_dload_stream_write_worker_request request, QObject *parent) :
+StreamingDloadStreamWriteWorker::StreamingDloadStreamWriteWorker(StreamingDloadSerial& port, StreamingDloadStreamWriteWorkerRequest request, QObject *parent) :
     port(port),
     request(request),
     QThread(parent)

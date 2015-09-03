@@ -19,12 +19,8 @@ DEPENDPATH += $$PWD/../
 VPATH += $$PWD/../
 
 SOURCES += \
-    lib/serial/src/serial.cc \
     src/util/hexdump.cpp \
-    src/util/endian.cpp \
-    src/util/sleep.cpp \
     src/gui/sahara_window.cpp \
-    src/serial/sahara_serial.cpp \
     src/worker/sahara_memory_read_worker.cpp \
     src/worker/sahara_image_transfer_worker.cpp \
     src/gui/application.cpp \
@@ -32,10 +28,7 @@ SOURCES += \
 
 HEADERS  += \
     src/include/definitions.h \
-    src/qc/sahara.h \
     src/util/hexdump.h \
-    src/util/endian.h \
-    src/util/sleep.h \
     src/gui/sahara_window.h \
     src/serial/sahara_serial.h \
     src/worker/sahara_memory_read_worker.h \
@@ -45,6 +38,8 @@ HEADERS  += \
 
 FORMS  += resources/ui/sahara_window.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/release/  -llibopenpst
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/debug/ -llibopenpst
-else:unix: LIBS += -L$$OUT_PWD/ -llibopenpst
+RESOURCES = resources/sahara.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/release/  -llibopenpst -lserial
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/debug/ -llibopenpst -lserial
+else:unix: LIBS += -L$$OUT_PWD/ -llibopenpst -lserial

@@ -67,11 +67,11 @@ void OpenPST::MbnToolWindow::loadFile()
 	bool asDec = ui->displayDataAsSelect->currentText().compare("DEC");
 	bool isEightyByte = true;
 
-	eighty_byte_mbn_header_t* header;
+	MbnSblHeader* header;
 	if (isEightyByteHeader(headerBuffer)) {
-		header = (eighty_byte_mbn_header_t*)headerBuffer;
+		header = (MbnSblHeader*)headerBuffer;
 	} else if (isFourtyByteHeader(headerBuffer)) {
-		fourty_byte_mbn_header_t* header = (fourty_byte_mbn_header_t*)headerBuffer;
+		MbnHeader* header = (MbnHeader*)headerBuffer;
 		isEightyByte = false;
 	} else {
 		log("Not a valid MBN image");
@@ -176,12 +176,12 @@ void OpenPST::MbnToolWindow::extractSegment(int segment)
 	size_t segmentOffset,
 		segmentSize;
 
-	eighty_byte_mbn_header_t* header;
+	MbnSblHeader* header;
 
 	if (isEightyByteHeader(headerBuffer)) {
-		header = (eighty_byte_mbn_header_t*)headerBuffer;
+		header = (MbnSblHeader*)headerBuffer;
 	} else if (isFourtyByteHeader(headerBuffer)) {
-		fourty_byte_mbn_header_t* header = (fourty_byte_mbn_header_t*)headerBuffer;
+		MbnHeader* header = (MbnHeader*)headerBuffer;
 	} else {
 		log("Not a valid MBN image");
 		file.close();
@@ -289,7 +289,7 @@ bool OpenPST::MbnToolWindow::isValidHeader(uint8_t* data)
 
 bool OpenPST::MbnToolWindow::isEightyByteHeader(uint8_t* data)
 {
-	eighty_byte_mbn_header_t* header = (eighty_byte_mbn_header_t*)data;
+	MbnSblHeader* header = (MbnSblHeader*)data;
 
 	if (header->magic == MBN_EIGHTY_BYTE_MAGIC) {
 		return true;
@@ -300,7 +300,7 @@ bool OpenPST::MbnToolWindow::isEightyByteHeader(uint8_t* data)
 
 bool OpenPST::MbnToolWindow::isFourtyByteHeader(uint8_t* data)
 {
-	fourty_byte_mbn_header_t* header = (fourty_byte_mbn_header_t*)data;
+	MbnHeader* header = (MbnHeader*)data;
 
 	if (header->image_id >= MBN_IMAGE_LAST) {
 		return true;

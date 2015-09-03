@@ -35,6 +35,23 @@ QcdmSerial::~QcdmSerial()
 
 }
 
+int QcdmSerial::getVersion(QcdmVersionResponse& response)
+{
+	if (!isOpen()) {
+		return kQcdmIOError;
+	}
+
+	int result = sendCommand(DIAG_VERNO_F);
+
+	if (result != kQcdmSuccess) {
+		return result;
+	}
+
+	std::memcpy(&response, buffer, sizeof(response));
+
+	return kQcdmSuccess;
+}
+
 /**
  * @brief QcdmSerial::sendSpc
  * @param spc - a 6 digit SPC code to unlock service programming
@@ -43,29 +60,39 @@ QcdmSerial::~QcdmSerial()
 int QcdmSerial::sendSpc(const char* spc)
 {
     if (!isOpen()) {
-        return DIAG_CMD_PORT_CLOSED;
+		return kQcdmIOError;
     }
 
-    qcdm_spc_tx_t packet;
-    memcpy(&packet.spc, spc, 6);
+	operationMutex.lock();
 
-    lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	if (strlen(spc) != 6) {
+		LOGE("SPC must be 6 digits\n");
+		return kQcdmError;
+	}
 
-    if (!lastTxSize) {
-        printf("Attempted to write to device but 0 bytes were written\n");
-        return DIAG_CMD_TX_FAIL;
+	QcdmSpcRequest packet = { };
+	packet.command = DIAG_SPC_F;
+    std::memcpy(&packet.spc, spc, 6);
+
+	if (!write((uint8_t*)&packet, sizeof(packet))) {
+		operationMutex.unlock(); 
+		LOGE("Attempted to write to device but 0 bytes were written\n");
+        return kQcdmIOError;
     }
 
-    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
+    size_t rxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
-    if (!lastRxSize) {
-        printf("Device did not respond\n");
-        return DIAG_CMD_RX_FAIL;
+	if (!rxSize) {
+		operationMutex.unlock();
+        LOGE("Device did not respond\n");		
+		return kQcdmIOError;
     }
 
-    qcdm_spc_rx_t* rxPacket = (qcdm_spc_rx_t*) buffer;
+    QcdmSpcResponse* rxPacket = (QcdmSpcResponse*) buffer;
 
-    return rxPacket->status;
+	operationMutex.unlock();
+
+    return rxPacket->status ? kQcdmSuccess : kQcdmError;
 }
 
 /**
@@ -76,7 +103,7 @@ int QcdmSerial::sendSpc(const char* spc)
 int QcdmSerial::sendPassword(const char* password)
 {
     if (!isOpen()) {
-        return DIAG_CMD_PORT_CLOSED;
+        return kQcdmIOError;
     }
 
     long data = std::stoul(password, nullptr, 16);
@@ -87,7 +114,7 @@ int QcdmSerial::sendPassword(const char* password)
         data = __builtin_bswap64(data);
     #endif
 
-    qcdm_16pw_tx_t packet;
+    QcdmPasswordRequest packet;
     memcpy(&packet.password, &data, sizeof(data));
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
@@ -104,7 +131,7 @@ int QcdmSerial::sendPassword(const char* password)
         return DIAG_CMD_RX_FAIL;
     }
 
-    qcdm_16pw_rx_t* rxPacket = (qcdm_16pw_rx_t*)buffer;
+    QcdmPasswordResponse* rxPacket = (QcdmPasswordResponse*)buffer;
 
     return rxPacket->status;
 }
@@ -120,7 +147,7 @@ int QcdmSerial::sendPhoneMode(uint8_t mode)
         return DIAG_CMD_PORT_CLOSED;
     }
 
-    qcdm_phone_mode_tx_t packet;
+    QcdmPhoneModeRequest packet;
     packet.mode = mode;
 
     lastTxSize = write((uint8_t*)&packet, sizeof(packet));
@@ -137,7 +164,7 @@ int QcdmSerial::sendPhoneMode(uint8_t mode)
         return DIAG_CMD_RX_FAIL;
     }
 
-    qcdm_phone_mode_rx_t* rxPacket = (qcdm_phone_mode_rx_t*)buffer;
+    QcdmPhoneModeResponse* rxPacket = (QcdmPhoneModeResponse*)buffer;
 
     return rxPacket->status;
 }
@@ -154,7 +181,7 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
         return DIAG_CMD_PORT_CLOSED;
     }
 
-    qcdm_nv_tx_t packet;
+    QcdmNvRequest packet;
     packet.cmd = DIAG_NV_READ_F;
     packet.nvItem = itemId;
 
@@ -174,7 +201,7 @@ int QcdmSerial::getNvItem(int itemId, uint8_t** response)
 
     *response = buffer;
 
-    qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)buffer;
+    QcdmNvResponse* rxPacket = (QcdmNvResponse*)buffer;
 
     return rxPacket->cmd;
 }
@@ -205,7 +232,7 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
         return DIAG_CMD_PORT_CLOSED;
     }
 
-    qcdm_nv_tx_t packet;
+    QcdmNvRequest packet;
     packet.cmd = DIAG_NV_WRITE_F;
     packet.nvItem = itemId;
     memcpy(&packet.data, data, length);
@@ -226,7 +253,7 @@ int QcdmSerial::setNvItem(int itemId, const char *data, int length, uint8_t** re
 
     *response = buffer;
 
-    qcdm_nv_rx_t* rxPacket = (qcdm_nv_rx_t*)buffer;
+    QcdmNvResponse* rxPacket = (QcdmNvResponse*)buffer;
 
     return rxPacket->cmd;
 }
@@ -326,3 +353,89 @@ int QcdmSerial::getLgSpc(uint8_t** response)
 
     return buffer[0] != DIAG_BAD_PARM_F ? 1 : 0;
 }
+
+int QcdmSerial::sendCommand(uint8_t command)
+{
+	QcdmGenericRequest packet = { command };
+
+	return sendCommand(command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+}
+
+int QcdmSerial::sendCommand(uint8_t command, uint8_t* data, size_t size)
+{
+	if (!isOpen() || !write(data, size)) {
+		return kQcdmIOError;
+	}
+
+	size_t rxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
+
+	if (!rxSize) {
+		return kQcdmIOError;
+	}
+
+	if (!isValidResponse(command, buffer, rxSize)) {
+		return kQcdmError;
+	}
+
+	return kQcdmSuccess;
+}
+
+bool QcdmSerial::isValidResponse(uint8_t command, uint8_t* response, size_t size)
+{
+	
+	if (command != response[0]) {
+		switch (response[0]) {
+			case DIAG_BAD_CMD_F:
+				LOGE("Bad Command Response for Command %d", command);
+				break;
+			case DIAG_BAD_PARM_F:
+				LOGE("Bad Parameter Response for Command %d", command);
+				break;
+			case DIAG_BAD_LEN_F:
+				LOGE("Bad Length Response for Command %d", command);
+				break;
+			case DIAG_BAD_MODE_F:
+				LOGE("Bad Mode Response for Command %d", command);
+				break;
+			default:
+				LOGE("Unexpected Response for Command %d Received %d", command, response[0]);
+				break;
+		}
+		return kQcdmError;
+	}
+
+	return true;
+}
+
+int QcdmSerial::getErrorLog()
+{
+	/*
+	PACKED(typedef struct QcdmLogResponse{
+		uint8_t command;
+		uint8_t entries;
+		uint16_t  length;
+		uint8_t  logs[0];
+	}) QcdmLogResponse;*/
+
+	//DIAG_FEATURE_QUERY_F
+	//DIAG_LOG_F
+	QcdmGenericRequest packet = { DIAG_LOG_F };
+
+	write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+	size_t rx = read(buffer, DIAG_MAX_PACKET_SIZE);
+	hexdump(buffer, rx);
+
+
+	QcdmLogResponse* response = (QcdmLogResponse*)buffer;
+
+	LOGI("Cmd: %d\n", response->command);
+	LOGI("Entries: %d\n", response->entries);
+	LOGI("Size: %lu\n", response->length);
+
+	//hexdump(&response->logs, response->length);
+
+	return kQcdmSuccess;
+}
+
+

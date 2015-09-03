@@ -14,6 +14,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
 #include <fcntl.h>
 #include "qc/dm.h"
 #include "qc/dm_efs.h"
@@ -35,12 +38,12 @@ namespace OpenPST {
 			uint32_t subsystemId;
 		public:
 			
-			enum kDmEfsOperationResult{
+			enum DmEfsOperationResult{
 				kDmEfsIOError = -1,
 				kDmEfsError = 0,
 				kDmEfsSuccess = 1,
 			}; 
-			
+
 			/**
 			* @brief DmEfsManager - Constructor
 			* @param QcdmSerial port
@@ -127,7 +130,7 @@ namespace OpenPST {
 			int close(int32_t fp);
 
 			/**
-			* @brief read - Read from a file
+			* @brief read - Read from a file to a data buffer
 			*
 			* @param int32_t - fp of file
 			* @param size_t size - amount of data to read
@@ -138,6 +141,14 @@ namespace OpenPST {
 			*/
 			int read(int32_t fp, size_t size, uint32_t offset, std::vector<uint8_t>& data);
 			
+			/**
+			* @brief read - Read from a file to a file
+			*
+			* @param std::string - Remote path to read
+			* @param std::string - Local path to write
+			*
+			* @return int
+			*/
 			int read(std::string path, std::string outPath);
 
 			/**
@@ -156,11 +167,11 @@ namespace OpenPST {
 			* @brief symlink - Create a symlink
 			*
 			* @param std::string path - Full path to file
-			* @param std::string newpath - Full path to the link
+			* @param std::string linkPath - Full path to the link
 			*
 			* @return int
 			*/
-			int symlink(std::string path, std::string newPath);
+			int symlink(std::string path, std::string linkPath);
 
 			/**
 			* @brief readSimlink - Read a symlink path
@@ -222,7 +233,7 @@ namespace OpenPST {
 			int readDir(std::string path, std::vector<DmEfsNode>& contents, bool recursive = false);
 
 			/**
-			* @brief readDir - Read a directory contents, optionally recursively
+			* @brief readDir - Read a directory contents, not recursive
 			*
 			* @param uint32_t dp - dp from openDir operation
 			* @param std::vector<DmEfsNode>& - DmEfsNode vector to populate the tree
@@ -381,10 +392,11 @@ namespace OpenPST {
 			* @brief deltree - Delete a directory tree
 			*
 			* @param std::string path
+			* @param int32_t sequence
 			*
 			* @return int
 			*/
-			int deltree(std::string path);
+			int deltree(std::string path, int32_t sequence = 1);
 			
 			/*
 			int startBenchmarkTest();
@@ -469,18 +481,67 @@ namespace OpenPST {
 			int lseek64();
 			*/
 			int makeGoldenCopy(std::string path, int32_t sequence = 1);
-			int openFilesystemImage();
-			int readFilesystemImage();
-			int closeFilesystemImage();
+
+			int openFilesystemImage(std::string path, uint8_t imageType, int32_t& handle, int32_t sequence = 1);
+			int readFilesystemImage(int32_t handle, std::vector<uint8_t>& data, int32_t sequence = 1);
+			int closeFilesystemImage(int32_t handle, int32_t sequence = 1);
 
 		
-
 		private:
-			qcdm_subsys_header_t getHeader(uint16_t command);
+			
+			/**
+			* @brief getHeader - Used internally to quickly assemble a packet header
+			* 
+			* @param uint16_t - The command to create the header data for
+			*
+			* @return QcdmSubsysHeader
+			*/
+			QcdmSubsysHeader getHeader(uint16_t command);
+			
+			/**
+			* @brief sendCommand - Same as sendCommand(uint16_t command) but does not construct a packet,
+			*						just writes the raw data and validates the response
+			*
+			*
+			* @param uint16_t - The basic packet command to send as well as expected response command
+			* @param uint8_t* - Opaque data pointer to validate against
+			* @param size_t - Size of the data
+			*
+			* @return int
+			*/
 			int sendCommand(uint16_t command);
+			
+			/**
+			* @brief sendCommand - Same as sendCommand(uint16_t command) but does not construct a packet, 
+			*						just writes the raw data (hdlc encoded for you) and validates the response
+			*
+			*
+			* @param uint16_t - The expected response command
+			* @param uint8_t* - Opaque data pointer to validate against
+			* @param size_t - Size of the data
+			*
+			* @return int
+			*/
 			int sendCommand(uint16_t command, uint8_t* packet, size_t packetSize);
+
+			/**
+			* @brief isValidResponse - used internally to validate responses
+			*
+			*
+			* @param uint16_t - The expected response command
+			* @param uint8_t* - Opaque data pointer to validate against
+			* @param size_t - Size of the data
+			*
+			* @return bool
+			*/
 			bool isValidResponse(uint16_t command, uint8_t* data, size_t size);
 	};
+
+
+
+
+	
+
 }
 
 #endif // _QC_DM_EFS_MANAGER_H_
