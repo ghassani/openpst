@@ -24,17 +24,17 @@
 namespace OpenPST {
 
 	class SaharaSerial : public serial::Serial {
-		
-		enum kSaharaOperationResult {
-			kSaharaIOError = -1,
-			kSaharaError = 0,
-			kSaharaSuccess = 1
-		};
-
+	
 		uint8_t* buffer;
 		size_t bufferSize;
 
 		public:
+			enum kSaharaOperationResult {
+				kSaharaIOError = -1,
+				kSaharaError = 0,
+				kSaharaSuccess = 1
+			}; 
+			
 			SaharaHelloRequest deviceState;
 			SaharaReadDataRequest readState;
 			SaharaMemoryDebugRequest memoryState;

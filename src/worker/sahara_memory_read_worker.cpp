@@ -59,9 +59,11 @@ void SaharaMemoryReadWorker::run()
 
 			uint32_t address = request.address + request.outSize;
 
-			if (!port.readMemory(address, request.stepSize, file, request.lastChunkSize)) {
+			int result = port.readMemory(address, request.stepSize, file, request.lastChunkSize);
+
+			if (result != port.kSaharaSuccess) {
 				file.close();
-				emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", request.stepSize, address));
+				emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X - %d", request.stepSize, address, result));
 				return;
 			}
 						
@@ -74,9 +76,11 @@ void SaharaMemoryReadWorker::run()
 
 	} else {
 		
-		if (!port.readMemory(request.address, request.size, file, request.lastChunkSize)) {
+		int result = port.readMemory(request.address, request.size, file, request.lastChunkSize);
+		
+		if (result != port.kSaharaSuccess) {
 			file.close();
-			emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X", request.size, request.address));
+			emit error(request, tmp.sprintf("Error reading %lu bytes starting from 0x%08X %i", request.size, request.address, result));
 			return;
 		}
 

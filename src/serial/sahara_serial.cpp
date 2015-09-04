@@ -537,6 +537,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 		}
 	}
 
+	int maxReadSize = SAHARA_MAX_MEMORY_REQUEST_SIZE;
 	bool isOverMax = size > SAHARA_MAX_MEMORY_REQUEST_SIZE;
 
 	SaharaMemoryReadRequest packet;
@@ -587,6 +588,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, uint8_t** out, size_
 			if (rxSize == 0) {
 				break;
 			} else if (isValidResponse(SAHARA_END_OF_IMAGE_TRANSFER, &outBuffer[outSize], rxSize)) {
+				LOGE("End Image Transfer Received");
 				if (!outSize) {
 					delete outBuffer;
 				}
@@ -695,8 +697,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, std::ofstream& out, 
 		size_t txSize = write((uint8_t*)&packet, sizeof(packet));
 
 		if (!txSize) {
-			LOGD("Attempted to write to port but 0 bytes were written\n");
-			return 0;
+			return kSaharaIOError;
 		}
 
 		do {
@@ -705,8 +706,7 @@ int SaharaSerial::readMemory(uint32_t address, size_t size, std::ofstream& out, 
 
 			if (rxSize == 0) {
 				break;
-			}
-			else if (isValidResponse(SAHARA_END_OF_IMAGE_TRANSFER, memBuffer, rxSize)) {
+			} else if (isValidResponse(SAHARA_END_OF_IMAGE_TRANSFER, memBuffer, rxSize)) {
 				return kSaharaError;
 			}
 
@@ -827,6 +827,41 @@ void SaharaSerial::close()
 */
 bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* data, size_t dataSize)
 {
+	if (dataSize == 0) {
+		LOGD("No data to validate");
+		return false;
+	}
+
+	if (data[0] == SAHARA_END_OF_IMAGE_TRANSFER) {
+		if (dataSize == sizeof(SaharaEndImageTransferResponse)) {
+			SaharaEndImageTransferResponse* error = (SaharaEndImageTransferResponse*)data;
+			memcpy(&lastError, error, sizeof(SaharaEndImageTransferResponse));
+			
+			if (expectedResponseCommand == SAHARA_END_OF_IMAGE_TRANSFER) {
+				return true;
+			}
+
+			if (error->status != 0x00) {
+				LOGE("Device Responded With Error: %s\n", getNamedErrorStatus(error->status));
+
+				// we need to reset after an error and disconnect to prepare for another transfer if needed
+				// except read data command is used
+				if (expectedResponseCommand != SAHARA_READ_DATA) {
+					sendReset();
+				}
+
+				return false;
+			}
+		}
+				
+	} else if (NULL == expectedResponseCommand || data[0] == expectedResponseCommand) {
+		return true;
+	}
+
+	LOGE("Unexpected Response. Expected 0x%02x But Received 0x%02x", expectedResponseCommand, data[0]);
+	return false; 
+	
+	/*
 	if (expectedResponseCommand == data[0]) {
 		if (expectedResponseCommand == SAHARA_END_OF_IMAGE_TRANSFER && dataSize == sizeof(SaharaEndImageTransferResponse)) {
 			memcpy(&lastError, data, sizeof(SaharaEndImageTransferResponse));
@@ -851,7 +886,7 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, uint8_t* da
 		return false;
 	}
 
-	return true;
+	return true;*/
 }
 
 /**
