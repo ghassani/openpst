@@ -1,13 +1,18 @@
-qfprom kernel module
+QFPROM Kernel Module
 ===================
-This kernel module allows for QFPROM reading and writing through either a pre-defined static list within the code or through a TCP server from userland or remotely.
+This kernel module allows for QFPROM reading and writing through either a pre-defined static list within the code or through a TCP server from userland or remotely. This module uses SCM calls to read and write to fuses.
+
+You still need read/write permissions defined in certain fuses to be able to read/write to certain rows.
 
 You will need to compile the module for your kernel. There are many instructions on the web that can be of assistance here.
 
 ##Read/Write from a static list defined within the module
 You can add new rows to read/write from in the module itself. Open up `main.`c and find the fuses static list of addresses. See the structures `qfprom_write_operation_entry_t` and `qfprom_write_operation_entry_t` for formatting.
 
-
+Once compiled just install teh module, it will read and write the specified rows
+    
+    insmod qfprom_tcp.ko
+    
 ##Read/Write through a TCP Server
 
 To enable the TCP server, install the module passing the port with the parameter `start_tcp`
