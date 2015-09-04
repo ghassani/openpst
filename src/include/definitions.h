@@ -26,10 +26,9 @@
 #ifdef DEBUG
 #define LOGD(...) fprintf(stderr, __VA_ARGS__); 
 #else
-#define LOGD(...) fprintf(stderr, __VA_ARGS__); 
+#define LOGD(...)
 #endif
 
-#define LOGD(...) fprintf(stderr, __VA_ARGS__); 
 #define LOGE(...) fprintf(stderr, __VA_ARGS__); 
 #define LOGI(...) fprintf(stdout, __VA_ARGS__); 
 
