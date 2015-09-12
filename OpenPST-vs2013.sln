@@ -27,12 +27,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mbn_tool", "vs2013\mbn_tool
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extras", "extras", "{65BCA580-F8F4-4E2A-916A-B5A3BA312A67}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lgserialshell", "extra\lgserialshell\lgserialshell.vcxproj", "{5218F14D-2F8C-47B1-92CC-CE0323CB4315}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lafshell", "extra\lafshell\lafshell.vcxproj", "{5218F14D-2F8C-47B1-92CC-CE0323CB4315}"
 	ProjectSection(ProjectDependencies) = postProject
-		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
+		{076D4926-771D-4B94-BA24-DF3252D35E90} = {076D4926-771D-4B94-BA24-DF3252D35E90}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openpst-lib", "vs2013\libopenpst.vcxproj", "{076D4926-771D-4B94-BA24-DF3252D35E90}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libopenpst", "vs2013\libopenpst.vcxproj", "{076D4926-771D-4B94-BA24-DF3252D35E90}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD}
 	EndProjectSection
