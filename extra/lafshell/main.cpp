@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
         return 1;
     }
     
+	cout << "Special Commands: ENTER, LEAVE" << endl;
+
 	int lastCommandSize = 0;
 
     do {
