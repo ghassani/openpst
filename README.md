@@ -14,7 +14,7 @@ OpenPST aims to be a multi-platform phone servicing tool for Qualcomm based chip
 
 #### Sahara Protocol
 
-Sahara protocol that allows for memory debugging, firmware transfer, and emergency device programming. Typically known to be Qualcomm USB Product ID 0x9006 and 9008. On some devices it is also used for firmware transfer during boot, such as some 9xxx series chipsets.
+Sahara protocol that allows for memory debugging, firmware transfer, and emergency device programming. Typically known to be Qualcomm USB Product ID 9006 and 9008. 
 
 Currently supported features:
 
@@ -27,7 +27,7 @@ Currently supported features:
 
 #### Streaming DLOAD Protocol
 
-Streaming DLOAD is a flash recovery protocol which allows to recover improperly flashed devices. Mostly people who flash any SBL* partition with an invalidly signed image encounter this mode. It is recoverable with a signed recovery binary (MRGXXXX.mbn) in cases of devices with secure boot enabled. For devices without secure boot enabled you can easily recover a device with an unsigned binary.
+Streaming DLOAD is a flash recovery protocol. Generally, in emergency mode a device programmer file is required to be upload to reprogram the flash. This is one of the protocols used to restore the device.
 
 	- General features
 	- Read flash
