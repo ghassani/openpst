@@ -1276,12 +1276,12 @@ int DmEfsManager::deltree(std::string path, int sequence)
         return kDmEfsIOError;
     }
 
-    size_t packetSize = sizeof(QcdmEfsDeltreeRequest) + path.size();
+    size_t packetSize = sizeof(QcdmEfsDeltreeRequest) + path.size();+1
     QcdmEfsDeltreeRequest* packet = (QcdmEfsDeltreeRequest*) new uint8_t[packetSize]();
 
     packet->header = getHeader(DIAG_EFS_DELTREE);
     packet->sequence = sequence;
-    std::memcpy(packet->path, path.c_str(), path.size());
+    std::memcpy(packet->path, path.c_str(), path.size()+1);
 
     int commandResult = sendCommand(DIAG_EFS_DELTREE, reinterpret_cast<uint8_t*>(packet), packetSize);
 
