@@ -19,11 +19,11 @@
  */
 int main(int argc, char *argv[])
 {
-	OpenPST::Application application(argc, argv, "sahara_");
+    OpenPST::Application application(argc, argv, "sahara_");
 
-	OpenPST::SaharaWindow window;
+    OpenPST::SaharaWindow window;
 
-	window.show();
+    window.show();
 
-	return application.exec();
+    return application.exec();
 }

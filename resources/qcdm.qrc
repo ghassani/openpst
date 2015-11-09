@@ -11,5 +11,6 @@
         <file>images/file-protected-2x.png</file>
         <file>images/clipboard.png</file>
         <file>images/clipboard-2x.png</file>
+        <file>xml/nv_items.xml</file>
     </qresource>
 </RCC>

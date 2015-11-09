@@ -45,7 +45,7 @@ std::string bytesToHex(unsigned char* input, int size, bool byteswap) {
     for (int i = size; i >= 0; i--) {
         char buffer[2];
 #ifdef _WIN32
-		sprintf_s(buffer, "%02x", input[i]);
+        sprintf_s(buffer, "%02x", input[i]);
 #else
         sprintf(buffer, "%02x", input[i]);
 #endif

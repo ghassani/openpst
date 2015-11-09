@@ -17,13 +17,13 @@
 #include "debug.h"
 
 typedef struct qfprom_read_operation_entry_s {
-	char name[50];
+	char name[75];
 	uint32_t address;
 	bool corrected;
 } qfprom_read_operation_entry_t;
 
 typedef struct qfprom_write_operation_entry_s {
-	char name[50];
+	char name[75];
 	uint32_t address;
 	uint32_t lsb;
 	uint32_t msb;
@@ -34,13 +34,16 @@ static short int start_tcp = 0;
 
 
 static qfprom_read_operation_entry_t read_rows_table[] = {
-	{ "QFPROM_SECURE_BOOT_ENABLE", 	0xFC4B83F8, false },
+	// Enter the rows you wish to add to the read list
+	//   name   address     corrected
+	//{ "Name", 0x80000000, 0x00000000 }
 };
 
 static qfprom_write_operation_entry_t write_rows_table[] = {
 	// Enter the rows you wish to add to the write list
 	//   name   address     lsb         msb         bus_clk_khz
 	//{ "Name", 0x80000000, 0x00000000, 0x00000000, 0x00000000 },
+	//{ "Test", 0xFC4B80B8, 0x00000000, 0x00000000, 0x00000000}
 };
 
 static int __init tz_qfprom_init(void)
@@ -57,6 +60,7 @@ static int __init tz_qfprom_init(void)
 
 	if (sizeof(read_rows_table) > 0) {
 		for (i=0; i < read_count; i++) {
+			log("%s - 0x%08X - %d\n", read_rows_table[i].name, read_rows_table[i].address, read_rows_table[i].corrected);
 			tz_qfprom_read_row(read_rows_table[i].address, (read_rows_table[i].corrected ? 0x01 : 0x00), &read_row_data);
 		}
 	}

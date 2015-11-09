@@ -9,3 +9,4 @@ modules.order
 \.*.o.cmd 
 \.*.ko.cmd 
 \.*.o.d *.ko
+client_dev.py

@@ -12,9 +12,34 @@
 #include <linux/kernel.h>
 #include <linux/msm_ion.h>
 #include <mach/scm.h>
+#include <asm/io.h>
+#include <linux/platform_device.h>
+#include <linux/delay.h>
+#include <linux/io.h>
+#include <linux/regulator/consumer.h>
 #include "debug.h"
+#include <linux/qfp_fuse.h>
+#include <mach/msm_iomap.h>
 
 #define TZ_SVC_FUSE 8
+
+#define QFP_FUSE_IOC_MAGIC                  0x92
+#define QFP_FUSE_IOC_WRITE                  _IO(QFP_FUSE_IOC_MAGIC, 1)
+#define QFP_FUSE_IOC_READ                   _IO(QFP_FUSE_IOC_MAGIC, 2)
+/*
+* 8x26
+*/
+#define QFPROM_BLOW_TIMER_ADDR          0xFC4BA038
+#define QFPROM_BLOW_STATUS_ADDR         0xFC4BA048
+#define QFPROM_BLOW_TIMER_CLK_FREQ_MHZ  2.4
+#define QFPROM_FUSE_BLOW_TIME_IN_US     4
+#define QFPROM_ACCEL_VALUE              0x100
+#define QFPROM_ACCEL_RESET_VALUE        0x104
+#define QFPROM_INVALID_ENTRY            0xFFFFFFFF
+#define QFPROM_BLOW_STATUS_BUSY             0x01
+#define QFPROM_BLOW_STATUS_ERROR            0x02
+
+#define QFPROM_BLOW_TIMER_VALUE             (QFPROM_FUSE_BLOW_TIME_IN_US * 83)
 
 enum TZ_SVC_FUSE_COMMANDS {
     TZ_BLOW_SW_FUSE_ID                  = 0x00000001,
@@ -76,6 +101,8 @@ typedef struct scm_qfprom_write_row_data_s {
 
 int tz_qfprom_read_row(uint32_t address, uint32_t type, scm_qfprom_read_row_data_t* row_data);
 int tz_qfprom_write_row(uint32_t address, uint32_t lsb, uint32_t msb, uint32_t bus_clk_khz, scm_qfprom_write_row_data_t* row_data);
+int qfprom_read_direct(uint32_t address, scm_qfprom_read_row_data_t* row_data);
+int tz_qfprom_write_direct(uint32_t address, uint32_t lsb, uint32_t msb, uint32_t bus_clk_khz, scm_qfprom_write_row_data_t* row_data);
 
 
 #endif // __QFPROM_TCP_QFPROM_H

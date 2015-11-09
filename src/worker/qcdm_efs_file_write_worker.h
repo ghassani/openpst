@@ -18,29 +18,29 @@ using namespace serial;
 
 namespace OpenPST {
 
-	struct QcdmEfsFileWriteWorkerRequest {
+    struct QcdmEfsFileWriteWorkerRequest {
 
-	};
+    };
 
-	class QcdmEfsFileWriteWorker : public QThread
-	{
-		Q_OBJECT
+    class QcdmEfsFileWriteWorker : public QThread
+    {
+        Q_OBJECT
 
-	public:
-		QcdmEfsFileWriteWorker(DmEfsManager& efsManager, QcdmEfsFileWriteWorkerRequest request, QObject *parent = 0);
-		~QcdmEfsFileWriteWorker();
-		void cancel();
-	protected:
-		DmEfsManager&  efsManager;
-		QcdmEfsFileWriteWorkerRequest request;
+    public:
+        QcdmEfsFileWriteWorker(DmEfsManager& efsManager, QcdmEfsFileWriteWorkerRequest request, QObject *parent = 0);
+        ~QcdmEfsFileWriteWorker();
+        void cancel();
+    protected:
+        DmEfsManager&  efsManager;
+        QcdmEfsFileWriteWorkerRequest request;
 
-		void run() Q_DECL_OVERRIDE;
-		bool cancelled;
-	signals:
-		void chunkReady(QcdmEfsFileWriteWorkerRequest request);
-		void complete(QcdmEfsFileWriteWorkerRequest request);
-		void error(QcdmEfsFileWriteWorkerRequest request, QString msg);
-	};
+        void run() Q_DECL_OVERRIDE;
+        bool cancelled;
+    signals:
+        void update(QcdmEfsFileWriteWorkerRequest request);
+        void complete(QcdmEfsFileWriteWorkerRequest request);
+        void error(QcdmEfsFileWriteWorkerRequest request, QString msg);
+    };
 }
 
 #endif // _WORKER_QCDM_EFS_FILE_WRITE_WORKER_H

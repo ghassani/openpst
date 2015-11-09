@@ -18,31 +18,31 @@ using namespace serial;
 
 namespace OpenPST {
 
-	struct QcdmEfsDirectoryTreeWorkerRequest {
-		bool recursive;
-		std::string path;
-		std::vector<DmEfsNode> contents;
-	};
-	
-	class QcdmEfsDirectoryTreeWorker : public QThread
-	{
-		Q_OBJECT
+    struct QcdmEfsDirectoryTreeWorkerRequest {
+        bool recursive;
+        std::string path;
+        std::vector<DmEfsNode> contents;
+    };
+    
+    class QcdmEfsDirectoryTreeWorker : public QThread
+    {
+        Q_OBJECT
 
-		public:
-			QcdmEfsDirectoryTreeWorker(DmEfsManager& efsManager, QcdmEfsDirectoryTreeWorkerRequest request, QObject *parent = 0);
-			~QcdmEfsDirectoryTreeWorker();
-			void cancel();
-		protected:
-			DmEfsManager&  efsManager;
-			QcdmEfsDirectoryTreeWorkerRequest request;
+        public:
+            QcdmEfsDirectoryTreeWorker(DmEfsManager& efsManager, QcdmEfsDirectoryTreeWorkerRequest request, QObject *parent = 0);
+            ~QcdmEfsDirectoryTreeWorker();
+            void cancel();
+        protected:
+            DmEfsManager&  efsManager;
+            QcdmEfsDirectoryTreeWorkerRequest request;
 
-			void run() Q_DECL_OVERRIDE;			
-			bool cancelled;
-		signals:
-			void folderFinished(QcdmEfsDirectoryTreeWorkerRequest request, std::vector<DmEfsNode> folderContents);
-			void complete(QcdmEfsDirectoryTreeWorkerRequest request);
-			void error(QcdmEfsDirectoryTreeWorkerRequest request, QString msg);
-	};
+            void run() Q_DECL_OVERRIDE;         
+            bool cancelled;
+        signals:
+            void update(QcdmEfsDirectoryTreeWorkerRequest request, std::vector<DmEfsNode> folderContents);
+            void complete(QcdmEfsDirectoryTreeWorkerRequest request);
+            void error(QcdmEfsDirectoryTreeWorkerRequest request, QString msg);
+    };
 }
 
 #endif // _WORKER_QCDM_EFS_DIRECTORY_TREE_WORKER_H

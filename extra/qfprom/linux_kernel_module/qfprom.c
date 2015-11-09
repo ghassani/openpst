@@ -1,7 +1,7 @@
 /**
 * LICENSE PLACEHOLDER
 *
-* @file qfprom.ch
+* @file qfprom.c
 * @package OpenPST Extras - QFPROM Kernel Module
 *
 * @author Gassan Idriss <ghassani@gmail.com>
@@ -49,7 +49,7 @@ int tz_qfprom_read_row(uint32_t address, uint32_t type, scm_qfprom_read_row_data
 
     if (ret) {
         
-        log("Reading row at 0x%08X faile. SCM call failed. %d\n", address, ret);
+        log("Reading row at 0x%08X (%d) failed. SCM call failed. %d\n", address, type, ret);
         
         row_data->lsb   = 0;
         row_data->msb   = 0;    
@@ -66,10 +66,10 @@ int tz_qfprom_read_row(uint32_t address, uint32_t type, scm_qfprom_read_row_data
 
         if (row_datap->error) {             
 
-            log("Error reading row at 0x%08X. Error: %d\n", address, row_datap->error);
+            log("Error reading row at 0x%08X (%d). Error: %d\n", address, type, row_datap->error);
 
         } else {
-            log("Row data at 0x%08X - LSB: 0x%08X - MSB: 0x%08X\n", address, row_datap->lsb, row_datap->msb);
+            log("Row data at 0x%08X (%d) - LSB: 0x%08X - MSB: 0x%08X\n", address, type, row_datap->lsb, row_datap->msb);
         }
 
         row_data->lsb   = row_datap->lsb;
@@ -134,6 +134,7 @@ int tz_qfprom_write_row(uint32_t address, uint32_t lsb, uint32_t msb, uint32_t b
     req.row_data    = row_data_phyaddr;
     req.error       = row_data_phyaddr + (sizeof(scm_qfprom_write_row_data_t) - sizeof(uint32_t));
 
+    //ret = scm_call(TZ_SVC_FUSE, TZ_QFPROM_ROLLBACK_WRITE_ROW_ID, &req, sizeof(req), &resp, sizeof(resp));
     ret = scm_call(TZ_SVC_FUSE, TZ_QFPROM_WRITE_ROW_ID, &req, sizeof(req), &resp, sizeof(resp));
 
     if (ret) {
@@ -167,3 +168,110 @@ error:
     ion_client_destroy(ion_clientp);
     return -EINVAL;
 }
+
+
+int qfprom_read_direct(uint32_t address, scm_qfprom_read_row_data_t* row_data)
+{
+
+    uint32_t direct_read_lsb;
+    uint32_t direct_read_msb;
+    void __iomem *direct_read_lsb_address;
+    void __iomem *direct_read_msb_address;
+    
+    direct_read_lsb_address = ioremap(address,  sizeof(uint32_t));
+    direct_read_msb_address = ioremap(address + sizeof(uint32_t), sizeof(uint32_t));
+
+    direct_read_lsb = (uint32_t) readl(direct_read_lsb_address);
+    direct_read_msb = (uint32_t) readl(direct_read_msb_address);
+
+    iounmap(direct_read_lsb_address);
+    iounmap(direct_read_msb_address);
+
+    log("Direct Read: 0x%08X - LSB: 0x%08X - MSB: 0x%08X\n", 
+        address, direct_read_lsb, direct_read_msb
+    );
+ 
+    row_data->lsb = direct_read_lsb;
+    row_data->msb = direct_read_msb;
+    row_data->error = 0;
+
+    return 0;
+}
+
+int qfprom_write_direct(uint32_t address, uint32_t lsb, uint32_t msb, uint32_t bus_clk_khz, scm_qfprom_write_row_data_t* row_data)
+{
+    /*
+    uint32_t blow_status = 0;
+    uint32_t read_lsb;
+    uint32_t read_msb;
+    uint32_t timeout;
+    int err;
+
+    // Set QFPROM  blow timer register 
+    writel_relaxed(QFPROM_BLOW_TIMER_VALUE, QFPROM_BLOW_TIMER_ADDR);
+    mb();
+
+    // Enable LVS0 regulator 
+    err = regulator_enable(qfp_priv->fuse_vdd);
+    
+    if (err != 0){        
+        pr_err("Error (%d) enabling regulator... you should probably care about this.\n", err);
+    }
+    
+    msleep(20);
+
+    // Write data 
+    __raw_writel(lsb, &address);
+    __raw_writel(msb, &address + sizeof(lsb));
+    
+    mb();
+
+    // blow_status = QFPROM_BLOW_STATUS_BUSY; 
+    timeout = QFPROM_FUSE_BLOW_TIME_IN_US;
+    // wait for 400us before checking for the first time 
+    udelay(400);
+    do {
+        *status = readl_relaxed(QFPROM_BLOW_STATUS_ADDR);
+
+        if (!(*status & QFPROM_BLOW_STATUS_BUSY)) {
+            return 0;
+        }
+
+        timeout--;
+        udelay(1);
+    } while (timeout);
+    
+    pr_err("Timeout waiting for FUSE blow, status = %x . This is probably important\n", *status);
+
+    // Check error status 
+    if (blow_status & QFPROM_BLOW_STATUS_ERROR) {
+        pr_err("Fuse blow status error: %d. Bummer, I was hoping that would work\n", blow_status);
+    }
+
+    // Disable regulator 
+    err = regulator_disable(qfp_priv->fuse_vdd);    
+
+    if (err != 0) {
+        pr_err("Error (%d) disabling regulator, I can't just turn it off??? WTF\n", err);
+    }
+    
+    
+    msleep(20);
+
+    // Verify written data 
+    read_lsb = readl_relaxed(address);
+    read_msb = readl_relaxed(address + sizeof(lsb));
+
+    if (read_lsb != lsb) {
+        pr_err("Error: read/write data mismatch (LSB)\n");
+        pr_err("Address = %p written data = %x read data = %x.\n", address, lsb, read_lsb);
+    }
+
+
+   if (read_msb != msb) {
+        pr_err("Error: read/write data mismatch (MSB)\n");
+        pr_err("Address = %p written data = %x read data = %x.\n", address, msb, read_msb);
+    }
+*/
+    return 0;
+ }

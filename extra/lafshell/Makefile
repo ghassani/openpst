@@ -17,7 +17,7 @@ default:
 	$(CXX) \
 		-I"$(LIB_DIR)/serial/include" \
 		-I"$(LIB_DIR)/serial/src" \
-		-o $(BUILD_DIR)/lgadbserial \
+		-o $(BUILD_DIR)/lafshell \
 		$(LIB_DIR)/serial/src/impl/list_ports/list_ports_linux.cc  \
 		$(LIB_DIR)/serial/src/impl/unix.cc \
 		$(LIB_DIR)/serial/src/serial.cc \

@@ -118,8 +118,8 @@ void OpenPST::MbnToolWindow::loadFile()
     } else {
         log(tmp.sprintf("Image Size: %lu bytes", header->image_size));
         log(tmp.sprintf("Code Size: %lu bytes", header->code_size));
-        log(tmp.sprintf("Signature Size: %lu bytes", header->signature_size));
-        log(tmp.sprintf("Cert Chain Size: %lu bytes", header->cert_chain_size));
+        log(tmp.sprintf("Signature Size: %lu bytes  Offset: 0x%08X", header->signature_size, (header->signature_ptr - header->image_dest_ptr)));
+        log(tmp.sprintf("Cert Chain Size: %lu bytes  Offset: 0x%08X", header->cert_chain_size, (header->cert_chain_ptr - header->image_dest_ptr)));
 
 		if (isEightyByte) {
 			ui->mbnHeaderCodewordValue->setText(tmp.sprintf(format, header->codeword));
@@ -228,6 +228,14 @@ void OpenPST::MbnToolWindow::extractSegment(int segment)
 
 	file.read((char *)outBuffer, segmentSize);
 
+    if (segment == MBN_SEGMENT_X509_CHAIN_CERTIFICATE) {
+
+        tmp.sprintf("%lu / %lu", segmentSize, sizeof(pbl_secx509_cert_list_type));
+        log(tmp);
+
+        parseX509Certificates((pbl_secx509_cert_list_type*)outBuffer);
+    }
+
 	outFile.write((char *)outBuffer, segmentSize);
 
 	outFile.close();
@@ -239,6 +247,14 @@ void OpenPST::MbnToolWindow::extractSegment(int segment)
 	log(tmp.sprintf("Image segment saved to %s. Size: %lu", outFilePath.toStdString().c_str(), segmentSize));
 }
 
+
+void OpenPST::MbnToolWindow::parseX509Certificates(pbl_secx509_cert_list_type* certificates)
+{
+    int i;
+    QString tmp;
+
+
+}
 
 void OpenPST::MbnToolWindow::readCode()
 {

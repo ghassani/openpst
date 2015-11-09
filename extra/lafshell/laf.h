@@ -3,7 +3,9 @@
 
 #include "include/definitions.h"
 
-#define LAF_MAGIC 0xBCBAA7BA
+#define LAF_EXEC_MAGIC 0xBCBAA7BA
+#define LAF_CTRL_MAGIC 0xB3ADABBC
+
 #define LAF_MAX_DATA_SIZE 1048578
 
 #define LAF_ENTER 0x3AA16E7E
@@ -24,6 +26,9 @@
 #define LAF_CMD_MISC		0x4353494D // MISC
 #define LAF_CMD_KILO		0x4F4C494B // KILO
 
+#define LAF_CMD_INFO_SPRO  0x4F525053 // ORPS
+#define LAF_CMD_INFO_GPRO  0x4F525047 // GPRO
+
 #define LAF_CMD_CONTROL_POWER_OFF	0x46464F50 // POFF
 #define LAF_CMD_CONTROL_RESET		0x54455352 // REST
 #define LAF_CMD_CONTROL_ONRS		0x53524E4F // ONRS
@@ -32,6 +37,7 @@
 #define LAF_CMD_KILO_METR		0x5254454D // METR
 #define LAF_CMD_KILO_CENT		0x544E4543 // CENT
 
+#define LAF_MISC_PARITION_OFFSET(number) \ number << 9
 /*
 This functionality is part of the laf kernel image in the / sbin / lafd binary file
 

@@ -19,11 +19,11 @@
  */
 int main(int argc, char *argv[])
 {
-	OpenPST::Application application(argc, argv, "streaming_dload_");
+    OpenPST::Application application(argc, argv, "streaming_dload_");
 
-	OpenPST::StreamingDloadWindow window;
-	
-	window.show();
+    OpenPST::StreamingDloadWindow window;
+    
+    window.show();
 
     return application.exec();
 }

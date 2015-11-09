@@ -13,12 +13,12 @@
 using namespace OpenPST;
 
 AboutDialog::AboutDialog(QWidget *parent) :
-	QDialog(parent)
+    QDialog(parent)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
 }
 
 AboutDialog::~AboutDialog()
 {
-	delete ui;
+    delete ui;
 }

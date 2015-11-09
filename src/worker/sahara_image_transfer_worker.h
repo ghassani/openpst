@@ -20,34 +20,34 @@ using namespace serial;
 namespace OpenPST {
 
 
-	struct SaharaImageTransferWorkerRequest {
-		size_t			fileSize;
-		size_t			chunkSize;
-		uint32_t		offset;
-		size_t			sent;
-		uint32_t		imageType;
-		std::string		imagePath;
-	};
-	
-	class SaharaImageTransferWorker : public QThread
-	{
+    struct SaharaImageTransferWorkerRequest {
+        size_t          fileSize;
+        size_t          chunkSize;
+        uint32_t        offset;
+        size_t          sent;
+        uint32_t        imageType;
+        std::string     imagePath;
+    };
+    
+    class SaharaImageTransferWorker : public QThread
+    {
 		Q_OBJECT
 
-		public:
-			SaharaImageTransferWorker(SaharaSerial& port, SaharaImageTransferWorkerRequest request, QObject *parent = 0);
-			~SaharaImageTransferWorker();
-			void cancel();
-		protected:
-			SaharaSerial&  port;
-			SaharaImageTransferWorkerRequest request;
+        public:
+            SaharaImageTransferWorker(SaharaSerial& port, SaharaImageTransferWorkerRequest request, QObject *parent = 0);
+            ~SaharaImageTransferWorker();
+            void cancel();
+        protected:
+            SaharaSerial&  port;
+            SaharaImageTransferWorkerRequest request;
 
-			void run() Q_DECL_OVERRIDE;			
-			bool cancelled;
-		signals:
-			void chunkDone(SaharaImageTransferWorkerRequest request);
-			void complete(SaharaImageTransferWorkerRequest request);
-			void error(SaharaImageTransferWorkerRequest request, QString msg);
-	};
+            void run() Q_DECL_OVERRIDE;         
+            bool cancelled;
+        signals:
+            void chunkDone(SaharaImageTransferWorkerRequest request);
+            void complete(SaharaImageTransferWorkerRequest request);
+            void error(SaharaImageTransferWorkerRequest request, QString msg);
+    };
 }
 
 #endif // _WORKER_SAHARA_IMAGE_TRANSFER_WORKER_H

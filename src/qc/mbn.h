@@ -20,10 +20,10 @@
 #define MBN_MAX_ROOT_CERTIFICATES 4
 
 enum MBN_IMAGE_SEGMENTS {
-	MBN_SEGMENT_HEADER = 1,
-	MBN_SEGMENT_CODE,
-	MBN_SEGMENT_SIGNATURE,
-	MBN_SEGMENT_X509_CHAIN_CERTIFICATE
+  MBN_SEGMENT_HEADER = 1,
+  MBN_SEGMENT_CODE,
+  MBN_SEGMENT_SIGNATURE,
+  MBN_SEGMENT_X509_CHAIN_CERTIFICATE
 };
 
 PACKED(typedef struct {
@@ -116,6 +116,302 @@ enum MBN_IMAGE {
     MBN_IMAGE_ACDB           = 0x1D,
     MBN_IMAGE_WDT            = 0x1E,
     MBN_IMAGE_MBA            = 0x1F,
-	MBN_IMAGE_LAST
+  MBN_IMAGE_LAST
 };
+
+
+
+/**
+  ASN1 Constants and definitions
+*/
+#define SECASN1_NO_TYPE_CHECK         (0x00)
+#define SECASN1_bool_TYPE          (0x01)
+#define SECASN1_INTEGER_TYPE          (0x02)
+#define SECASN1_BIT_STRING_TYPE       (0x03)
+#define SECASN1_OCTET_STRING_TYPE     (0x04)
+#define SECASN1_NULL_TYPE             (0x05)
+#define SECASN1_OID_TYPE              (0x06)
+#define SECASN1_UTF8_STRING_TYPE      (0x0c)
+#define SECASN1_SEQUENCE_TYPE         (0x10)
+#define SECASN1_SET_TYPE              (0x11)
+#define SECASN1_PRINTABLE_STRING_TYPE (0x13)
+#define SECASN1_TELETEX_STRING_TYPE   (0x14)
+#define SECASN1_UTC_TYPE              (0x17)
+/*!
+  @}
+*/
+/*--------------------------------------------------------------------------
+                Modular Constants and definitions
+--------------------------------------------------------------------------*/
+
+/**
+  ASN.1 Error Codes
+*/
+typedef enum
+{
+  E_ASN1_SUCCESS = 0,
+  E_ASN1_INVALID_TAG,
+  E_ASN1_NO_DATA,
+  E_ASN1_INVALID_DATA,
+  E_ASN1_INVALID_ARG
+} secasn1_err_type;
+
+/**
+  ASN.1 data holder
+*/
+typedef struct
+{
+  uint8_t *data;
+  uint16_t len;
+} secasn1_data_type;
+
+/**
+  ASN.1 bit string data holder
+*/
+typedef struct
+{
+  uint8_t *data;
+  uint16_t len;
+  uint8_t unused;
+} secasn1_bit_string_type;
+
+
+
+/* Key Usage Masks */
+#define SECX509_KEY_USAGE_DIG_SIG   (0x0100) /* digital signature */
+#define SECX509_KEY_USAGE_NON_REP   (0x0080) /* non-repudiation   */
+#define SECX509_KEY_USAGE_KEY_ENC   (0x0040) /* key encipherment  */
+#define SECX509_KEY_USAGE_DAT_ENC   (0x0020) /* data encipherment */
+#define SECX509_KEY_USAGE_KEY_ARG   (0x0010) /* key agreement     */
+#define SECX509_KEY_USAGE_KEY_CRT   (0x0008) /* key cert sign     */
+#define SECX509_KEY_USAGE_CRL_SIG   (0x0004) /* CRL sign          */
+#define SECX509_KEY_USAGE_ENC_OLY   (0x0002) /* encipher only     */
+#define SECX509_KEY_USAGE_DEC_OLY   (0x0001) /* decipher only     */
+/* Extended Key Usage Masks */
+#define SECX509_EX_KEY_USAGE_SAUTH  (0x0001) /* TLS Web Server Authentication*/
+#define SECX509_EX_KEY_USAGE_CAUTH  (0x0002) /* TLS Web Client Authentication*/
+#define SECX509_EX_KEY_USAGE_CODE   (0x0004) /* Downloadable Code Signing    */
+#define SECX509_EX_KEY_USAGE_EMAIL  (0x0008) /* Email Protection             */
+#define SECX509_EX_KEY_USAGE_TIME   (0x0010) /* Time Stamping                */
+#define SECX509_EX_KEY_USAGE_SGC    (0x0020) /* Secured Gated Crypto         */
+
+/*==========================================================================
+
+                       Type Definitions
+
+==========================================================================*/
+/* Public Key algorithms in the certificate */
+typedef enum
+{
+  SECX509_PUBKEY_RSA = 0,
+  SECX509_PUBKEY_DSA = 1,
+  SECX509_PUBKEY_DH  = 2,
+  SECX509_PUBKEY_MAX,               /* Last one, for error checking */
+  SECX509_RESERVED_1 = 0x7FFFFFFF
+} pbl_secx509_pubkey_algo_type;
+
+/* Certificate signature algorithm type */
+typedef enum
+{
+  SECX509_md5WithRSAEncryption    = 0,
+  SECX509_md2WithRSAEncryption    = 1,
+  SECX509_sha1WithRSAEncryption   = 2,
+  SECX509_sha256WithRSAEncryption = 3,
+  SECX509_SIG_ALGO_MAX,                 /* Last one, for error checking */
+  SECX509_RESERVED_2            = 0x7FFFFFFF
+} pbl_secx509_sig_algo_type;
+
+
+/* RSA public key parameters */
+typedef struct pbl_secx509_rsa_pubkey_type
+{
+  uint32_t  mod_len;
+  const uint8_t   *mod_data;
+  uint32_t  exp_e_len;
+  const uint8_t   *exp_e_data;
+
+} pbl_secx509_rsa_pubkey_type;
+
+/* Union of all the public key types */
+typedef struct pbl_secx509_pubkey_type
+{
+  pbl_secx509_pubkey_algo_type  algo;
+  union
+  {
+    pbl_secx509_rsa_pubkey_type  rsa;
+  }key;
+
+} pbl_secx509_pubkey_type;
+
+/* Signature Structure */
+typedef struct pbl_secx509_signature_type
+{
+  pbl_secx509_sig_algo_type   algo_id;
+  secasn1_data_type           val;
+
+} pbl_secx509_signature_type;
+
+/* Distinguished name structure */
+typedef struct pbl_secx509_dn_type
+{
+  uint32_t             num_attrib;
+  secasn1_data_type  data;
+
+} pbl_secx509_dn_type;
+
+/* Version structure */
+typedef struct pbl_secx509_version_type
+{
+  uint32_t             ver;
+  secasn1_data_type  val;
+
+} pbl_secx509_version_type;
+
+/* Time structure */
+typedef struct pbl_secx509_time_type
+{
+  uint32_t             time;
+  secasn1_data_type  data;
+
+} pbl_secx509_time_type;
+
+/* Authority Key Identifier structure */
+typedef struct pbl_secx509_auth_key_id_type
+{
+  bool            set;
+  secasn1_data_type  key_id;
+  pbl_secx509_dn_type    name;
+  secasn1_data_type  serial_number;
+
+} pbl_secx509_auth_key_id_type;
+
+/* Subject Key Identifier structure */
+typedef struct pbl_secx509_subject_key_id_type
+{
+  bool            set;
+  secasn1_data_type  key_id;
+
+} pbl_secx509_subject_key_id_type;
+
+/* Key Usage structure */
+typedef struct pbl_secx509_key_usage_type
+{
+  uint32_t   val;
+  bool  set;
+
+} pbl_secx509_key_usage_type;
+
+/* CA structure */
+typedef struct pbl_secx509_ca_type
+{
+  bool  set;
+  bool  val;
+
+} pbl_secx509_ca_type;
+
+/* Extension structure type */
+typedef struct pbl_secx509_ext_type
+{
+  bool                          set;
+  pbl_secx509_auth_key_id_type     auth_key_id;
+  pbl_secx509_subject_key_id_type  subject_key_id;
+  pbl_secx509_key_usage_type       key_usage;
+  pbl_secx509_key_usage_type       ex_key_usage;
+  int32_t                            path_len;
+  pbl_secx509_ca_type              ca;
+
+} pbl_secx509_ext_type;
+
+/* Certificate information structure */
+typedef struct pbl_secx509_cert_info_type
+{
+  pbl_secx509_version_type     version;
+  secasn1_data_type            serial_number;
+  pbl_secx509_signature_type   algorithm;
+  pbl_secx509_dn_type          issuer;
+  pbl_secx509_time_type        not_before;
+  pbl_secx509_time_type        not_after;
+  pbl_secx509_dn_type          subject;
+  secasn1_bit_string_type      issuer_unique_id;
+  secasn1_bit_string_type      subject_unique_id;
+  pbl_secx509_ext_type         extension;
+
+} pbl_secx509_cert_info_type;
+
+/* Certificate structure */
+typedef struct pbl_secx509_cert_type
+{
+  /* The cert_info needs to be the first member */
+  pbl_secx509_cert_info_type  cert_info;
+
+  uint32_t                      cinf_offset; //where the certificate actually starts -
+                                           //after the initial tag/len
+  uint32_t                      cinf_byte_len; //length of where the certificate actually starts
+                                             //upto (but not including) the certificate signature
+  uint32_t                      asn1_size_in_bytes; //size of the entire certificate (including the initial tag/len)
+
+  /* Signature info on the cert */
+  pbl_secx509_pubkey_type     pkey;
+  pbl_secx509_sig_algo_type   sig_algo;
+  const uint8_t                *sig;
+  uint32_t                      sig_len;
+
+  /*For verification */
+  uint8_t                       cert_hash[32];
+} pbl_secx509_cert_type;
+
+
+
+/* Certificate list struct */
+typedef struct pbl_secx509_cert_list_struct
+{
+  pbl_secx509_cert_type  cert[3];
+  uint32_t               size;
+
+} pbl_secx509_cert_list_type;
+
+/* certificate list context type */
+typedef struct
+{
+  uint32_t                     purpose;
+  uint32_t                     trust;
+  uint32_t                     depth;
+  pbl_secx509_cert_list_type*  ca_list;
+
+} pbl_secx509_cert_ctx_type;
+
+
+typedef enum
+{
+  E_X509_SUCCESS = 0,
+  E_X509_FAILURE,
+  E_X509_NO_DATA,
+  E_X509_DATA_INVALID,
+  E_X509_BAD_DATA,
+  E_X509_DATA_TOO_LARGE,
+  E_X509_DATA_EXPIRED,
+  E_X509_NO_MEMORY,
+  E_X509_INVALID_ARG,
+  E_X509_NOT_SUPPORTED,
+  E_X509_RESERVED       = 0x7FFFFFFF
+} secx509_errno_enum_type;
+
+typedef enum
+{
+  E_X509_CODE_HASH_NOT_SPECIFIED = 0,
+  E_X509_CODE_HASH_SHA1,
+  E_X509_CODE_HASH_SHA256,
+  E_X509_CODE_HASH_RESERVED       = 0x7FFFFFFF
+}secx509_code_hash_algo_type;
+
+typedef struct secx509_ou_field_info_type
+{
+  uint64_t                      debug_enable;
+  uint64_t                      sw_id;
+  uint64_t                      hw_id;
+  secx509_code_hash_algo_type code_hash_algo;
+  uint64_t                      crash_dump_enable;
+} secx509_ou_field_info_type;
+
+
 #endif // _QC_MBN_H

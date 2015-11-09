@@ -20,16 +20,13 @@
 #include <QVariant>
 #endif
 
-#define DEBUG
-#define HEXDUMP_PORT_TX
-#define HEXDUMP_PORT_RX
 
 #ifdef HEXDUMP_PORT_TX
 #define hexdump_tx(data, amount) \
             do { if (amount > 0) printf("Dumping %lu bytes written\n", amount); hexdump(data, amount); } while (0)
 #else
 #define hexdump_tx(data, amount) \
-	        do {} while (0)
+            do {} while (0)
 #endif
 
 

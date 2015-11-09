@@ -19,9 +19,9 @@ using namespace OpenPST;
 * @param QcdmSerial port
 */
 DmEfsManager::DmEfsManager(QcdmSerial& port) : 
-	port(port),
-	subsystemCommand(DIAG_SUBSYS_CMD_F),
-	subsystemId(DIAG_SUBSYS_FS)
+    port(port),
+    subsystemCommand(DIAG_SUBSYS_CMD_F),
+    subsystemId(DIAG_SUBSYS_FS)
 {
 
 }
@@ -40,7 +40,7 @@ DmEfsManager::~DmEfsManager()
 */
 void DmEfsManager::setSubsystemCommand(uint32_t command)
 {
-	subsystemCommand = command;
+    subsystemCommand = command;
 }
 
 /**
@@ -50,7 +50,7 @@ void DmEfsManager::setSubsystemCommand(uint32_t command)
 */
 uint32_t DmEfsManager::getSubsystemCommand()
 {
-	return subsystemCommand;
+    return subsystemCommand;
 }
 
 /**
@@ -61,7 +61,7 @@ uint32_t DmEfsManager::getSubsystemCommand()
 */
 void DmEfsManager::setSubsystemId(uint32_t id)
 {
-	subsystemId = id;
+    subsystemId = id;
 }
 
 /**
@@ -71,95 +71,95 @@ void DmEfsManager::setSubsystemId(uint32_t id)
 */
 uint32_t DmEfsManager::getSubsystemId()
 {
-	return subsystemId;
+    return subsystemId;
 }
 
 /**
-* @brief DmEfsManager::hello - Send the hello and recieve configuration parameters
+* @brief DmEfsManager::hello - Send the hello and receive configuration parameters
 *
-* @param diag_subsys_efs_hello_rx_t &response - Populated with the results from the device on success
+* @param QcdmEfsHelloResponse &response - Populated with the results from the device on success
 * @return int
 */
-int DmEfsManager::hello(diag_subsys_efs_hello_rx_t& response)
+int DmEfsManager::hello(QcdmEfsHelloResponse& response)
 {
 
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_hello_tx_t packet = {
-		getHeader(DIAG_EFS_HELLO),
-		DIAG_EFS_DEFAULT_WINDOW_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-		DIAG_EFS_VERSION,
-		DIAG_EFS_MIN_VERSION,
-		DIAG_EFS_MAX_VERSION,
-		0x000000
-	};
-	
-	int commandResult = sendCommand(DIAG_EFS_HELLO, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    QcdmEfsHelloRequest packet = {
+        getHeader(DIAG_EFS_HELLO),
+        DIAG_EFS_DEFAULT_WINDOW_SIZE,
+        DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+        DIAG_EFS_DEFAULT_WINDOW_SIZE,
+        DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+        DIAG_EFS_DEFAULT_WINDOW_SIZE,
+        DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+        DIAG_EFS_VERSION,
+        DIAG_EFS_MIN_VERSION,
+        DIAG_EFS_MAX_VERSION,
+        0x000000
+    };
+    
+    int commandResult = sendCommand(DIAG_EFS_HELLO, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
 * @brief getDeviceInfo - Get the device information
 *
-* @param diag_subsys_efs_device_info_rx_t &response - Populated with the results from the device on success
+* @param QcdmEfsDeviceInfoResponse &response - Populated with the results from the device on success
 * @return int
 */
-int DmEfsManager::getDeviceInfo(diag_subsys_efs_device_info_rx_t& response)
+int DmEfsManager::getDeviceInfo(QcdmEfsDeviceInfoResponse& response)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
-	
-	int commandResult = sendCommand(DIAG_EFS_DEV_INFO);
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
+    
+    int commandResult = sendCommand(DIAG_EFS_DEV_INFO);
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_device_info_rx_t* resp = (diag_subsys_efs_device_info_rx_t*)buffer;
+    QcdmEfsDeviceInfoResponse* resp = (QcdmEfsDeviceInfoResponse*)buffer;
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
 * @brief query - Query for file system settings
 *
-* @param diag_subsys_efs_query_rx_t &response - Populated with the results from the device on success
+* @param QcdmEfsQueryResponse &response - Populated with the results from the device on success
 * @return int
 */
-int DmEfsManager::query(diag_subsys_efs_query_rx_t& response)
+int DmEfsManager::query(QcdmEfsQueryResponse& response)
 {
-	if (!port.isOpen()) {		
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {       
+        return kDmEfsIOError;
+    }
 
-	int commandResult = sendCommand(DIAG_EFS_QUERY);
+    int commandResult = sendCommand(DIAG_EFS_QUERY);
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_query_rx_t* resp = (diag_subsys_efs_query_rx_t*)buffer;
+    QcdmEfsQueryResponse* resp = (QcdmEfsQueryResponse*)buffer;
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess; 
+    return kDmEfsSuccess; 
 }
 
 /**
@@ -173,36 +173,36 @@ int DmEfsManager::query(diag_subsys_efs_query_rx_t& response)
 */
 int DmEfsManager::open(std::string path, int32_t flags, int32_t mode, int32_t& fp)
 {
-	
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_open_file_tx_t) + path.size();
-	diag_subsys_efs_open_file_tx_t* packet = (diag_subsys_efs_open_file_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsOpenFileRequest) + path.size();
+    QcdmEfsOpenFileRequest* packet = (QcdmEfsOpenFileRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_OPEN);
-	packet->flags = flags;
-	packet->mode = mode;	
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_OPEN);
+    packet->flags = flags;
+    packet->mode = mode;    
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_OPEN, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_OPEN, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
-	
-	diag_subsys_efs_open_file_rx_t* response = (diag_subsys_efs_open_file_rx_t*)buffer;
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
+    
+    QcdmEfsOpenFileResponse* response = (QcdmEfsOpenFileResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	fp = response->fp;
+    fp = response->fp;
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -214,28 +214,28 @@ int DmEfsManager::open(std::string path, int32_t flags, int32_t mode, int32_t& f
 */
 int DmEfsManager::close(int32_t fp)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_close_file_tx_t packet = {
-		getHeader(DIAG_EFS_CLOSE),
-		fp
-	};
+    QcdmEfsCloseFileRequest packet = {
+        getHeader(DIAG_EFS_CLOSE),
+        fp
+    };
 
-	int commandResult = sendCommand(DIAG_EFS_CLOSE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_CLOSE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_close_file_rx_t* response = (diag_subsys_efs_close_file_rx_t*)buffer;
+    QcdmEfsCloseFileReponse* response = (QcdmEfsCloseFileReponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -250,38 +250,38 @@ int DmEfsManager::close(int32_t fp)
 */
 int DmEfsManager::read(int32_t fp, size_t size, uint32_t offset, std::vector<uint8_t>& data)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_read_file_tx_t packet = {
-		getHeader(DIAG_EFS_READ),
-		fp,
-		size,
-		offset
-	};
+    QcdmEfsReadFileRequest packet = {
+        getHeader(DIAG_EFS_READ),
+        fp,
+        size,
+        offset
+    };
 
-	if (!port.write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet))) {
-		return kDmEfsIOError;
-	}
-	
-	size_t rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
+    if (!port.write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet))) {
+        return kDmEfsIOError;
+    }
+    
+    size_t rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
 
-	if (!rxSize) {
-		return kDmEfsIOError;
-	}
-	
-	if (!isValidResponse(DIAG_EFS_READ, buffer, rxSize)) {
-		return kDmEfsError;
-	}
-	
-	diag_subsys_efs_read_file_rx_t* response = (diag_subsys_efs_read_file_rx_t*)buffer;
-	
-	hexdump(response->data, rxSize - sizeof(diag_subsys_efs_read_file_rx_t));
+    if (!rxSize) {
+        return kDmEfsIOError;
+    }
+    
+    if (!isValidResponse(DIAG_EFS_READ, buffer, rxSize)) {
+        return kDmEfsError;
+    }
+    
+    QcdmEfsReadFileResponse* response = (QcdmEfsReadFileResponse*)buffer;
+    
+    hexdump(response->data, rxSize - sizeof(QcdmEfsReadFileResponse));
 
-	data.insert(data.end(), response->data, response->data + (rxSize - sizeof(diag_subsys_efs_read_file_rx_t)));
-	
-	return kDmEfsSuccess;
+    data.insert(data.end(), response->data, response->data + (rxSize - sizeof(QcdmEfsReadFileResponse)));
+    
+    return kDmEfsSuccess;
 }
 
 /**
@@ -294,50 +294,50 @@ int DmEfsManager::read(int32_t fp, size_t size, uint32_t offset, std::vector<uin
 */
 int DmEfsManager::read(std::string path, std::string outPath)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	int32_t fp;
-	
-	int openResult = open(path, O_RDONLY, 0x00, fp);
+    int32_t fp;
+    
+    int openResult = open(path, O_RDONLY, 0x00, fp);
 
-	if (openResult != kDmEfsSuccess) {
-		return openResult;
-	}
+    if (openResult != kDmEfsSuccess) {
+        return openResult;
+    }
 
-	diag_subsys_efs_fstat_rx_t fileInfo;
+    QcdmEfsFstatResponse fileInfo;
 
-	int fstatResult = fstat(fp, fileInfo);
+    int fstatResult = fstat(fp, fileInfo);
 
-	if (fstatResult != kDmEfsSuccess) {
-		return fstatResult;
-	}
+    if (fstatResult != kDmEfsSuccess) {
+        return fstatResult;
+    }
 
-	if (fileInfo.size <= 0) {
-		return kDmEfsError;
-	}
+    if (fileInfo.size <= 0) {
+        return kDmEfsError;
+    }
 
-	std::vector<uint8_t> data;
+    std::vector<uint8_t> data;
 
-	int readResult = read(fp, fileInfo.size, 0x00, data);
+    int readResult = read(fp, fileInfo.size, 0x00, data);
 
-	if (readResult != kDmEfsSuccess) {
-		close(fp);
-		return readResult;
-	}
+    if (readResult != kDmEfsSuccess) {
+        close(fp);
+        return readResult;
+    }
 
-	close(fp);
+    close(fp);
 
-	std::ofstream out(outPath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+    std::ofstream out(outPath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 
-	if (!out.is_open()) {
-		return kDmEfsIOError;
-	}
+    if (!out.is_open()) {
+        return kDmEfsIOError;
+    }
 
-	out.write(reinterpret_cast<char*>(&data[0]), data.size());
+    out.write(reinterpret_cast<char*>(&data[0]), data.size());
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -352,7 +352,7 @@ int DmEfsManager::read(std::string path, std::string outPath)
 */
 int DmEfsManager::write(int32_t fp, uint8_t* data, size_t amount, uint32_t offset)
 {
-	return 0;
+    return 0;
 }
 
 /**
@@ -365,33 +365,33 @@ int DmEfsManager::write(int32_t fp, uint8_t* data, size_t amount, uint32_t offse
 */
 int DmEfsManager::symlink(std::string path, std::string linkPath)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_create_link_tx_t) + path.size() + linkPath.size();
-	diag_subsys_efs_create_link_tx_t* packet = (diag_subsys_efs_create_link_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsCreateLinkRequest) + path.size() + linkPath.size();
+    QcdmEfsCreateLinkRequest* packet = (QcdmEfsCreateLinkRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_SYMLINK);
-	std::memcpy(packet->path, path.c_str(), path.size());
-	std::memcpy((packet->path + path.size() + 1), linkPath.c_str(), linkPath.size());
+    packet->header = getHeader(DIAG_EFS_SYMLINK);
+    std::memcpy(packet->path, path.c_str(), path.size());
+    std::memcpy((packet->path + path.size() + 1), linkPath.c_str(), linkPath.size());
 
-	int commandResult = sendCommand(DIAG_EFS_SYMLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_SYMLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_create_link_rx_t* response = (diag_subsys_efs_create_link_rx_t*)buffer;
+    QcdmEfsCreateLinkResponse* response = (QcdmEfsCreateLinkResponse*)buffer;
 
-	if (response->error) {
-		LOGE("Error creating link from %s to %s\n", path.c_str(), linkPath.c_str());
-		return kDmEfsError;
-	}
+    if (response->error) {
+        LOGE("Error creating link from %s to %s\n", path.c_str(), linkPath.c_str());
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess; 
+    return kDmEfsSuccess; 
 }
 
 /**
@@ -404,33 +404,33 @@ int DmEfsManager::symlink(std::string path, std::string linkPath)
 */
 int DmEfsManager::readSimlink(std::string path, std::string& out)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_read_link_tx_t) + path.size();
-	diag_subsys_efs_read_link_tx_t* packet = (diag_subsys_efs_read_link_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsReadLinkRequest) + path.size();
+    QcdmEfsReadLinkRequest* packet = (QcdmEfsReadLinkRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_READLINK);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_READLINK);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_READLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_READLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
-	
-	diag_subsys_efs_read_link_rx_t* response = (diag_subsys_efs_read_link_rx_t*)buffer;
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
+    
+    QcdmEfsReadLinkResponse* response = (QcdmEfsReadLinkResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	out = response->path;
+    out = response->path;
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -442,32 +442,32 @@ int DmEfsManager::readSimlink(std::string path, std::string& out)
 */
 int DmEfsManager::unlink(std::string path)
 {
-	
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_unlink_tx_t) + path.size();
-	diag_subsys_efs_unlink_tx_t* packet = (diag_subsys_efs_unlink_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsUnlinkRequest) + path.size();
+    QcdmEfsUnlinkRequest* packet = (QcdmEfsUnlinkRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_UNLINK);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_UNLINK);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_UNLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_UNLINK, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_unlink_rx_t* response = (diag_subsys_efs_unlink_rx_t*)buffer;
+    QcdmEfsUnlinkResponse* response = (QcdmEfsUnlinkResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -480,32 +480,32 @@ int DmEfsManager::unlink(std::string path)
 */
 int DmEfsManager::mkdir(std::string path, int16_t mode)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_mkdir_tx_t) + path.size();
-	diag_subsys_efs_mkdir_tx_t* packet = (diag_subsys_efs_mkdir_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsMkdirRequest) + path.size();
+    QcdmEfsMkdirRequest* packet = (QcdmEfsMkdirRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_MKDIR);
-	packet->mode = mode;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_MKDIR);
+    packet->mode = mode;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_MKDIR, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_MKDIR, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_mkdir_rx_t* response = (diag_subsys_efs_mkdir_rx_t*)buffer;
+    QcdmEfsMkdirResponse* response = (QcdmEfsMkdirResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -517,31 +517,31 @@ int DmEfsManager::mkdir(std::string path, int16_t mode)
 */
 int DmEfsManager::rmdir(std::string path)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_rmdir_tx_t) + path.size();
-	diag_subsys_efs_rmdir_tx_t* packet = (diag_subsys_efs_rmdir_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsRmdirRequest) + path.size();
+    QcdmEfsRmdirRequest* packet = (QcdmEfsRmdirRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_RMDIR);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_RMDIR);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_RMDIR, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_RMDIR, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_mkdir_rx_t* response = (diag_subsys_efs_mkdir_rx_t*)buffer;
+    QcdmEfsMkdirResponse* response = (QcdmEfsMkdirResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -555,34 +555,34 @@ int DmEfsManager::rmdir(std::string path)
 int DmEfsManager::openDir(std::string path, uint32_t& dp)
 {
 
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_open_dir_tx_t) + path.size();
-	diag_subsys_efs_open_dir_tx_t* packet = (diag_subsys_efs_open_dir_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsOpenDirRequest) + path.size();
+    QcdmEfsOpenDirRequest* packet = (QcdmEfsOpenDirRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_OPENDIR);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_OPENDIR);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_OPENDIR, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_OPENDIR, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_open_dir_rx_t* response = (diag_subsys_efs_open_dir_rx_t*)buffer;
+    QcdmEfsOpenDirResponse* response = (QcdmEfsOpenDirResponse*)buffer;
 
-	if (response->error) {
-		LOGE("Error opening directory %s - Error: %08X\n", path.c_str(), response->error);
-		return kDmEfsError;
-	}
+    if (response->error) {
+        LOGE("Error opening directory %s - Error: %08X\n", path.c_str(), response->error);
+        return kDmEfsError;
+    }
 
-	dp = response->dp;
+    dp = response->dp;
 
-	return kDmEfsSuccess; 
+    return kDmEfsSuccess; 
 }
 
 /**
@@ -596,78 +596,78 @@ int DmEfsManager::openDir(std::string path, uint32_t& dp)
 */
 int DmEfsManager::readDir(std::string path, std::vector<DmEfsNode>& contents, bool recursive)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t txSize, rxSize;
-	uint32_t dp;
+    size_t txSize, rxSize;
+    uint32_t dp;
 
-	int openResult = openResult = openDir(path, dp);
+    int openResult = openResult = openDir(path, dp);
 
-	if (openResult != kDmEfsSuccess) {
-		return openResult;
-	}
+    if (openResult != kDmEfsSuccess) {
+        return openResult;
+    }
 
-	diag_subsys_efs_read_dir_tx_t packet = {};
-	packet.header = getHeader(DIAG_EFS_READDIR);
-	packet.dp = dp;
-	packet.sequenceNumber = 1;
+    QcdmEfsReadDirRequest packet = {};
+    packet.header = getHeader(DIAG_EFS_READDIR);
+    packet.dp = dp;
+    packet.sequenceNumber = 1;
 
-	do {
+    do {
 
-		int commandResult = sendCommand(DIAG_EFS_READDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+        int commandResult = sendCommand(DIAG_EFS_READDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-		if (commandResult != kDmEfsSuccess) {
-			if (closeDir(dp) != kDmEfsSuccess) {
-				LOGI("Error closing directory %s\n", path.c_str());
-			}
-			return commandResult;
-		}
+        if (commandResult != kDmEfsSuccess) {
+            if (closeDir(dp) != kDmEfsSuccess) {
+                LOGI("Error closing directory %s\n", path.c_str());
+            }
+            return commandResult;
+        }
 
-		diag_subsys_efs_read_dir_rx_t* response = (diag_subsys_efs_read_dir_rx_t*)buffer;
+        QcdmEfsReadDirResponse* response = (QcdmEfsReadDirResponse*)buffer;
 
-		if (response->sequenceNumber != packet.sequenceNumber) {
-			LOGI("Invalid readDir Sequence Received\n");
-		}
+        if (response->sequenceNumber != packet.sequenceNumber) {
+            LOGI("Invalid readDir Sequence Received\n");
+        }
 
-		if (response->error) {
-			LOGE("Error Reading %s/%s. Error: %08X\n", path.c_str(), response->name, response->error);
-		}
+        if (response->error) {
+            LOGE("Error Reading %s/%s. Error: %08X\n", path.c_str(), response->name, response->error);
+        }
 
-		if (strlen(response->name) == 0) {
-			break; // end
-		}
-	
-		DmEfsNode node(path, response);
+        if (strlen(response->name) == 0) {
+            break; // end
+        }
+    
+        DmEfsNode node(path, response);
 
-		contents.insert(contents.end(), node);
+        contents.insert(contents.end(), node);
 
-		packet.sequenceNumber++;
+        packet.sequenceNumber++;
 
-	} while (true);
+    } while (true);
 
-	if (closeDir(dp) != kDmEfsSuccess) {
-		LOGI("Error closing directory %s\n", path.c_str());
-	}
+    if (closeDir(dp) != kDmEfsSuccess) {
+        LOGI("Error closing directory %s\n", path.c_str());
+    }
 
-	if (recursive) {
-		for (auto &node : contents) {
-			if (node.isDir()) {
+    if (recursive) {
+        for (auto &node : contents) {
+            if (node.isDir()) {
 
-				std::string checkPath = path;
+                std::string checkPath = path;
 
-				checkPath.append(node.name).append("/");
-		
-				if (readDir(checkPath, node.children, recursive) != kDmEfsSuccess) {
-					LOGE("Error on recursive readDir for %s\n", checkPath.c_str());
-					node.error = 0x000001;
-				}
-			}
-		}
-	}
+                checkPath.append(node.name).append("/");
+        
+                if (readDir(checkPath, node.children, recursive) != kDmEfsSuccess) {
+                    LOGE("Error on recursive readDir for %s\n", checkPath.c_str());
+                    node.error = 0x000001;
+                }
+            }
+        }
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -681,50 +681,50 @@ int DmEfsManager::readDir(std::string path, std::vector<DmEfsNode>& contents, bo
 int DmEfsManager::readDir(uint32_t dp, std::vector<DmEfsNode>& contents)
 {
 
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t txSize, rxSize;
+    size_t txSize, rxSize;
 
-	diag_subsys_efs_read_dir_tx_t packet = {};
-	packet.header = getHeader(DIAG_EFS_READDIR);
-	packet.dp = dp;
-	packet.sequenceNumber = 1;
-			
-	do {
-		int commandResult = sendCommand(DIAG_EFS_READDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    QcdmEfsReadDirRequest packet = {};
+    packet.header = getHeader(DIAG_EFS_READDIR);
+    packet.dp = dp;
+    packet.sequenceNumber = 1;
+            
+    do {
+        int commandResult = sendCommand(DIAG_EFS_READDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-		if (commandResult != kDmEfsSuccess) {
-			if (closeDir(dp) != kDmEfsSuccess) {
-				LOGI("Error closing directory dp %d\n", dp);
-			}
-			return commandResult;
-		}
-		
-		diag_subsys_efs_read_dir_rx_t* response = (diag_subsys_efs_read_dir_rx_t*)buffer;
+        if (commandResult != kDmEfsSuccess) {
+            if (closeDir(dp) != kDmEfsSuccess) {
+                LOGI("Error closing directory dp %d\n", dp);
+            }
+            return commandResult;
+        }
+        
+        QcdmEfsReadDirResponse* response = (QcdmEfsReadDirResponse*)buffer;
 
-		if (response->sequenceNumber != packet.sequenceNumber) {
-			LOGI("Invalid sequence received in read directory response\n");
-		}
+        if (response->sequenceNumber != packet.sequenceNumber) {
+            LOGI("Invalid sequence received in read directory response\n");
+        }
 
-		if (response->error) {
-			LOGE("Error reading directory fp %s. Error %08X\n", response->name, response->error);
-		}
+        if (response->error) {
+            LOGE("Error reading directory fp %s. Error %08X\n", response->name, response->error);
+        }
 
-		if (strlen(response->name) == 0) {
-			break; // end
-		}
+        if (strlen(response->name) == 0) {
+            break; // end
+        }
 
-		DmEfsNode node("", response);
+        DmEfsNode node("", response);
 
-		contents.insert(contents.end(), node);
+        contents.insert(contents.end(), node);
 
-		packet.sequenceNumber++;
+        packet.sequenceNumber++;
 
-	} while (true);
+    } while (true);
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -735,29 +735,29 @@ int DmEfsManager::readDir(uint32_t dp, std::vector<DmEfsNode>& contents)
 int DmEfsManager::closeDir(uint32_t dp)
 {
 
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_close_dir_tx_t packet = {
-		getHeader(DIAG_EFS_CLOSEDIR),
-		dp
-	};
+    QcdmEfsCloseDirRequest packet = {
+        getHeader(DIAG_EFS_CLOSEDIR),
+        dp
+    };
 
-	int commandResult = sendCommand(DIAG_EFS_CLOSEDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_CLOSEDIR, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_close_dir_rx_t* response = (diag_subsys_efs_close_dir_rx_t*)buffer;
+    QcdmEfsCloseDirResponse* response = (QcdmEfsCloseDirResponse*)buffer;
 
-	if (response->error) {
-		LOGE("Error closing directory %d - Error: %08X\n", dp, response->error);
-		return kDmEfsError;
-	}
+    if (response->error) {
+        LOGE("Error closing directory %d - Error: %08X\n", dp, response->error);
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -770,146 +770,146 @@ int DmEfsManager::closeDir(uint32_t dp)
 */
 int DmEfsManager::rename(std::string path, std::string newPath)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_rename_tx_t) + path.size() + newPath.size();
-	diag_subsys_efs_rename_tx_t* packet = (diag_subsys_efs_rename_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsRenameRequest) + path.size() + newPath.size();
+    QcdmEfsRenameRequest* packet = (QcdmEfsRenameRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_RENAME);
-	std::memcpy(packet->path, path.c_str(), path.size());
-	std::memcpy((packet->path + path.size() + 1), newPath.c_str(), newPath.size());
+    packet->header = getHeader(DIAG_EFS_RENAME);
+    std::memcpy(packet->path, path.c_str(), path.size());
+    std::memcpy((packet->path + path.size() + 1), newPath.c_str(), newPath.size());
 
-	int commandResult = sendCommand(DIAG_EFS_RENAME, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_RENAME, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_access_rx_t* response = (diag_subsys_efs_access_rx_t*)buffer;
+    QcdmEfsAccessResponse* response = (QcdmEfsAccessResponse*)buffer;
 
-	if (response->error) {
-		LOGE("Error renaming %s to %s\n", path.c_str(), newPath.c_str());
-		return kDmEfsError;
-	}
+    if (response->error) {
+        LOGE("Error renaming %s to %s\n", path.c_str(), newPath.c_str());
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
 * @brief DmEfsManager::stat - Stat a file or directory by path
 *
 * @param std::string path
-* @param diag_subsys_efs_stat_rx_t& response
+* @param QcdmEfsStatResponse& response
 *
 * @return int
 */
-int DmEfsManager::stat(std::string path, diag_subsys_efs_stat_rx_t& response)
+int DmEfsManager::stat(std::string path, QcdmEfsStatResponse& response)
 {
 if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_stat_tx_t) + path.size();
-	diag_subsys_efs_stat_tx_t* packet = (diag_subsys_efs_stat_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsStatRequest) + path.size();
+    QcdmEfsStatRequest* packet = (QcdmEfsStatRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_STAT);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_STAT);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_STAT, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_STAT, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_stat_rx_t* resp = (diag_subsys_efs_stat_rx_t*)buffer;
-	
-	if (resp->error) {		
-		return kDmEfsError;
-	}
+    QcdmEfsStatResponse* resp = (QcdmEfsStatResponse*)buffer;
+    
+    if (resp->error) {      
+        return kDmEfsError;
+    }
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
 * @brief lstat - Stat a link by path
 *
 * @param std::string path
-* @param diag_subsys_efs_lstat_rx_t& response
+* @param QcdmEfsLstatResponse& response
 *
 * @return int
 */
-int DmEfsManager::lstat(std::string path, diag_subsys_efs_lstat_rx_t& response)
+int DmEfsManager::lstat(std::string path, QcdmEfsLstatResponse& response)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_lstat_tx_t) + path.size();
-	diag_subsys_efs_lstat_tx_t* packet = (diag_subsys_efs_lstat_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsLstatRequest) + path.size();
+    QcdmEfsLstatRequest* packet = (QcdmEfsLstatRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_LSTAT);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_LSTAT);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_LSTAT, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_LSTAT, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_lstat_rx_t* resp = (diag_subsys_efs_lstat_rx_t*)buffer;
-	
-	if (resp->error) {		
-		return kDmEfsError;
-	}
+    QcdmEfsLstatResponse* resp = (QcdmEfsLstatResponse*)buffer;
+    
+    if (resp->error) {      
+        return kDmEfsError;
+    }
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
 * @brief fstat - Stat a file by fp
 *
 * @param std::string path
-* @param diag_subsys_efs_lstat_rx_t& response
+* @param QcdmEfsLstatResponse& response
 *
 * @return int
 */
-int DmEfsManager::fstat(int32_t fp, diag_subsys_efs_fstat_rx_t& response)
+int DmEfsManager::fstat(int32_t fp, QcdmEfsFstatResponse& response)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_fstat_tx_t packet = {};
-	packet.header = getHeader(DIAG_EFS_FSTAT);
-	packet.fp = fp;
-	
-	int commandResult = sendCommand(DIAG_EFS_FSTAT, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    QcdmEfsFstatRequest packet = {};
+    packet.header = getHeader(DIAG_EFS_FSTAT);
+    packet.fp = fp;
+    
+    int commandResult = sendCommand(DIAG_EFS_FSTAT, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_fstat_rx_t* resp = (diag_subsys_efs_fstat_rx_t*)buffer;
+    QcdmEfsFstatResponse* resp = (QcdmEfsFstatResponse*)buffer;
 
-	if (resp->error) {
-		return kDmEfsError;
-	}
+    if (resp->error) {
+        return kDmEfsError;
+    }
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -922,67 +922,67 @@ int DmEfsManager::fstat(int32_t fp, diag_subsys_efs_fstat_rx_t& response)
 */
 int DmEfsManager::chmod(std::string path, int16_t mode)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_chmod_tx_t) + path.size();
-	diag_subsys_efs_chmod_tx_t* packet = (diag_subsys_efs_chmod_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsChmodRequest) + path.size();
+    QcdmEfsChmodRequest* packet = (QcdmEfsChmodRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_CHMOD);
-	packet->mode = mode;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_CHMOD);
+    packet->mode = mode;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_CHMOD, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_CHMOD, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_chmod_rx_t* response = (diag_subsys_efs_chmod_rx_t*)buffer;
+    QcdmEfsChmodResponse* response = (QcdmEfsChmodResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
 * @brief statfs - Stat the filesystem
 *
 * @param std::string path
-* @param diag_subsys_efs_statfs_rx_t& response
+* @param QcdmEfsStatfsResponse& response
 *
 * @return int
 */
-int DmEfsManager::statfs(std::string path, diag_subsys_efs_statfs_rx_t& response)
+int DmEfsManager::statfs(std::string path, QcdmEfsStatfsResponse& response)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_statfs_tx_t) + path.size();
-	diag_subsys_efs_statfs_tx_t* packet = (diag_subsys_efs_statfs_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsStatfsRequest) + path.size();
+    QcdmEfsStatfsRequest* packet = (QcdmEfsStatfsRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_STATFS);
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_STATFS);
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_STATFS, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_STATFS, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
-	
-	diag_subsys_efs_statfs_tx_t* resp = (diag_subsys_efs_statfs_tx_t*)buffer;
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
+    
+    QcdmEfsStatfsRequest* resp = (QcdmEfsStatfsRequest*)buffer;
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -995,32 +995,32 @@ int DmEfsManager::statfs(std::string path, diag_subsys_efs_statfs_rx_t& response
 */
 int DmEfsManager::access(std::string path, char checkPermissionBits)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_access_tx_t) + path.size();
-	diag_subsys_efs_access_tx_t* packet = (diag_subsys_efs_access_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsAccessRequest) + path.size();
+    QcdmEfsAccessRequest* packet = (QcdmEfsAccessRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_ACCESS);
-	packet->permissionBits = checkPermissionBits;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_ACCESS);
+    packet->permissionBits = checkPermissionBits;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_ACCESS, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_ACCESS, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_access_rx_t* response = (diag_subsys_efs_access_rx_t*)buffer;
+    QcdmEfsAccessResponse* response = (QcdmEfsAccessResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1032,7 +1032,7 @@ int DmEfsManager::access(std::string path, char checkPermissionBits)
 */
 int DmEfsManager::getFactoryImage(std::ofstream& out)
 {
-	return  kDmEfsError;
+    return  kDmEfsError;
 }
 
 /**
@@ -1042,22 +1042,22 @@ int DmEfsManager::getFactoryImage(std::ofstream& out)
 */
 int DmEfsManager::factoryImageStart()
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	int commandResult = sendCommand(DIAG_EFS_FACT_IMAGE_START);
+    int commandResult = sendCommand(DIAG_EFS_FACT_IMAGE_START);
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_factory_image_start_rx_t* response = (diag_subsys_efs_factory_image_start_rx_t*)buffer;
+    QcdmEfsFactoryImageStartResponse* response = (QcdmEfsFactoryImageStartResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
-	return kDmEfsSuccess;
+    if (response->error) {
+        return kDmEfsError;
+    }
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1067,30 +1067,30 @@ int DmEfsManager::factoryImageStart()
 */
 int DmEfsManager::factoryImageRead(std::vector<uint8_t>& data)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_factory_image_read_tx_t packet = {};
-	packet.header = getHeader(DIAG_EFS_FACT_IMAGE_START);
-	packet.streamState = 0x00;
-	packet.infoClusterSent = 0x00;
-	packet.clusterMapSequence = 0x00;
-	packet.clusterDataSequence = 0x00;
+    QcdmEfsFactoryImageReadRequest packet = {};
+    packet.header = getHeader(DIAG_EFS_FACT_IMAGE_START);
+    packet.streamState = 0x00;
+    packet.infoClusterSent = 0x00;
+    packet.clusterMapSequence = 0x00;
+    packet.clusterDataSequence = 0x00;
 
-	int commandResult = sendCommand(DIAG_EFS_FACT_IMAGE_START, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_FACT_IMAGE_START, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_factory_image_read_rx_t* response = (diag_subsys_efs_factory_image_read_rx_t*)buffer;
+    QcdmEfsFactoryImageReadResponse* response = (QcdmEfsFactoryImageReadResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1100,22 +1100,22 @@ int DmEfsManager::factoryImageRead(std::vector<uint8_t>& data)
 */
 int DmEfsManager::factoryImageEnd()
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	int commandResult = sendCommand(DIAG_EFS_FACT_IMAGE_START);
+    int commandResult = sendCommand(DIAG_EFS_FACT_IMAGE_START);
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_factory_image_end_rx_t* response = (diag_subsys_efs_factory_image_end_rx_t*)buffer;
+    QcdmEfsFactoryImageEndResponse* response = (QcdmEfsFactoryImageEndResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
-	return kDmEfsSuccess;
+    if (response->error) {
+        return kDmEfsError;
+    }
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1125,23 +1125,23 @@ int DmEfsManager::factoryImageEnd()
 */
 int DmEfsManager::factoryImagePrepare()
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	int commandResult = sendCommand(DIAG_EFS_PREP_FACT_IMAGE);
+    int commandResult = sendCommand(DIAG_EFS_PREP_FACT_IMAGE);
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_factory_image_prepare_rx_t* response = (diag_subsys_efs_factory_image_prepare_rx_t*)buffer;
+    QcdmEfsFactoryImagePrepareResponse* response = (QcdmEfsFactoryImagePrepareResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1155,33 +1155,33 @@ int DmEfsManager::factoryImagePrepare()
 */
 int DmEfsManager::chown(std::string path, int32_t uid, int32_t gid)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_chown_tx_t) + path.size();
-	diag_subsys_efs_chown_tx_t* packet = (diag_subsys_efs_chown_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsChownRequest) + path.size();
+    QcdmEfsChownRequest* packet = (QcdmEfsChownRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_CHOWN);
-	packet->uid = uid;
-	packet->gid = gid;
-	std::memcpy(packet->path, path.c_str(), path.size());
-	
-	int commandResult = sendCommand(DIAG_EFS_CHOWN, reinterpret_cast<uint8_t*>(packet), packetSize);
+    packet->header = getHeader(DIAG_EFS_CHOWN);
+    packet->uid = uid;
+    packet->gid = gid;
+    std::memcpy(packet->path, path.c_str(), path.size());
+    
+    int commandResult = sendCommand(DIAG_EFS_CHOWN, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_chown_rx_t* response = (diag_subsys_efs_chown_rx_t*)buffer;
+    QcdmEfsChownResponse* response = (QcdmEfsChownResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1195,33 +1195,33 @@ int DmEfsManager::chown(std::string path, int32_t uid, int32_t gid)
 */
 int DmEfsManager::setQuota(std::string path, int32_t gid, size_t size)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_set_quota_tx_t) + path.size();
-	diag_subsys_efs_set_quota_tx_t* packet = (diag_subsys_efs_set_quota_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsSetQuotaRequest) + path.size();
+    QcdmEfsSetQuotaRequest* packet = (QcdmEfsSetQuotaRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_SET_QUOTA);
-	packet->gid = gid;
-	packet->amount = size;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_SET_QUOTA);
+    packet->gid = gid;
+    packet->amount = size;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_SET_QUOTA, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_SET_QUOTA, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_set_quota_rx_t* response = (diag_subsys_efs_set_quota_rx_t*)buffer;
+    QcdmEfsSetQuotaResponse* response = (QcdmEfsSetQuotaResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1234,32 +1234,32 @@ int DmEfsManager::setQuota(std::string path, int32_t gid, size_t size)
 */
 int DmEfsManager::getGroupInfo(std::string path, int32_t gid)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_get_group_info_tx_t) + path.size();
-	diag_subsys_efs_get_group_info_tx_t* packet = (diag_subsys_efs_get_group_info_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsGetGroupInfoRequest) + path.size();
+    QcdmEfsGetGroupInfoRequest* packet = (QcdmEfsGetGroupInfoRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_GET_GROUP_INFO);
-	packet->gid = gid;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_GET_GROUP_INFO);
+    packet->gid = gid;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_GET_GROUP_INFO, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_GET_GROUP_INFO, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_get_group_info_rx_t* response = (diag_subsys_efs_get_group_info_rx_t*)buffer;
+    QcdmEfsGetGroupInfoResponse* response = (QcdmEfsGetGroupInfoResponse*)buffer;
 
-	if (response->error) {
-		return kDmEfsError;
-	}
+    if (response->error) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1272,32 +1272,32 @@ int DmEfsManager::getGroupInfo(std::string path, int32_t gid)
 */
 int DmEfsManager::deltree(std::string path, int sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_deltree_tx_t) + path.size();
-	diag_subsys_efs_deltree_tx_t* packet = (diag_subsys_efs_deltree_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsDeltreeRequest) + path.size();
+    QcdmEfsDeltreeRequest* packet = (QcdmEfsDeltreeRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_DELTREE);
-	packet->sequence = sequence;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_DELTREE);
+    packet->sequence = sequence;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_DELTREE, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_DELTREE, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_deltree_rx_t* response = (diag_subsys_efs_deltree_rx_t*)buffer;
+    QcdmEfsDeltreeResponse* response = (QcdmEfsDeltreeResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1311,32 +1311,32 @@ int DmEfsManager::deltree(std::string path, int sequence)
 */
 int DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_truncate_tx_t) + path.size();
-	diag_subsys_efs_truncate_tx_t* packet = (diag_subsys_efs_truncate_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsTruncateRequest) + path.size();
+    QcdmEfsTruncateRequest* packet = (QcdmEfsTruncateRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_TRUNCATE);
-	packet->sequence = sequence;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_TRUNCATE);
+    packet->sequence = sequence;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_TRUNCATE, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_TRUNCATE, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_truncate_rx_t* response = (diag_subsys_efs_truncate_rx_t*)buffer;
+    QcdmEfsTruncateResponse* response = (QcdmEfsTruncateResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1350,58 +1350,58 @@ int DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 */
 int DmEfsManager::ftruncate(int32_t fp, size_t amount, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_ftruncate_tx_t packet = {};
+    QcdmEfsFtncateRequest packet = {};
 
-	packet.header = getHeader(DIAG_EFS_FTRUNCATE);
-	packet.sequence = sequence;
-	packet.fp = fp;
+    packet.header = getHeader(DIAG_EFS_FTRUNCATE);
+    packet.sequence = sequence;
+    packet.fp = fp;
 
-	int commandResult = sendCommand(DIAG_EFS_FTRUNCATE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_FTRUNCATE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_ftruncate_rx_t* response = (diag_subsys_efs_ftruncate_rx_t*)buffer;
+    QcdmEfsFtncateResponse* response = (QcdmEfsFtncateResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 
-int DmEfsManager::statfsV2(diag_subsys_efs_statfs_v2_rx_t& response, int32_t sequence)
+int DmEfsManager::statfsV2(QcdmEfsStatfsV2Response& response, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_statfs_v2_tx_t packet = {
-		getHeader(DIAG_EFS_STATVFS_V2),
-		sequence
-	};
+    QcdmEfsStatfsV2Request packet = {
+        getHeader(DIAG_EFS_STATVFS_V2),
+        sequence
+    };
 
-	int commandResult = sendCommand(DIAG_EFS_STATVFS_V2, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_STATVFS_V2, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_statfs_v2_rx_t* resp = (diag_subsys_efs_statfs_v2_rx_t*)buffer;
+    QcdmEfsStatfsV2Response* resp = (QcdmEfsStatfsV2Response*)buffer;
 
-	if (resp->error || resp->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (resp->error || resp->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	std::memcpy(&response, buffer, sizeof(response));
+    std::memcpy(&response, buffer, sizeof(response));
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1414,44 +1414,44 @@ int DmEfsManager::statfsV2(diag_subsys_efs_statfs_v2_rx_t& response, int32_t seq
 */
 int DmEfsManager::md5sum(std::string path, std::string& hash, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_md5_sum_tx_t) + path.size();
-	diag_subsys_efs_md5_sum_tx_t* packet = (diag_subsys_efs_md5_sum_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsMd5SumRequest) + path.size();
+    QcdmEfsMd5SumRequest* packet = (QcdmEfsMd5SumRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_MD5SUM);
-	packet->sequence = sequence;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_MD5SUM);
+    packet->sequence = sequence;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_MD5SUM, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_MD5SUM, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_md5_sum_rx_t* response = (diag_subsys_efs_md5_sum_rx_t*)buffer;
+    QcdmEfsMd5SumResponse* response = (QcdmEfsMd5SumResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	std::stringstream ss;
-	ss << std::hex << std::setw(2) << std::setfill('0'); 
-	for (int i = 0; i < 16; i++) {
-		ss << (int)response->hash[i];
-	}
-	
-	std::string tmp = ss.str();
-	std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
+    std::stringstream ss;
+    ss << std::hex << std::setw(2) << std::setfill('0'); 
+    for (int i = 0; i < 16; i++) {
+        ss << (int)response->hash[i];
+    }
+    
+    std::string tmp = ss.str();
+    std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
 
-	hash.clear();
-	hash.append(ss.str());
+    hash.clear();
+    hash.append(ss.str());
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1464,32 +1464,32 @@ int DmEfsManager::md5sum(std::string path, std::string& hash, int32_t sequence)
 */
 int DmEfsManager::formatHotplugDevice(std::string path, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_hotplug_format_tx_t) + path.size();
-	diag_subsys_efs_hotplug_format_tx_t* packet = (diag_subsys_efs_hotplug_format_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsHotplugFormatRequest) + path.size();
+    QcdmEfsHotplugFormatRequest* packet = (QcdmEfsHotplugFormatRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_HOTPLUG_FORMAT);
-	packet->sequence = sequence;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_HOTPLUG_FORMAT);
+    packet->sequence = sequence;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_HOTPLUG_FORMAT, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_HOTPLUG_FORMAT, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
-	
-	diag_subsys_efs_hotplug_format_rx_t* response = (diag_subsys_efs_hotplug_format_rx_t*)buffer;
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
+    
+    QcdmEfsHotplugFormatResponse* response = (QcdmEfsHotplugFormatResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1502,155 +1502,216 @@ int DmEfsManager::formatHotplugDevice(std::string path, int32_t sequence)
 */
 int DmEfsManager::shred(std::string path, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_shred_tx_t) + path.size();
-	diag_subsys_efs_shred_tx_t* packet = (diag_subsys_efs_shred_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsShredRequest) + path.size();
+    QcdmEfsShredRequest* packet = (QcdmEfsShredRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_SHRED);
+    packet->header = getHeader(DIAG_EFS_SHRED);
+    packet->sequence = sequence;
+    std::memcpy(packet->path, path.c_str(), path.size());
+
+    int commandResult = sendCommand(DIAG_EFS_SHRED, reinterpret_cast<uint8_t*>(packet), packetSize);
+
+    delete packet;
+
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
+
+    QcdmEfsShredResponse* response = (QcdmEfsShredResponse*)buffer;
+
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
+
+    return kDmEfsSuccess;
+}
+
+
+QcdmEfsSyncResponse DmEfsManager::syncNoWait(std::string path, uint16_t sequence)
+{
+	QcdmEfsSyncResponse ret = {};
+	size_t packetSize = sizeof(QcdmEfsSyncRequest) + path.size();
+	QcdmEfsSyncRequest* packet = (QcdmEfsSyncRequest*) new uint8_t[packetSize]();
+
+	packet->header = getHeader(DIAG_EFS_SYNC_NO_WAIT);
 	packet->sequence = sequence;
 	std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_SHRED, reinterpret_cast<uint8_t*>(packet), packetSize);
+	int commandResult = sendCommand(packet->header.command, reinterpret_cast<uint8_t*>(packet), packetSize);
 
 	delete packet;
 
 	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
+		throw QcdmResponseError("Command Error");
 	}
 
-	diag_subsys_efs_shred_rx_t* response = (diag_subsys_efs_shred_rx_t*)buffer;
+	QcdmEfsSyncResponse* response = (QcdmEfsSyncResponse*)buffer;
 
 	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
+		throw QcdmResponseError("Command Error");
+
 	}
 
-	return kDmEfsSuccess;
+	std::memcpy(&ret, response, sizeof(QcdmEfsSyncResponse));
+
+	return ret;	
+}
+
+QcdmEfsGetSyncStatusResponse DmEfsManager::getSyncStatus(uint32_t token, uint16_t sequence)
+{
+	QcdmEfsGetSyncStatusResponse ret = {};
+	QcdmEfsGetSyncStatusRequest packet = {};
+
+	packet.header	= getHeader(DIAG_EFS_SYNC_GET_STATUS);
+	packet.sequence = sequence;
+	packet.token	= token;
+
+	int commandResult = sendCommand(packet.header.command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+	if (commandResult != kDmEfsSuccess) {
+		throw QcdmResponseError("Command Error");
+	}
+
+	QcdmEfsSyncResponse* response = (QcdmEfsSyncResponse*)buffer;
+
+	if (response->error) {
+		throw QcdmResponseError(port.getErrorString(response->header.command));
+	}
+
+	if (response->sequence != sequence) {
+		throw QcdmResponseError("Invalid Sequence");
+	}
+	
+	std::memcpy(&ret, response, sizeof(packet));
+
+	return ret;
 }
 
 
 int DmEfsManager::makeGoldenCopy(std::string path, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_make_golden_copy_tx_t) + path.size();
-	diag_subsys_efs_make_golden_copy_tx_t* packet = (diag_subsys_efs_make_golden_copy_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsMakeGoldenCopyRequest) + path.size();
+    QcdmEfsMakeGoldenCopyRequest* packet = (QcdmEfsMakeGoldenCopyRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_MAKE_GOLDEN_COPY);
-	packet->sequence = sequence;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_MAKE_GOLDEN_COPY);
+    packet->sequence = sequence;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_MAKE_GOLDEN_COPY, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_MAKE_GOLDEN_COPY, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {		
-		return commandResult;
-	}	
+    if (commandResult != kDmEfsSuccess) {       
+        return commandResult;
+    }   
 
-	diag_subsys_efs_make_golden_copy_rx_t* response = (diag_subsys_efs_make_golden_copy_rx_t*)buffer;
+    QcdmEfsMakeGoldenCopyResponse* response = (QcdmEfsMakeGoldenCopyResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 
 int DmEfsManager::openFilesystemImage(std::string path, uint8_t imageType, int32_t& handle, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	size_t packetSize = sizeof(diag_subsys_efs_fs_image_open_tx_t) + path.size();
-	diag_subsys_efs_fs_image_open_tx_t* packet = (diag_subsys_efs_fs_image_open_tx_t*) new uint8_t[packetSize]();
+    size_t packetSize = sizeof(QcdmEfsFsImageOpenRequest) + path.size();
+    QcdmEfsFsImageOpenRequest* packet = (QcdmEfsFsImageOpenRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(DIAG_EFS_FILESYSTEM_IMAGE_OPEN);
-	packet->sequence = sequence;
-	packet->imageType = imageType;
-	std::memcpy(packet->path, path.c_str(), path.size());
+    packet->header = getHeader(DIAG_EFS_FILESYSTEM_IMAGE_OPEN);
+    packet->sequence = sequence;
+    packet->imageType = imageType;
+    std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_OPEN, reinterpret_cast<uint8_t*>(packet), packetSize);
+    int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_OPEN, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	delete packet;
+    delete packet;
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_fs_image_open_rx_t* response = (diag_subsys_efs_fs_image_open_rx_t*)buffer;
+    QcdmEfsFsImageOpenResponse* response = (QcdmEfsFsImageOpenResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	handle = response->handle;
+    handle = response->handle;
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 int DmEfsManager::readFilesystemImage(int32_t handle, std::vector<uint8_t>& data, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_fs_image_read_tx_t packet = {
-		getHeader(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE),
-		sequence,
-		handle
-	};
+    QcdmEfsFsImageReadRequest packet = {
+        getHeader(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE),
+        sequence,
+        handle
+    };
 
-	int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_READ, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_READ, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_fs_image_read_rx_t* response = (diag_subsys_efs_fs_image_read_rx_t*)buffer;
+    QcdmEfsFsImageReadResponse* response = (QcdmEfsFsImageReadResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	data.reserve(data.size() + response->length);
+    data.reserve(data.size() + response->length);
 
-	data.insert(data.end(), response->data, response->data + response->length);
-	
-	return kDmEfsSuccess;
+    data.insert(data.end(), response->data, response->data + response->length);
+    
+    return kDmEfsSuccess;
 }
 
 int DmEfsManager::closeFilesystemImage(int32_t handle, int32_t sequence)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	diag_subsys_efs_fs_image_close_tx_t packet = {
-		getHeader(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE),
-		sequence,
-		handle
-	};
+    QcdmEfsFsImageCloseRequest packet = {
+        getHeader(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE),
+        sequence,
+        handle
+    };
 
-	int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(DIAG_EFS_FILESYSTEM_IMAGE_CLOSE, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-	if (commandResult != kDmEfsSuccess) {
-		return commandResult;
-	}
+    if (commandResult != kDmEfsSuccess) {
+        return commandResult;
+    }
 
-	diag_subsys_efs_fs_image_open_rx_t* response = (diag_subsys_efs_fs_image_open_rx_t*)buffer;
+    QcdmEfsFsImageOpenResponse* response = (QcdmEfsFsImageOpenResponse*)buffer;
 
-	if (response->error || response->sequence != sequence) {
-		return kDmEfsError;
-	}
+    if (response->error || response->sequence != sequence) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 
@@ -1663,18 +1724,18 @@ int DmEfsManager::closeFilesystemImage(int32_t handle, int32_t sequence)
 */
 QcdmSubsysHeader DmEfsManager::getHeader(uint16_t command)
 {
-	QcdmSubsysHeader header = {
-		getSubsystemCommand(),
-		getSubsystemId(),
-		command
-	};
+    QcdmSubsysHeader header = {
+        getSubsystemCommand(),
+        getSubsystemId(),
+        command
+    };
 
-	return header;
+    return header;
 }
 
 /**
 * @brief sendCommand - Same as sendCommand(uint16_t command) but does not construct a packet,
-*						just writes the raw data and validates the response
+*                       just writes the raw data and validates the response
 *
 *
 * @param uint16_t - The basic packet command to send as well as expected response command
@@ -1686,18 +1747,18 @@ QcdmSubsysHeader DmEfsManager::getHeader(uint16_t command)
 
 int DmEfsManager::sendCommand(uint16_t command)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	QcdmSubsysHeader packet = getHeader(command);
+    QcdmSubsysHeader packet = getHeader(command);
 
-	return sendCommand(command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    return sendCommand(command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 }
 
 /**
 * @brief sendCommand - Same as sendCommand(uint16_t command) but does not construct a packet,
-*						just writes the raw data (hdlc encoded for you) and validates the response
+*                       just writes the raw data (hdlc encoded for you) and validates the response
 *
 *
 * @param uint16_t - The expected response command
@@ -1708,37 +1769,37 @@ int DmEfsManager::sendCommand(uint16_t command)
 */
 int DmEfsManager::sendCommand(uint16_t command, uint8_t* data, size_t dataSize)
 {
-	if (!port.isOpen()) {
-		return kDmEfsIOError;
-	}
+    if (!port.isOpen()) {
+        return kDmEfsIOError;
+    }
 
-	try {
-		if (!port.write(data, dataSize)) {
-			return kDmEfsIOError;
-		}
-	}
-	catch (serial::IOException e) {
-		return kDmEfsIOError;
-	}
+    try {
+        if (!port.write(data, dataSize)) {
+            return kDmEfsIOError;
+        }
+    }
+    catch (serial::IOException e) {
+        return kDmEfsIOError;
+    }
 
-	size_t rxSize;
+    size_t rxSize;
 
-	try {
-		rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
+    try {
+        rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE);
 
-		if (!rxSize) {
-			return kDmEfsIOError;
-		}
-	}
-	catch (serial::IOException e) {
-		return kDmEfsIOError;
-	}
+        if (!rxSize) {
+            return kDmEfsIOError;
+        }
+    }
+    catch (serial::IOException e) {
+        return kDmEfsIOError;
+    }
 
-	if (!isValidResponse(command, buffer, rxSize)) {
-		return kDmEfsError;
-	}
+    if (!isValidResponse(command, buffer, rxSize)) {
+        return kDmEfsError;
+    }
 
-	return kDmEfsSuccess;
+    return kDmEfsSuccess;
 }
 
 /**
@@ -1753,29 +1814,29 @@ int DmEfsManager::sendCommand(uint16_t command, uint8_t* data, size_t dataSize)
 */
 bool DmEfsManager::isValidResponse(uint16_t command, uint8_t* data, size_t size)
 {
-	if (size == 0) {
-		return false;
-	}
+    if (size == 0) {
+        return false;
+    }
 
-	QcdmSubsysHeader* header = (QcdmSubsysHeader*)data;
+    QcdmSubsysHeader* header = (QcdmSubsysHeader*)data;
 
-	if (header->command != getSubsystemCommand() || 
-		header->subsysId != getSubsystemId() ||
-		header->subsysCommand != command
-	) {		
-		switch (header->command) {
-			case DIAG_BAD_CMD_F:
-				LOGE("Error: Bad Command Subsys Command %d - %04X\n", command, command);
-				break;
-			case DIAG_BAD_PARM_F:
-				LOGE("Error: Bad Parameter Subsys Command %d - %04X\n", command, command);
-				break;
-			case DIAG_BAD_LEN_F:
-				LOGE("Error: Bad Length Subsys Command %d - %04X\n", command, command);
-				break;
-		}
-		return false;
-	}
+    if (header->command != getSubsystemCommand() || 
+        header->subsysId != getSubsystemId() ||
+        header->subsysCommand != command
+    ) {     
+        switch (header->command) {
+            case DIAG_BAD_CMD_F:
+                LOGE("Error: Bad Command Subsys Command %d - %04X\n", command, command);
+                break;
+            case DIAG_BAD_PARM_F:
+                LOGE("Error: Bad Parameter Subsys Command %d - %04X\n", command, command);
+                break;
+            case DIAG_BAD_LEN_F:
+                LOGE("Error: Bad Length Subsys Command %d - %04X\n", command, command);
+                break;
+        }
+        return false;
+    }
 
-	return true;
+    return true;
 }

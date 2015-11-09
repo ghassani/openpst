@@ -14,10 +14,10 @@
 using namespace OpenPST;
 
 QcdmPrlReadWorker::QcdmPrlReadWorker(QcdmSerial& port, QcdmPrlReadWorkerRequest request, QObject *parent) :
-	port(port),
-	request(request),
-	QThread(parent),
-	cancelled(false)
+    port(port),
+    request(request),
+    QThread(parent),
+    cancelled(false)
 {
 
 }
@@ -29,10 +29,10 @@ QcdmPrlReadWorker::~QcdmPrlReadWorker()
 
 void QcdmPrlReadWorker::cancel()
 {
-	cancelled = true;
+    cancelled = true;
 }
 
 void QcdmPrlReadWorker::run()
 {
-	return;
+    return;
 }

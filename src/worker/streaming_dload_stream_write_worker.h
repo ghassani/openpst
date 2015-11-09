@@ -19,32 +19,32 @@ using namespace serial;
 
 namespace OpenPST {
 
-	struct StreamingDloadStreamWriteWorkerRequest {
-		uint32_t		address;
-		std::string		filePath;
-		size_t			outSize;
-		bool			unframed;
-	};
+    struct StreamingDloadStreamWriteWorkerRequest {
+        uint32_t        address;
+        std::string     filePath;
+        size_t          outSize;
+        bool            unframed;
+    };
 
-	class StreamingDloadStreamWriteWorker : public QThread
-	{
-		Q_OBJECT
+    class StreamingDloadStreamWriteWorker : public QThread
+    {
+        Q_OBJECT
 
-	public:
-		StreamingDloadStreamWriteWorker(StreamingDloadSerial& port, StreamingDloadStreamWriteWorkerRequest request, QObject *parent = 0);
-		~StreamingDloadStreamWriteWorker();
-		void cancel();
-	protected:
-		StreamingDloadSerial&  port;
-		StreamingDloadStreamWriteWorkerRequest request;
+    public:
+        StreamingDloadStreamWriteWorker(StreamingDloadSerial& port, StreamingDloadStreamWriteWorkerRequest request, QObject *parent = 0);
+        ~StreamingDloadStreamWriteWorker();
+        void cancel();
+    protected:
+        StreamingDloadSerial&  port;
+        StreamingDloadStreamWriteWorkerRequest request;
 
-		void run() Q_DECL_OVERRIDE;
-		bool cancelled;
-	signals:
-		void chunkComplete(StreamingDloadStreamWriteWorkerRequest request);
-		void complete(StreamingDloadStreamWriteWorkerRequest request);
-		void error(StreamingDloadStreamWriteWorkerRequest request, QString msg);
-	};
+        void run() Q_DECL_OVERRIDE;
+        bool cancelled;
+    signals:
+        void chunkComplete(StreamingDloadStreamWriteWorkerRequest request);
+        void complete(StreamingDloadStreamWriteWorkerRequest request);
+        void error(StreamingDloadStreamWriteWorkerRequest request, QString msg);
+    };
 }
 
 #endif // _WORKER_STREAMING_DLOAD_STREAM_WRITE_WORKER_H

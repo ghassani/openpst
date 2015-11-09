@@ -17,25 +17,25 @@
 
 #include "include/definitions.h"
 
-#define STREAMING_DLOAD_FEATURE_BIT_UNCOMPRESSED_DOWNLOAD	0x00000001
-#define STREAMING_DLOAD_FEATURE_BIT_NAND_BOOTABLE_IMAGE		0x00000002
-#define STREAMING_DLOAD_FEATURE_BIT_NAND_BOOT_LOADER		0x00000004
-#define STREAMING_DLOAD_FEATURE_BIT_MULTI_IMAGE				0x00000008
-#define STREAMING_DLOAD_FEATURE_BIT_SECTOR_ADDRESSES		0x00000010
+#define STREAMING_DLOAD_FEATURE_BIT_UNCOMPRESSED_DOWNLOAD   0x00000001
+#define STREAMING_DLOAD_FEATURE_BIT_NAND_BOOTABLE_IMAGE     0x00000002
+#define STREAMING_DLOAD_FEATURE_BIT_NAND_BOOT_LOADER        0x00000004
+#define STREAMING_DLOAD_FEATURE_BIT_MULTI_IMAGE             0x00000008
+#define STREAMING_DLOAD_FEATURE_BIT_SECTOR_ADDRESSES        0x00000010
 
-#define STREAMING_DLOAD_SECURITY_MODE_UNTRUSTED				0x00
-#define STREAMING_DLOAD_SECURITY_MODE_TRUSTED				0x01
+#define STREAMING_DLOAD_SECURITY_MODE_UNTRUSTED             0x00
+#define STREAMING_DLOAD_SECURITY_MODE_TRUSTED               0x01
 
-#define STREAMING_DLOAD_PARTITION_TABLE_ACCEPTED					0x00
-#define STREAMING_DLOAD_PARTITION_TABLE_DIFFERS_OVERRIDE_ACCEPTED	0x01
-#define STREAMING_DLOAD_PARTITION_TABLE_FORMAT_NOT_RECOGNIZED		0x02
-#define STREAMING_DLOAD_PARTITION_TABLE_ERASE_FAILED				0x03
+#define STREAMING_DLOAD_PARTITION_TABLE_ACCEPTED                    0x00
+#define STREAMING_DLOAD_PARTITION_TABLE_DIFFERS_OVERRIDE_ACCEPTED   0x01
+#define STREAMING_DLOAD_PARTITION_TABLE_FORMAT_NOT_RECOGNIZED       0x02
+#define STREAMING_DLOAD_PARTITION_TABLE_ERASE_FAILED                0x03
 
-#define STREAMING_DLOAD_OPEN_MULTI_OPEN_SUCCESS						0x00
-#define STREAMING_DLOAD_OPEN_MULTI_PAYLOAD_LENGTH_EXCEEDED			0x01
-#define STREAMING_DLOAD_OPEN_MULTI_NO_PAYLOAD_EXPECTED				0x02
-#define STREAMING_DLOAD_OPEN_MULTI_PAYLOAD_REQUIRED_FAIL			0x03
-#define STREAMING_DLOAD_OPEN_MULTI_BLOCK_WRITE_PROTECTED			0x04
+#define STREAMING_DLOAD_OPEN_MULTI_OPEN_SUCCESS                     0x00
+#define STREAMING_DLOAD_OPEN_MULTI_PAYLOAD_LENGTH_EXCEEDED          0x01
+#define STREAMING_DLOAD_OPEN_MULTI_NO_PAYLOAD_EXPECTED              0x02
+#define STREAMING_DLOAD_OPEN_MULTI_PAYLOAD_REQUIRED_FAIL            0x03
+#define STREAMING_DLOAD_OPEN_MULTI_BLOCK_WRITE_PROTECTED            0x04
 
 #define STREAMING_DLOAD_MAGIC_SIZE 32
 #define STREAMING_DLOAD_FLASH_ID_MAX_SIZE    32
@@ -84,8 +84,8 @@ enum STREAMING_DLOAD_COMMAND {
     STREAMING_DLOAD_SET_ECC                      = 0x21,
     STREAMING_DLOAD_SET_ECC_RESPONSE             = 0x22,
     STREAMING_DLOAD_CALCULATE_SHA1_HASH          = 0x23, // depreciated - doesnt appear to be used
-	STREAMING_DLOAD_CALCULATE_SHA1_HASH_RESPONSE = 0x24, // depreciated - doesnt appear to be used
-	STREAMING_DLOAD_INFO_RESPONSE				 = 0x24, 
+    STREAMING_DLOAD_CALCULATE_SHA1_HASH_RESPONSE = 0x24, // depreciated - doesnt appear to be used
+    STREAMING_DLOAD_INFO_RESPONSE                = 0x24, 
 
     //25-2F commands described in [Q2]
 
@@ -121,78 +121,78 @@ enum STREAMING_DLOAD_ERROR_CODE {
 };
 
 enum STREAMING_DLOAD_OPEN_MODE {
-	STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD		= 0x01,
-	STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD	= 0x02,
-	STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD		= 0x03,
-	STREAMING_DLOAD_OPEN_MODE_FACTORY					= 0x04
+    STREAMING_DLOAD_OPEN_MODE_BOOTLOADER_DOWNLOAD       = 0x01,
+    STREAMING_DLOAD_OPEN_MODE_BOOTABLE_IMAGE_DOWNLOAD   = 0x02,
+    STREAMING_DLOAD_OPEN_MODE_CEFS_IMAGE_DOWNLOAD       = 0x03,
+    STREAMING_DLOAD_OPEN_MODE_FACTORY                   = 0x04
 };
 
 enum STREAMING_DLOAD_OPEN_MULTI_MODE {
-	STREAMING_DLOAD_OPEN_MULTI_MODE_NONE		= 0x00,  
-	STREAMING_DLOAD_OPEN_MULTI_MODE_PBL			= 0x01,  // Primary boot loader
-	STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBLHDCFG	= 0x02,  // Qualcomm secondary boot loader header and config data 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBL		= 0x03,	 // Qualcomm secondary boot loader
-	STREAMING_DLOAD_OPEN_MULTI_MODE_OEMSBL		= 0x04,	 // OEM secondary boot loader (max payload: 512 octets)
-	STREAMING_DLOAD_OPEN_MULTI_MODE_AMSS		= 0x05,	 // AMSS modem executable (max payload: 512 octets)
-	STREAMING_DLOAD_OPEN_MULTI_MODE_APPS		= 0x06,	 // AMSS applications executable (max payload: 512 octets)
-	STREAMING_DLOAD_OPEN_MULTI_MODE_OBL			= 0x07,	 // MSM6250 OTP boot loader 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_FOTAUI		= 0x08,	 // FOTA UI binary 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_CEFS		= 0x09,	 // Compact EFS2 image
-	STREAMING_DLOAD_OPEN_MULTI_MODE_APPSBL		= 0x0A,	 // AMSS applications boot loader (max payload: 512 octets)
-	STREAMING_DLOAD_OPEN_MULTI_MODE_APPS_CEFS	= 0x0B,  // Apps CEFS image
-	STREAMING_DLOAD_OPEN_MULTI_MODE_FLASH_BIN	= 0x0C,  // Flash.bin for Windows Mobile
-	STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1		= 0x0D,	 // DSP1 runtime image
-	STREAMING_DLOAD_OPEN_MULTI_MODE_CUSTOM		= 0x0E,	 // Image for user-defined partition User (max payload: 512 octets)
-	STREAMING_DLOAD_OPEN_MULTI_MODE_DBL			= 0x0F,	 // DBL image for Secure  Boot 2.0 architecture 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL		= 0x10,	 // OSBL image for Secure  Boot 2.0 architecture 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_FSBL		= 0x11,	 // FSBL image for Secure  Boot 2.0 architecture 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_DSP2		= 0x12,	 // DSP2 executable 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_RAW			= 0x13,	 // Apps EFS2 raw image 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS1		= 0x14,  // Symbian
-	STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS2		= 0x15,  // Symbian
-	STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS3		= 0x16,  // Symbian
-														 // 0x17-0x1F - RESERVED
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_USER	= 0x21,  // EMMC card USER partition image 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT0	= 0x22,  // EMMC card BOOT0 partition image 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT1	= 0x23,  // EMMC card BOOT1 partition image 
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_RPMB	= 0x24,  // partition1
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP1	= 0x25,  // partition1-4
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP2	= 0x26,   
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP3	= 0x27,   
-	STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP4	= 0x28    
+    STREAMING_DLOAD_OPEN_MULTI_MODE_NONE        = 0x00,  
+    STREAMING_DLOAD_OPEN_MULTI_MODE_PBL         = 0x01,  // Primary boot loader
+    STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBLHDCFG  = 0x02,  // Qualcomm secondary boot loader header and config data 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_QCSBL       = 0x03,  // Qualcomm secondary boot loader
+    STREAMING_DLOAD_OPEN_MULTI_MODE_OEMSBL      = 0x04,  // OEM secondary boot loader (max payload: 512 octets)
+    STREAMING_DLOAD_OPEN_MULTI_MODE_AMSS        = 0x05,  // AMSS modem executable (max payload: 512 octets)
+    STREAMING_DLOAD_OPEN_MULTI_MODE_APPS        = 0x06,  // AMSS applications executable (max payload: 512 octets)
+    STREAMING_DLOAD_OPEN_MULTI_MODE_OBL         = 0x07,  // MSM6250 OTP boot loader 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_FOTAUI      = 0x08,  // FOTA UI binary 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_CEFS        = 0x09,  // Compact EFS2 image
+    STREAMING_DLOAD_OPEN_MULTI_MODE_APPSBL      = 0x0A,  // AMSS applications boot loader (max payload: 512 octets)
+    STREAMING_DLOAD_OPEN_MULTI_MODE_APPS_CEFS   = 0x0B,  // Apps CEFS image
+    STREAMING_DLOAD_OPEN_MULTI_MODE_FLASH_BIN   = 0x0C,  // Flash.bin for Windows Mobile
+    STREAMING_DLOAD_OPEN_MULTI_MODE_DSP1        = 0x0D,  // DSP1 runtime image
+    STREAMING_DLOAD_OPEN_MULTI_MODE_CUSTOM      = 0x0E,  // Image for user-defined partition User (max payload: 512 octets)
+    STREAMING_DLOAD_OPEN_MULTI_MODE_DBL         = 0x0F,  // DBL image for Secure  Boot 2.0 architecture 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_OSBL        = 0x10,  // OSBL image for Secure  Boot 2.0 architecture 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_FSBL        = 0x11,  // FSBL image for Secure  Boot 2.0 architecture 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_DSP2        = 0x12,  // DSP2 executable 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_RAW         = 0x13,  // Apps EFS2 raw image 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS1       = 0x14,  // Symbian
+    STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS2       = 0x15,  // Symbian
+    STREAMING_DLOAD_OPEN_MULTI_MODE_ROFS3       = 0x16,  // Symbian
+                                                         // 0x17-0x1F - RESERVED
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_USER   = 0x21,  // EMMC card USER partition image 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT0  = 0x22,  // EMMC card BOOT0 partition image 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_BOOT1  = 0x23,  // EMMC card BOOT1 partition image 
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_RPMB   = 0x24,  // partition1
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP1   = 0x25,  // partition1-4
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP2   = 0x26,   
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP3   = 0x27,   
+    STREAMING_DLOAD_OPEN_MULTI_MODE_EMMC_GPP4   = 0x28    
 };
 
 PACKED(typedef struct { // 0x01
     uint8_t command;
-	uint8_t magic[STREAMING_DLOAD_MAGIC_SIZE];
+    uint8_t magic[STREAMING_DLOAD_MAGIC_SIZE];
     uint8_t version;
     uint8_t compatibleVersion;
     uint8_t featureBits;
 }) StreamingDloadHelloRequest;
 
 PACKED(typedef struct { // 0x02
-	uint8_t  command;
-	uint8_t  magic[STREAMING_DLOAD_MAGIC_SIZE];
-	uint8_t  version;
-	uint8_t  compatibleVersion;
-	uint32_t maxPreferredBlockSize;
-	uint32_t baseFlashAddress;
-	uint8_t  flashIdLength;
-}) StreamingDloadHelloResponseHeader;
-
-PACKED(typedef struct { // 0x02
     uint8_t  command;
-	uint8_t  magic[STREAMING_DLOAD_MAGIC_SIZE];
+    uint8_t  magic[STREAMING_DLOAD_MAGIC_SIZE];
     uint8_t  version;
     uint8_t  compatibleVersion;
     uint32_t maxPreferredBlockSize;
     uint32_t baseFlashAddress;
     uint8_t  flashIdLength;
-	uint8_t  flashIdenfier[STREAMING_DLOAD_FLASH_ID_MAX_SIZE];
+}) StreamingDloadHelloResponseHeader;
+
+PACKED(typedef struct { // 0x02
+    uint8_t  command;
+    uint8_t  magic[STREAMING_DLOAD_MAGIC_SIZE];
+    uint8_t  version;
+    uint8_t  compatibleVersion;
+    uint32_t maxPreferredBlockSize;
+    uint32_t baseFlashAddress;
+    uint8_t  flashIdLength;
+    uint8_t  flashIdenfier[STREAMING_DLOAD_FLASH_ID_MAX_SIZE];
     uint16_t windowSize;
     uint16_t numberOfSectors;
     uint16_t sectorSizes[STREAMING_DLOAD_MAX_SECTORS * 4];
-	uint16_t featureBits;
+    uint16_t featureBits;
 }) StreamingDloadHelloResponse;
 
 PACKED(typedef struct { // 0x03
@@ -221,7 +221,7 @@ PACKED(typedef struct { // 0x06
 PACKED(typedef struct {// 0x07
     uint8_t command;
     uint32_t address;
-	uint8_t data[0];
+    uint8_t data[0];
 }) StreamingDloadStreamWriteRequest;
 
 PACKED(typedef struct { // 0x08
@@ -236,7 +236,7 @@ PACKED(typedef struct {// 0x09
 
 PACKED(typedef struct { // 0x0A
     uint8_t command;
-	uint32_t identifier; // response should have same as in transmitted packet
+    uint32_t identifier; // response should have same as in transmitted packet
 }) StreamingDloadNopResponse;
 
 PACKED(typedef struct {// 0x0B
@@ -250,12 +250,12 @@ PACKED(typedef struct { // 0x0C
 PACKED(typedef struct { // 0x0D
     uint8_t command;
     uint32_t code;
-	uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
+    uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
 }) StreamingDloadErrorResponse;
 
 PACKED(typedef struct { // 0x0E
     uint8_t command;
-	uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
+    uint8_t text[STREAMING_DLOAD_MESSAGE_SIZE];
 }) StreamingDloadLogResponse;
 
 PACKED(typedef struct { // 0x0F
@@ -303,7 +303,7 @@ PACKED(typedef struct { // 0x18
 
 PACKED(typedef struct { // 0x19
     uint8_t command;
-	uint8_t overrideExisting; // 0x00 no override, 0x01 override existing table
+    uint8_t overrideExisting; // 0x00 no override, 0x01 override existing table
     uint8_t data[512]; // max 512 bytes
 }) StreamingDloadPartitionTableRequest;
 
@@ -322,17 +322,17 @@ PACKED(typedef struct  { // 0x1B
 }) StreamingDloadOpenMultiImageRequest;
 
 PACKED(typedef struct { // 0x1B
-	uint8_t command;
-	uint8_t type;
+    uint8_t command;
+    uint8_t type;
 }) StreamingDloadOpenMultiImageWithPayloadRequest;
 
 PACKED(typedef struct { // 0x1C
-	uint8_t command;
-	uint8_t status; // 0x00 Open successful
-					// 0x01 Payload length exceeded, fail
-					// 0x02 No payload expected, fail
-					// 0x03 Payload required, fail
-					// 0x04 Block 0 write protected, fail
+    uint8_t command;
+    uint8_t status; // 0x00 Open successful
+                    // 0x01 Payload length exceeded, fail
+                    // 0x02 No payload expected, fail
+                    // 0x03 Payload required, fail
+                    // 0x04 Block 0 write protected, fail
 }) StreamingDloadOpenMultiImageResponse;
 
 /*
@@ -340,45 +340,45 @@ PACKED(typedef struct { // 0x1C
 * have to restore the device via jtag. Use with caution
 */
 PACKED(typedef struct { // 0x1D
-	uint8_t command;
+    uint8_t command;
 }) StreamingDloadEraseFlashRequest;
 
 PACKED(typedef struct { // 0x1E
-	uint8_t command;
+    uint8_t command;
 }) StreamingDloadEraseFlashResponse;
 
 
 PACKED(typedef struct { // 0x1F
-	uint8_t command;
+    uint8_t command;
 }) StreamingDloadGetEccStateRequest;
 
 PACKED(typedef struct { // 0x20
-	uint8_t command;
-	uint8_t status; // 0x00 ECC generation/check disabled
-					// 0x01 ECC generation/check enabled
+    uint8_t command;
+    uint8_t status; // 0x00 ECC generation/check disabled
+                    // 0x01 ECC generation/check enabled
 }) StreamingDloadGetEccStateResponse;
 
 PACKED(typedef struct { // 0x21
-	uint8_t command;
-	uint8_t status; // 0x00 disable, 0x01 enabled
+    uint8_t command;
+    uint8_t status; // 0x00 disable, 0x01 enabled
 }) StreamingDloadSetEccStateRequest;
 
 PACKED(typedef struct { // 0x22
-	uint8_t command;
+    uint8_t command;
 }) StreamingDloadSetEccStateResponse;
 
 
 PACKED(typedef struct { // 0x30
-	uint8_t command;
-	uint8_t padding[2]; // should be set to 0x000000
-	uint32_t address;
-	uint32_t length;
-	uint8_t* data;
+    uint8_t command;
+    uint8_t padding[2]; // should be set to 0x000000
+    uint32_t address;
+    uint32_t length;
+    uint8_t* data;
 }) StreamingDloadUnframedStreamWriteRequest;
 
 PACKED(typedef struct { // 0x31
-	uint8_t command;
-	uint32_t address;
+    uint8_t command;
+    uint32_t address;
 }) StreamingDloadUnframedStreamWriteResponse;
 
 PACKED(typedef struct { // 0x32

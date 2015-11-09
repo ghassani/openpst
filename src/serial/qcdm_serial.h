@@ -25,120 +25,184 @@
 namespace OpenPST {
     class QcdmSerial : public HdlcSerial {
 
-		enum QcdmOpertationResult {
-			kQcdmIOError			= -2,
-			kQcdmRequiresSecurity	= -1,
-			kQcdmError				= 0,
-			kQcdmSuccess			= 1
-		};
+        enum QcdmOpertationResult {
+            kQcdmIOError            = -2,
+            kQcdmRequiresSecurity   = -1,
+            kQcdmError              = 0,
+            kQcdmSuccess            = 1
+        };
 
         public:
-			/**
-			* @brief QcdmSerial - Constructor
-			*
-			* @param std::string port
-			* @param int baudrate
-			* @param serial::Timeout - Timeout, defaults to 1000ms
-			*/
-			QcdmSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+            /**
+            * @brief QcdmSerial - Constructor
+            *
+            * @param std::string port
+            * @param int baudrate
+            * @param serial::Timeout - Timeout, defaults to 1000ms
+            */
+            QcdmSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
 
-			/**
-			* @brief ~QcdmSerial - Destructor
-			*/
+            /**
+            * @brief ~QcdmSerial - Destructor
+            */
             ~QcdmSerial();
 
-			/**
-			* @brief getVersion
-			* @param QcdmVersionResponse& - response
-			* @return
+            /**
+            * @brief getVersion
+            * @return QcdmVersionResponse
+			*
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
 			*/
-			int getVersion(QcdmVersionResponse& response);
+			QcdmVersionResponse getVersion();
 
+			/**
+			* @brief getDiagVersion
+			* @return uint16_t
+			*
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
+			*/
+			uint16_t getDiagVersion();
+
+			/**
+			* @brief getStatus
+			* @return QcdmStatusResponse
+			*
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
+			*/
+			QcdmStatusResponse getStatus();
+
+			/**
+			* @brief getGuid
+			* @return QcdmGuidResponse
+			*
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
+			*/
+			QcdmGuidResponse getGuid();
+			
             /**
              * @brief sendSpc
              * @param spc - a 6 digit SPC code to unlock service programming
-             * @return
+             * @return bool
+			 *
+			 * @throws QcdmInvalidArgument
+			 * @throws QcdmResponseError
+			 * @throws serial::PortNotOpenedException
+			 * @throws serial::IOException
              */
-            int sendSpc(const char* spc);
+			bool sendSpc(std::string spc);
 
             /**
             * @brief sendPassword
             * @param password - a 16 digit password to unlock secure operations
-            * @return
-            */
-            int sendPassword(const char* password);
+			* @return bool
+			*
+			* @throws QcdmInvalidArgument
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
+			*/
+			bool sendPassword(std::string password);
 
             /**
             * @brief sendPhoneMode
-            * @param mode - DIAG_PHONE_MODE
-            * @return
+            * @param QcdmPhoneMode mode
+            * @return bool
+			*
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
             */
-            int sendPhoneMode(uint8_t mode);
+			bool setPhoneMode(QcdmPhoneMode mode);
 
             /**
-            * @brief getNvItem
+            * @brief readNV - Read an item from non volatile memory
+            * @param uint16_t itemId - NV Item ID to read
+            * @param response - Response structure to populate the read data with
+            * @return QcdmNvResponse
+			*
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
+            */
+			QcdmNvResponse readNV(uint16_t itemId);
+
+            /**
+            * @brief writeNV - Write an item to non volatile memory
             * @param itemId - NV Item ID
-            * @param response -
-            * @return
+            * @param uint8_t* data - NV Item Data
+			* @param size_t size - Cannot exceed DIAG_NV_ITEM_SIZE
+            * @return bool
+			*
+			* @throws QcdmInvalidArgument
+			* @throws QcdmResponseError
+			* @throws serial::PortNotOpenedException
+			* @throws serial::IOException
             */
-            int getNvItem(int itemId, uint8_t** response);
+			bool writeNV(uint16_t itemId, uint8_t* data, size_t size);
 
-            /**
-            * @brief setNvItem
-            * @param itemId - NV Item ID
-            * @param data - NV Item Data
-            * @return
-            */
-            int setNvItem(int itemId, const char* data, int length);
+			QcdmNvPeekResponse peekNV(uint32_t address, uint8_t size);
 
-            /**
-            * @brief setNvItem
-            * @param itemId - NV Item ID
-            * @param data - NV Item Data
-            * @param response -
-            * @return
-            */
-            int setNvItem(int itemId, const char* data, int length, uint8_t** response);
+			void switchToDload();
 
-            /**
-            * @brief sendHtcNvUnlock
-            * @param response -
-            * @return
-            */
-            int sendHtcNvUnlock(uint8_t** response);
+			bool sendHtcNvUnlock();
+			   
+            bool sendLgNvUnlock();  
 
-            /**
-            * @brief sendLgNvUnlock
-            * @param response -
-            * @return
-            */
-            int sendLgNvUnlock(uint8_t** response);  //FIXME
+			bool getLgSpc();
 
-            /**
-            * @brief getLgSpc
-            * @param response -
-            * @return
-            */
-            int getLgSpc(uint8_t** response);
+            
 
-			
-
-			int getErrorLog();
-			int clearErrorLog();
+            int getErrorLog();
+            int clearErrorLog();
 
 
-			std::mutex operationMutex;
+			std::string lastError;
             uint8_t buffer[DIAG_MAX_PACKET_SIZE];
             size_t lastRxSize,
                    lastTxSize;
 
-			
-
+            
+			void sendCommand(uint8_t command, bool validate = true);
+			void sendCommand(uint8_t command, uint8_t* data, size_t size, bool validate = true);
+			std::string getErrorString(uint8_t responseCommand);
 		private:
-			int sendCommand(uint8_t command);
-			int sendCommand(uint8_t command, uint8_t* data, size_t size);
-			bool isValidResponse(uint8_t command, uint8_t* response, size_t size);
-	};
+
+    };
 }
+
+class QcdmResponseError : public std::exception
+{
+	const QcdmResponseError& operator=(QcdmResponseError);
+	std::string _what;
+public:
+	QcdmResponseError(std::string message) : _what(message)  {}
+	QcdmResponseError(const QcdmResponseError& second) : _what(second._what) {}
+	virtual ~QcdmResponseError() throw() {}
+	virtual const char* what() const throw () {
+		return _what.c_str();
+	}
+};
+
+class QcdmInvalidArgument : public std::invalid_argument
+{
+	const QcdmInvalidArgument& operator=(QcdmInvalidArgument);
+	std::string _what;
+public:
+	QcdmInvalidArgument(std::string message) : invalid_argument(message), _what(message)  {}
+	QcdmInvalidArgument(const QcdmInvalidArgument& second) : invalid_argument(second), _what(second._what) {}
+	virtual ~QcdmInvalidArgument() throw() {}
+	virtual const char* what() const throw () {
+		return _what.c_str();
+	}
+};
+
 
 #endif /* _SERIAL_QCDM_SERIAL_H */

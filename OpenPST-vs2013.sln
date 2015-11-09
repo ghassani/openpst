@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libopenpst", "vs2013\libope
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{E7621910-CB74-4938-90DE-D6BF987F530A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qcsamunlock", "extra\qcsamunlock\qcsamunlock.vcxproj", "{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -131,6 +133,18 @@ Global
 		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|Win32.Build.0 = Release|Win32
 		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|x64.ActiveCfg = Release|x64
 		{076D4926-771D-4B94-BA24-DF3252D35E90}.Release|x64.Build.0 = Release|x64
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Debug|Win32.Build.0 = Debug|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Debug|x64.ActiveCfg = Debug|x64
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Debug|x64.Build.0 = Debug|x64
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Release|Win32.ActiveCfg = Release|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Release|Win32.Build.0 = Release|Win32
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Release|x64.ActiveCfg = Release|x64
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,5 +153,6 @@ Global
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {E7621910-CB74-4938-90DE-D6BF987F530A}
 		{5218F14D-2F8C-47B1-92CC-CE0323CB4315} = {65BCA580-F8F4-4E2A-916A-B5A3BA312A67}
 		{076D4926-771D-4B94-BA24-DF3252D35E90} = {E7621910-CB74-4938-90DE-D6BF987F530A}
+		{D5EA444A-74C2-4EE4-BCD6-7CD05BD5D929} = {65BCA580-F8F4-4E2A-916A-B5A3BA312A67}
 	EndGlobalSection
 EndGlobal

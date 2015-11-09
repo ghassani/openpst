@@ -33,53 +33,53 @@ void StreamingDloadReadWorker::cancel()
 
 void StreamingDloadReadWorker::run()
 {
-	QString tmp;
+    QString tmp;
 
-	std::ofstream file(request.outFilePath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
-	
-	if (!file.is_open()) {
-		emit error(request, tmp.sprintf("Error opening %s for writing", request.outFilePath.c_str()));
-		return;
-	}
+    std::ofstream file(request.outFilePath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+    
+    if (!file.is_open()) {
+        emit error(request, tmp.sprintf("Error opening %s for writing", request.outFilePath.c_str()));
+        return;
+    }
 
-	if (request.stepSize > port.state.hello.maxPreferredBlockSize) {
-		request.stepSize = port.state.hello.maxPreferredBlockSize;
-	}
+    if (request.stepSize > port.state.hello.maxPreferredBlockSize) {
+        request.stepSize = port.state.hello.maxPreferredBlockSize;
+    }
 
-	request.outSize = 0;
+    request.outSize = 0;
 
-	if (request.size <= request.stepSize) {
+    if (request.size <= request.stepSize) {
 
-		if (port.readAddress(request.address, request.stepSize, file, request.outSize, request.stepSize) != kStreamingDloadSuccess) {
-			file.close();
-			emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, request.address));
-			return;
-		}
+        if (port.readAddress(request.address, request.stepSize, file, request.outSize, request.stepSize) != kStreamingDloadSuccess) {
+            file.close();
+            emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, request.address));
+            return;
+        }
 
-		emit chunkReady(request);
-	} else {
+        emit chunkReady(request);
+    } else {
 
-		
-		uint32_t address = request.address;
+        
+        uint32_t address = request.address;
 
-		do {
-			size_t chunkOutSize = 0;
+        do {
+            size_t chunkOutSize = 0;
 
-			if (port.readAddress((address + request.outSize), request.stepSize, file, chunkOutSize, request.stepSize) != kStreamingDloadSuccess) {
-				file.close();
-				emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, (address + request.outSize)));
-				return;
-			}
-			
-			request.outSize += chunkOutSize;
+            if (port.readAddress((address + request.outSize), request.stepSize, file, chunkOutSize, request.stepSize) != kStreamingDloadSuccess) {
+                file.close();
+                emit error(request, tmp.sprintf("Error reading %lu bytes from address 0x%08X", request.stepSize, (address + request.outSize)));
+                return;
+            }
+            
+            request.outSize += chunkOutSize;
 
-			emit chunkReady(request);
+            emit chunkReady(request);
 
-		} while (request.outSize < request.size && !cancelled);
+        } while (request.outSize < request.size && !cancelled);
 
-	}		
+    }       
 
-	file.close();
+    file.close();
 
-	emit complete(request);
+    emit complete(request);
 }

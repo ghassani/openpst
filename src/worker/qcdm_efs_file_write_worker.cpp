@@ -14,10 +14,10 @@
 using namespace OpenPST;
 
 QcdmEfsFileWriteWorker::QcdmEfsFileWriteWorker(DmEfsManager& efsManager, QcdmEfsFileWriteWorkerRequest request, QObject *parent) :
-	efsManager(efsManager),
-	request(request),
-	QThread(parent),
-	cancelled(false)
+    efsManager(efsManager),
+    request(request),
+    QThread(parent),
+    cancelled(false)
 {
 
 }
@@ -29,10 +29,10 @@ QcdmEfsFileWriteWorker::~QcdmEfsFileWriteWorker()
 
 void QcdmEfsFileWriteWorker::cancel()
 {
-	cancelled = true;
+    cancelled = true;
 }
 
 void QcdmEfsFileWriteWorker::run()
 {
-	return;
+    return;
 }

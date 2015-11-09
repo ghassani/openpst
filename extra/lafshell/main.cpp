@@ -19,6 +19,16 @@ using namespace serial;
 uint8_t enable_laf[] = { 0x3A, 0xA1, 0x6E, 0x7E };
 uint8_t buffer[BUFFER_SIZE] = {};
 void usage();
+int main(int argc, char **argv);
+
+void usage() {
+	printf("\n\nLG LAF Shell:\n");
+	printf("Usage:\n\n");
+	printf("\tlafshell [PORT]\n");
+	printf("\tlafshell\\\\.\\COM10\n");
+	printf("\tlafshell /dev/ttyUSB0\n");
+}
+
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -56,29 +66,37 @@ int main(int argc, char **argv) {
             continue;
         } else if (command.compare("LEAVE") == 0) {
 
-        }
+		} else if (command.compare("SPECIAL") == 0) {
+			LafCmdHeader header = {};
+			header.command = LAF_CMD_INFO;
+			header.magic = 0x000;
+			header.arg1 = 0xB08;
+			header.arg_opt0 = LAF_CMD_INFO_SPRO;
+			bytesWritten = port.write((uint8_t*)&header, sizeof(enable_laf));
+			bytesRead = port.read(buffer, BUFFER_SIZE);
+			hexdump(buffer, bytesRead);
+			continue;
+		}
 
         LafCmdHeader header = {}; 
         header.command = LAF_CMD_EXECUTE;
-        header.magic = LAF_MAGIC;       
+		header.magic = LAF_EXEC_MAGIC;
 
         LafCmd* packet = (LafCmd*)buffer;
         packet->header = header;
-		bool empty = true;
 
         if (command.size()) {
 			lastCommandSize = 0;
-			empty = false;
             memcpy(packet->data, command.c_str(), command.size()); 
-			memset(packet->data + command.size(), 0x00, 32 - command.size());
+			memset(packet->data + command.size(), 0x00, 1);
 			packet->header.size = command.size() + 1;
 			packet->header.crc = 0x000000; 
 			
 			uint16_t crc = crc16((char*)packet, (sizeof(header) + command.size() + 1));
 			packet->header.crc = crc; 
 			bytesWritten = port.write((uint8_t*)packet, (sizeof(header) + command.size() + 1));
-			printf("Write %d\n", bytesWritten);
-			hexdump((uint8_t*)packet, bytesWritten);
+			//printf("Write %d\n", bytesWritten);
+			//hexdump((uint8_t*)packet, bytesWritten);
 		}
 
         while (true) {
@@ -108,10 +126,3 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void usage() {
-    printf("\n\nLG LAF Shell:\n");
-    printf("Usage:\n\n");
-    printf("\tlafshell [PORT]\n");
-    printf("\tlafshell\\\\.\\COM10\n");
-    printf("\tlafshell /dev/ttyUSB0\n");
-}

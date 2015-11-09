@@ -19,7 +19,8 @@
 enum QFPROM_TCP_REQUEST {
     QFPROM_TCP_DISCONNECT_REQUEST   = 0,
     QFPROM_TCP_READ_REQUEST         = 1,
-    QFPROM_TCP_WRITE_REQUEST        = 2
+    QFPROM_TCP_WRITE_REQUEST        = 2,
+    QFPROM_TCP_READ_DIRECT_REQUEST  = 3
 };
 
 /**
@@ -38,6 +39,7 @@ typedef struct qfprom_tcp_read_row_resp_s {
     uint32_t error;
 } __attribute__ ((packed)) qfprom_tcp_read_row_resp_t;
 
+
 typedef struct qfprom_tcp_write_row_req_s {
     uint32_t address;
     uint32_t lsb;
@@ -52,6 +54,7 @@ typedef struct qfprom_tcp_write_row_resp_s {
     uint32_t bus_clk_khz;
     uint32_t error;
 } __attribute__ ((packed)) qfprom_tcp_write_row_resp_t;
+
 
 typedef struct qfprom_tcp_req_s {
     int8_t command;

@@ -121,6 +121,30 @@ int tcp_server_thread(void)
                     
                     kfree(response);
 
+                } else if (request->command == QFPROM_TCP_READ_DIRECT_REQUEST) {
+                    
+                    memset(&row_data, 0x00, sizeof(row_data));
+
+                    response = (qfprom_tcp_resp_t*) kcalloc(sizeof(uint8_t), sizeof(qfprom_tcp_resp_t), GFP_KERNEL);
+                    
+                    if (!response) {
+                        log("Error allocating response buffer\n");
+                        goto error;
+                    }
+
+                    response->command       = request->command;
+                    response->read.address  = request->read.address;
+
+                    ret = qfprom_read_direct(request->read.address, &row_data);
+
+                    response->read.error    = row_data.error;
+                    response->read.lsb      = row_data.lsb;
+                    response->read.msb      = row_data.msb;
+
+                    tcp_server_send(accept_socket, (uint8_t*)response, sizeof(qfprom_tcp_resp_t));
+                    
+                    kfree(response);
+
                 } else {
                     log("Invalid Command %d\n", request->command);
                 }

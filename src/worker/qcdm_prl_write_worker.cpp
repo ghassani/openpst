@@ -14,10 +14,10 @@
 using namespace OpenPST;
 
 QcdmPrlWriteWorker::QcdmPrlWriteWorker(QcdmSerial& port, QcdmPrlWriteWorkerRequest request, QObject *parent) :
-	port(port),
-	request(request),
-	QThread(parent),
-	cancelled(false)
+    port(port),
+    request(request),
+    QThread(parent),
+    cancelled(false)
 {
 
 }
@@ -29,10 +29,10 @@ QcdmPrlWriteWorker::~QcdmPrlWriteWorker()
 
 void QcdmPrlWriteWorker::cancel()
 {
-	cancelled = true;
+    cancelled = true;
 }
 
 void QcdmPrlWriteWorker::run()
 {
-	return;
+    return;
 }

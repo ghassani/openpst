@@ -19,30 +19,30 @@ using namespace serial;
 
 namespace OpenPST {
 
-	struct QcdmPrlReadWorkerRequest {
-		int nam;
-		std::string outPath;
-	};
+    struct QcdmPrlReadWorkerRequest {
+        int nam;
+        std::string outPath;
+    };
 
-	class QcdmPrlReadWorker : public QThread
-	{
-		Q_OBJECT
+    class QcdmPrlReadWorker : public QThread
+    {
+        Q_OBJECT
 
-	public:
-		QcdmPrlReadWorker(QcdmSerial& port, QcdmPrlReadWorkerRequest request, QObject *parent = 0);
-		~QcdmPrlReadWorker();
-		void cancel();
-	protected:
-		QcdmSerial&  port;
-		QcdmPrlReadWorkerRequest request;
+    public:
+        QcdmPrlReadWorker(QcdmSerial& port, QcdmPrlReadWorkerRequest request, QObject *parent = 0);
+        ~QcdmPrlReadWorker();
+        void cancel();
+    protected:
+        QcdmSerial&  port;
+        QcdmPrlReadWorkerRequest request;
 
-		void run() Q_DECL_OVERRIDE;
-		bool cancelled;
-	signals:
-		void chunkReady(QcdmPrlReadWorkerRequest request);
-		void complete(QcdmPrlReadWorkerRequest request);
-		void error(QcdmPrlReadWorkerRequest request, QString msg);
-	};
+        void run() Q_DECL_OVERRIDE;
+        bool cancelled;
+    signals:
+        void update(QcdmPrlReadWorkerRequest request);
+        void complete(QcdmPrlReadWorkerRequest request);
+        void error(QcdmPrlReadWorkerRequest request, QString msg);
+    };
 }
 
 #endif // _WORKER_QCDM_PRL_READ_WORKER_H

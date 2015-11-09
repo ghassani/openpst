@@ -20,11 +20,11 @@
 int main(int argc, char *argv[])
 {
 
-	OpenPST::Application application(argc, argv, "mbn_tool_");
+    OpenPST::Application application(argc, argv, "mbn_tool_");
 
-	OpenPST::MbnToolWindow window;
+    OpenPST::MbnToolWindow window;
 
-	window.show();
+    window.show();
 
-	return application.exec();
+    return application.exec();
 }

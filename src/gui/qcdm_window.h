@@ -19,6 +19,8 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QClipboard>
+#include <QListWidget>
+#include <QtXml>
 #include "ui_qcdm_window.h"
 #include "about_dialog.h"
 #include "qc/dm.h"
@@ -32,12 +34,11 @@
 #include "worker/qcdm_memory_read_worker.h"
 #include "worker/qcdm_prl_write_worker.h"
 #include "worker/qcdm_prl_read_worker.h"
-
+#include "worker/qcdm_nv_item_read_worker.h"
 #include "util/convert.h"
 
 namespace Ui {
 	class QcdmWindow;
-
 }
 
 namespace OpenPST {
@@ -64,15 +65,24 @@ namespace OpenPST {
 			kEfsBrowserColumnFullPath
 		};
 
+		enum SpcReadType {
+			kSpcReadTypeNv = 0,
+			kSpcReadTypeEfs = 1,
+			kSpcReadTypeHtc = 2,
+			kSpcReadTypeLg = 3,
+			kSpcReadTypeSamsung = 3,
+		};
+
 		std::vector<QThread*> workers;
 
 	public:
-		Ui::QcdmWindow *ui;
-		OpenPST::QcdmSerial port;
+		Ui::QcdmWindow* ui;
+		QcdmSerial port;
 		serial::PortInfo currentPort;
-		OpenPST::DmEfsManager efsManager;
-		AboutDialog *aboutDialog;
-		
+		DmEfsManager efsManager;
+		AboutDialog* aboutDialog;
+		QcdmNvItemReadWorker* nvItemReadWorker;
+
 		/**
 		* @brief
 		*/
@@ -87,152 +97,198 @@ namespace OpenPST {
 		/**
 		* @brief
 		*/
-		void UpdatePortList();
+		void updatePortList();
 
 		/**
 		* @brief
 		*/
-		void ConnectToPort();
+		void connectPort();
 
 		/**
 		* @brief
 		*/
-		void DisconnectPort();
+		void disconnectPort();
 
 		/**
 		* @brief
 		*/
-		void DisableUiButtons();
+		void disableUI();
 
 		/**
 		* @brief
 		*/
-		void EnableUiButtons();
+		void enableUI();
 
 		/**
 		* @brief
 		*/
-		void SendSpc();
+		void getVersionInfo();
 
 		/**
 		* @brief
 		*/
-		void SendPassword();
+		void getGuid();
+		
+		/**
+		* @brief
+		*/
+		void getStatus();
+				
+		/**
+		* @brief
+		*/
+		void sendSpc();
 
 		/**
 		* @brief
 		*/
-		void ReadImei();
+		void sendPassword();
 
 		/**
 		* @brief
 		*/
-		void ReadMeid();
+		void readImei();
 
 		/**
 		* @brief
 		*/
-		void WriteMeid();
+		void readMeid();
 
 		/**
 		* @brief
 		*/
-		void ReadNam();
+		void writeMeid();
 
 		/**
 		* @brief
 		*/
-		void WriteNam();
+		void readNam();
 
 		/**
 		* @brief
 		*/
-		void ReadNvItem();
+		void writeNam();
 
 		/**
 		* @brief
 		*/
-		void ReadSpc();
+		void nvReadSelectionToLog();
 
 		/**
 		* @brief
 		*/
-		void WriteSpc();
+		void nvReadSelectionToText();
 
 		/**
 		* @brief
 		*/
-		void ReadSubscription();
+		void nvReadSelectionToBinary();
 
 		/**
 		* @brief
 		*/
-		void WriteSubscription();
+		void nvReadRangeToLog();
 
 		/**
 		* @brief
 		*/
-		void SendPhoneMode();
+		void nvReadRangeToText();
 
 		/**
 		* @brief
 		*/
-		void SpcTextChanged(QString value);
+		void nvReadRangeToBinary();
 
 		/**
 		* @brief
 		*/
-		void ProbeCommands();
+		void readSpc();
 
 		/**
 		* @brief
 		*/
-		void EfsHello();
+		void writeSpc();
 
 		/**
 		* @brief
 		*/
-		void EfsGetDeviceInfo();
+		void readSubscription();
 
 		/**
 		* @brief
 		*/
-		void EfsListDirectories();
+		void writeSubscription();
 
 		/**
 		* @brief
 		*/
-		void EfsQuery();
+		void setPhoneMode();
 
 		/**
 		* @brief
 		*/
-		void EfsExtractFactoryImage();
+		void switchToDload();
+
+		
+		/**
+		* @brief
+		*/
+		void onSpcTextChanged(QString value);
 
 		/**
 		* @brief
 		*/
-		void EfsMakeGoldenCopy();
+		void probeCommands();
 
 		/**
 		* @brief
 		*/
-		void EfsFilesystemImage();
+		void efsHello();
 
 		/**
 		* @brief
 		*/
-		void EfsGetFileInfo();
+		void efsGetDeviceInfo();
 
 		/**
 		* @brief
 		*/
-		void EfsGetFile();
+		void efsListDirectories();
 
 		/**
 		* @brief
 		*/
-		void EfsDeleteFile();
+		void efsQuery();
+
+		/**
+		* @brief
+		*/
+		void efsExtractFactoryImage();
+
+		/**
+		* @brief
+		*/
+		void efsMakeGoldenCopy();
+
+		/**
+		* @brief
+		*/
+		void efsFilesystemImage();
+
+		/**
+		* @brief
+		*/
+		void efsGetFileInfo();
+
+		/**
+		* @brief
+		*/
+		void efsGetFile();
+
+		/**
+		* @brief
+		*/
+		void efsDeleteFile();
 
 		/**
 		* @brief
@@ -252,72 +308,82 @@ namespace OpenPST {
 		/**
 		* @brief
 		*/
-		void EfsReadAll();
+		void efsReadAll();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuSaveFile();
+		void efsContextMenuSaveFile();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuSaveDirectory();
+		void efsContextMenuSaveDirectory();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuSaveDirectoryCompressed();
+		void efsContextMenuSaveDirectoryCompressed();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuUploadFile();
+		void efsContextMenuUploadFile();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuCopyPathToClipboard();
+		void efsContextMenuCopyPathToClipboard();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuDeleteDirectory();
+		void efsContextMenuDeleteDirectory();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuDeleteFile();
+		void efsContextMenuDeleteFile();
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuCreateDirectory();
+		void efsContextMenuCreateDirectory();
 
 
 		/**
 		* @brief
 		*/
-		void EfsContextMenuCreateLink();
+		void efsContextMenuCreateLink();
 
 		/**
 		* @brief
 		*/
-		void ClearLog();
+		void clearLog();
 
 		/**
 		* @brief
 		*/
-		void SaveLog();
+		void saveLog();
 
 		/**
 		* @brief
 		*/
 		void About();
 
-		void ReadSome();
+		void readSome();
 
-		void SendCommand();
+		void sendCommand();
+
+		void nvReadRequest(QcdmNvItemReadWorkerRequest& request);
+
+		void nvItemReadUpdate(QcdmNvItemReadWorkerResponse response);
+
+		void nvItemReadComplete(QcdmNvItemReadWorkerRequest request);
+
+		void nvItemReadError(QcdmNvItemReadWorkerRequest request, QString msg);
+
+
 
 	private:
 		/**

@@ -18,18 +18,18 @@
 #endif
 
 namespace OpenPST {
-	class Application : public QApplication {
-		public:
-			Application(int argc, char *argv[], const char* translationPrefix);
-			~Application();
-		private:
-			QTranslator qtTranslator;
-			QTranslator	translator;
-			
+    class Application : public QApplication {
+        public:
+            Application(int argc, char *argv[], const char* translationPrefix);
+            ~Application();
+        private:
+            QTranslator qtTranslator;
+            QTranslator translator;
+            
 #if defined (_WIN32) && defined (DEBUG)
-			FILE* sout;
-			FILE* serr;
+            FILE* sout;
+            FILE* serr;
 #endif
-	};
+    };
 
 }

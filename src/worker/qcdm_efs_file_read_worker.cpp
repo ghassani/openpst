@@ -14,10 +14,10 @@
 using namespace OpenPST;
 
 QcdmEfsFileReadWorker::QcdmEfsFileReadWorker(DmEfsManager& efsManager, QcdmEfsFileReadWorkerRequest request, QObject *parent) :
-	efsManager(efsManager),
-	request(request),
-	QThread(parent),
-	cancelled(false)
+    efsManager(efsManager),
+    request(request),
+    QThread(parent),
+    cancelled(false)
 {
 
 }
@@ -29,10 +29,10 @@ QcdmEfsFileReadWorker::~QcdmEfsFileReadWorker()
 
 void QcdmEfsFileReadWorker::cancel()
 {
-	cancelled = true;
+    cancelled = true;
 }
 
 void QcdmEfsFileReadWorker::run()
 {
-	return;
+    return;
 }

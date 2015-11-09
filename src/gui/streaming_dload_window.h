@@ -27,191 +27,191 @@ class StreamingDloadWindow;
 }
 
 namespace OpenPST{
-	class StreamingDloadWindow : public QMainWindow
-	{
+    class StreamingDloadWindow : public QMainWindow
+    {
 
-		Q_OBJECT
+        Q_OBJECT
 
-		public:
-			explicit StreamingDloadWindow(QWidget *parent = 0);
-			~StreamingDloadWindow();
+        public:
+            explicit StreamingDloadWindow(QWidget *parent = 0);
+            ~StreamingDloadWindow();
 
 
-		public slots:
+        public slots:
 
-			/**
-			 * @brief updatePortList
-			 */
-			void updatePortList();
+            /**
+             * @brief updatePortList
+             */
+            void updatePortList();
 
-			/**
-			 * @brief connectToPort
-			 */
-			void connectToPort();
+            /**
+             * @brief connectToPort
+             */
+            void connectToPort();
 
-			/**
-			 * @brief disconnectPort
-			 */
-			void disconnectPort();
+            /**
+             * @brief disconnectPort
+             */
+            void disconnectPort();
 
-			/**
-			 * @brief sendHello
-			 */
-			void sendHello();
+            /**
+             * @brief sendHello
+             */
+            void sendHello();
 
-			/**
-			* @brief sendUnlock
-			*/
-			void sendUnlock();
+            /**
+            * @brief sendUnlock
+            */
+            void sendUnlock();
 
-			/**
-			* @brief setSecurityMode
-			*/
-			void setSecurityMode();
+            /**
+            * @brief setSecurityMode
+            */
+            void setSecurityMode();
 
-			/**
-			* @brief sendNop
-			*/
-			void sendNop();
+            /**
+            * @brief sendNop
+            */
+            void sendNop();
 
-			/**
-			* @brief sendReset
-			*/
-			void sendReset();
+            /**
+            * @brief sendReset
+            */
+            void sendReset();
 
-			/**
-			* @brief sendPowerDown
-			*/
-			void sendPowerDown();
+            /**
+            * @brief sendPowerDown
+            */
+            void sendPowerDown();
 
-			/**
-			* @brief openMode
-			*/
-			void openMode();
+            /**
+            * @brief openMode
+            */
+            void openMode();
 
-			/**
-			* @brief closeMode
-			*/
-			void closeMode();
+            /**
+            * @brief closeMode
+            */
+            void closeMode();
 
-			/**
-			* @brief openMultiMode
-			*/
-			void openMultiMode();
+            /**
+            * @brief openMultiMode
+            */
+            void openMultiMode();
 
-			/**
-			* @brief readEccState
-			*/
-			void readEccState();
+            /**
+            * @brief readEccState
+            */
+            void readEccState();
 
-			/**
-			* @brief setEccState
-			*/
-			void setEccState();
+            /**
+            * @brief setEccState
+            */
+            void setEccState();
 
-			/**
-			* @brief read - Read address and size
-			*/
-			void read();
+            /**
+            * @brief read - Read address and size
+            */
+            void read();
 
-			/**
-			* @brief streamWrite - Stream write file starting at spcified address
-			*/
-			void streamWrite();
+            /**
+            * @brief streamWrite - Stream write file starting at spcified address
+            */
+            void streamWrite();
 
-			/**
-			* @brief eraseFlash
-			*/
-			void eraseFlash();
+            /**
+            * @brief eraseFlash
+            */
+            void eraseFlash();
 
-			/**
-			* @brief clearLog
-			*/
-			void clearLog();
+            /**
+            * @brief clearLog
+            */
+            void clearLog();
 
-			/**
-			 * @brief SaveLog
-			 */
-			void saveLog();
+            /**
+             * @brief SaveLog
+             */
+            void saveLog();
 
-			/**
-			* @brief browseForPartitionTable
-			*/
-			void browseForParitionTable();
+            /**
+            * @brief browseForPartitionTable
+            */
+            void browseForParitionTable();
 
-			/**
-			* @brief writePartitionTable
-			*/
-			void writePartitionTable();
+            /**
+            * @brief writePartitionTable
+            */
+            void writePartitionTable();
 
-			/**
-			* @brief browseForWriteFile
-			*/
-			void browseForWriteFile();
-			
-			/**
-			* @brief readChunkReadyHandler - callback function to update UI when a read chunk is ready. 
-			*								 used to increment the progress bar
-			*/
-			void readChunkReadyHandler(StreamingDloadReadWorkerRequest request);
+            /**
+            * @brief browseForWriteFile
+            */
+            void browseForWriteFile();
+            
+            /**
+            * @brief readChunkReadyHandler - callback function to update UI when a read chunk is ready. 
+            *                                used to increment the progress bar
+            */
+            void readChunkReadyHandler(StreamingDloadReadWorkerRequest request);
 
-			/**
-			* @brief readCompleteHandler - callback function to update UI when the read worker completes the request
-			*/
-			void readCompleteHandler(StreamingDloadReadWorkerRequest request);
+            /**
+            * @brief readCompleteHandler - callback function to update UI when the read worker completes the request
+            */
+            void readCompleteHandler(StreamingDloadReadWorkerRequest request);
 
-			/**
-			* @brief readChunkErrorHandler - callback function to update UI when the read worker encounters an error
-			*/
-			void readChunkErrorHandler(StreamingDloadReadWorkerRequest request, QString msg);
-			
-			/**
-			* @brief streamWriteChunkCompleteHandler - callback function to update UI when a stream write chunk has been written. 
-			*										used to increment the progress bar
-			*/
-			void streamWriteChunkCompleteHandler(StreamingDloadStreamWriteWorkerRequest request);
+            /**
+            * @brief readChunkErrorHandler - callback function to update UI when the read worker encounters an error
+            */
+            void readChunkErrorHandler(StreamingDloadReadWorkerRequest request, QString msg);
+            
+            /**
+            * @brief streamWriteChunkCompleteHandler - callback function to update UI when a stream write chunk has been written. 
+            *                                       used to increment the progress bar
+            */
+            void streamWriteChunkCompleteHandler(StreamingDloadStreamWriteWorkerRequest request);
 
-			/**
-			* @brief streamWriteCompleteHandler - callback function to update UI when a stream write worker completes the request
-			*/
-			void streamWriteCompleteHandler(StreamingDloadStreamWriteWorkerRequest request);
+            /**
+            * @brief streamWriteCompleteHandler - callback function to update UI when a stream write worker completes the request
+            */
+            void streamWriteCompleteHandler(StreamingDloadStreamWriteWorkerRequest request);
 
-			/**
-			* @brief streamWriteErrorHandler - callback function to update UI when a stream write worker encounters an error
-			*/
-			void streamWriteErrorHandler(StreamingDloadStreamWriteWorkerRequest request, QString msg);
+            /**
+            * @brief streamWriteErrorHandler - callback function to update UI when a stream write worker encounters an error
+            */
+            void streamWriteErrorHandler(StreamingDloadStreamWriteWorkerRequest request, QString msg);
 
-			/**
-			* @brief cancelOperation - Cancels any currently running workers
-			*/			
-			void cancelOperation();
+            /**
+            * @brief cancelOperation - Cancels any currently running workers
+            */          
+            void cancelOperation();
 
-			/**
-			* @brief enableControls
-			*/
-			void enableControls();
+            /**
+            * @brief enableControls
+            */
+            void enableControls();
 
-			/**
-			* @brief disableControls
-			*/
-			void disableControls();
+            /**
+            * @brief disableControls
+            */
+            void disableControls();
 
-			/**
-			* @brief log
-			*/
-			void log(const char* message);
+            /**
+            * @brief log
+            */
+            void log(const char* message);
 
-			/**
-			* @brief SaveLog
-			*/
-			void log(QString message);
+            /**
+            * @brief SaveLog
+            */
+            void log(QString message);
 
-		private:
-			Ui::StreamingDloadWindow *ui;
-			StreamingDloadSerial port;
-			serial::PortInfo currentPort;
-			StreamingDloadReadWorker* readWorker;
-			StreamingDloadStreamWriteWorker* streamWriteWorker;
-		};
+        private:
+            Ui::StreamingDloadWindow *ui;
+            StreamingDloadSerial port;
+            serial::PortInfo currentPort;
+            StreamingDloadReadWorker* readWorker;
+            StreamingDloadStreamWriteWorker* streamWriteWorker;
+        };
 }
 #endif // _GUI_STREAMING_DLOAD_WINDOW_H

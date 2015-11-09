@@ -14,7 +14,7 @@
 #include <QMessageBox>
 #include "gui/main_window.h"
 #ifdef _WIN32
-	#include <windows.h>
+    #include <windows.h>
 #endif
 
 /**
@@ -25,17 +25,17 @@
  */
 int main(int argc, char *argv[])
 {
-	Q_INIT_RESOURCE(systray); 
-	
-	QApplication application(argc, argv);
-	
+    Q_INIT_RESOURCE(systray); 
+    
+    QApplication application(argc, argv);
+    
 
-	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-		QMessageBox::critical(0, QObject::tr("Systray"), QObject::tr("OS does not have a viable system tray"));
-		return 1;
-	}
-	
-	QApplication::setQuitOnLastWindowClosed(false);
+    if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+        QMessageBox::critical(0, QObject::tr("Systray"), QObject::tr("OS does not have a viable system tray"));
+        return 1;
+    }
+    
+    QApplication::setQuitOnLastWindowClosed(false);
 
     openpst::MainWindow mainWindow;
 

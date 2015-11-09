@@ -21,9 +21,10 @@ import time
 import binascii
 import re
 import struct
+import csv
 
 def read_row(sock, addr, corrected=False):    
-    request = struct.pack('<BLL', 0x01, addr, 0x00)
+    request = struct.pack('<BLL', 0x01, addr, 0x00000001 if corrected else 0x00000000)
     #print 'Request   :', binascii.hexlify(request)
     written = sock.send(request)
     #print "Sent %d bytes\n" % written 
@@ -87,7 +88,7 @@ def main():
   
     read_many(sock, args.r, False)
     read_many(sock, args.rc, True)
-
+    
     print "Disconnecting"
 
     sock.send(struct.pack('B', 0x00))

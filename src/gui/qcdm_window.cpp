@@ -11,6 +11,8 @@
 */
 
 #include "qcdm_window.h"
+#include "util/endian.h"
+
 
 using namespace OpenPST;
 
@@ -18,12 +20,13 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QcdmWindow),
     port("", 115200),
-	efsManager(port)
+	efsManager(port),
+	nvItemReadWorker(nullptr)
 {
     ui->setupUi(this);
 
-    DisableUiButtons();
-    UpdatePortList();
+    disableUI();
+    updatePortList();
 
     ui->decSpcValue->setInputMask("999999");
     ui->hexMeidValue->setInputMask("HHHHHHHHHHHHHH");
@@ -31,36 +34,50 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
     ui->mdnValue->setInputMask("9999999999");
     ui->minValue->setInputMask("9999999999");
 
-    QObject::connect(ui->portListRefreshButton, SIGNAL(clicked()), this, SLOT(UpdatePortList()));
-    QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(DisconnectPort()));
-    QObject::connect(ui->portConnectButton, SIGNAL(clicked()), this, SLOT(ConnectToPort()));
-    QObject::connect(ui->sendSpcButton, SIGNAL(clicked()), this, SLOT(SendSpc()));
-    QObject::connect(ui->sendPasswordButton, SIGNAL(clicked()), this, SLOT(SendPassword()));
-    QObject::connect(ui->readMeidButton, SIGNAL(clicked()), this, SLOT(ReadMeid()));
-    QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(WriteMeid()));
-    QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(ReadImei()));
-    QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(ReadNam()));
-    QObject::connect(ui->writeNamButton, SIGNAL(clicked()), this, SLOT(WriteNam()));
-    QObject::connect(ui->readNvItemButton, SIGNAL(clicked()), this, SLOT(ReadNvItem()));
-    QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(ReadSpc()));
-    QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(WriteSpc()));
-    QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(ReadSubscription()));
-    QObject::connect(ui->writeSubscriptionButton, SIGNAL(clicked()), this, SLOT(WriteSubscription()));
+	ui->subscriptionValue->addItem("", -1);
+	ui->subscriptionValue->addItem("RUIM Only", kQcdmRuimConfigTypeRuim);
+	ui->subscriptionValue->addItem("NV Only", kQcdmRuimConfigTypeNv);
+	ui->subscriptionValue->addItem("RUIM Preferred", kQcdmRuimConfigTypePref);
+	ui->subscriptionValue->addItem("GSM 1x",		 kQcdmRuimConfigTypeGsm1x);
 
-    QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(ClearLog()));
-    QObject::connect(ui->saveLogButton, SIGNAL(clicked()), this, SLOT(SaveLog()));
 
-    QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(SendPhoneMode()));
+    QObject::connect(ui->portListRefreshButton, SIGNAL(clicked()), this, SLOT(updatePortList()));
+    QObject::connect(ui->portDisconnectButton, SIGNAL(clicked()), this, SLOT(disconnectPort()));
+    QObject::connect(ui->portConnectButton, SIGNAL(clicked()), this, SLOT(connectPort()));
+    QObject::connect(ui->sendSpcButton, SIGNAL(clicked()), this, SLOT(sendSpc()));
+    QObject::connect(ui->sendPasswordButton, SIGNAL(clicked()), this, SLOT(sendPassword()));
+    QObject::connect(ui->readMeidButton, SIGNAL(clicked()), this, SLOT(readMeid()));
+    QObject::connect(ui->writeMeidButton, SIGNAL(clicked()), this, SLOT(writeMeid()));
+    QObject::connect(ui->readImeiButton, SIGNAL(clicked()), this, SLOT(readImei()));
+    QObject::connect(ui->readNamButton, SIGNAL(clicked()), this, SLOT(readNam()));
+    QObject::connect(ui->writeNamButton, SIGNAL(clicked()), this, SLOT(writeNam()));
+    QObject::connect(ui->readSpcButton, SIGNAL(clicked()), this, SLOT(readSpc()));
+    QObject::connect(ui->writeSpcButton, SIGNAL(clicked()), this, SLOT(writeSpc()));
+    QObject::connect(ui->readSubscriptionButton, SIGNAL(clicked()), this, SLOT(readSubscription()));
+    QObject::connect(ui->writeSubscriptionButton, SIGNAL(clicked()), this, SLOT(writeSubscription()));
 
-	QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(SpcTextChanged(QString)));
+    QObject::connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clearLog()));
+    QObject::connect(ui->saveLogButton, SIGNAL(clicked()), this, SLOT(saveLog()));
+
+	QObject::connect(ui->sendPhoneModeButton, SIGNAL(clicked()), this, SLOT(setPhoneMode()));
+	QObject::connect(ui->switchDloadModeButton, SIGNAL(clicked()), this, SLOT(switchToDload()));
 	
-	QObject::connect(ui->probeCommandsButton, SIGNAL(clicked()), this, SLOT(ProbeCommands()));
-
+	QObject::connect(ui->decSpcValue, SIGNAL(textChanged(QString)), this, SLOT(onSpcTextChanged(QString)));
 	
+	QObject::connect(ui->probeCommandsButton, SIGNAL(clicked()), this, SLOT(probeCommands()));
+	
+	// NV Tab Buttons
+	QObject::connect(ui->nvReadSelectionToLogButton, SIGNAL(clicked()), this, SLOT(nvReadSelectionToLog()));
+	QObject::connect(ui->nvReadSelectionToTextButton, SIGNAL(clicked()), this, SLOT(nvReadSelectionToText()));
+	QObject::connect(ui->nvReadSelectionToBinaryButton, SIGNAL(clicked()), this, SLOT(nvReadSelectionToBinary()));
+	QObject::connect(ui->nvReadRangeToLogButton, SIGNAL(clicked()), this, SLOT(nvReadRangeToLog()));
+	QObject::connect(ui->nvReadRangeToTextButton, SIGNAL(clicked()), this, SLOT(nvReadRangeToText()));
+	QObject::connect(ui->nvReadRangeToBinaryButton, SIGNAL(clicked()), this, SLOT(nvReadRangeToBinary()));
+
 
 	// EFS Browse Sub Tab
-	QObject::connect(ui->efsListDirectoriesButton, SIGNAL(clicked()), this, SLOT(EfsListDirectories()));
-	QObject::connect(ui->efsReadAllButton, SIGNAL(clicked()), this, SLOT(EfsReadAll()));
+	QObject::connect(ui->efsListDirectoriesButton, SIGNAL(clicked()), this, SLOT(efsListDirectories()));
+	QObject::connect(ui->efsReadAllButton, SIGNAL(clicked()), this, SLOT(efsReadAll()));
 	QObject::connect(ui->efsSubsysCommandValue, SIGNAL(editingFinished()), this, SLOT(onEfsSubsysCommandCodeChange()));
 	QObject::connect(ui->efsSubsysIdValue, SIGNAL(editingFinished()), this, SLOT(onEfsSubsysIdChange()));
 
@@ -69,20 +86,20 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 	connect(ui->efsDirectoryTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onEfsTreeNodeRightClick(const QPoint &)));
 
 	// EFS Manage Sub Tab
-	QObject::connect(ui->efsFileRetrieveButton, SIGNAL(clicked()), this, SLOT(EfsGetFile()));
-	QObject::connect(ui->efsFileGetInfoButton, SIGNAL(clicked()), this, SLOT(EfsGetFileInfo()));
-	QObject::connect(ui->efsFileDeleteButton, SIGNAL(clicked()), this, SLOT(EfsDeleteFile()));
+	QObject::connect(ui->efsFileRetrieveButton, SIGNAL(clicked()), this, SLOT(efsGetFile()));
+	QObject::connect(ui->efsFileGetInfoButton, SIGNAL(clicked()), this, SLOT(efsGetFileInfo()));
+	QObject::connect(ui->efsFileDeleteButton, SIGNAL(clicked()), this, SLOT(efsDeleteFile()));
 
 	// File Action Menu
 	//QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT());
 
 	// EFS Action Menu 
-	QObject::connect(ui->actionEfsHello, SIGNAL(triggered()), this, SLOT(EfsHello()));
-	QObject::connect(ui->actionEfsGetDeviceInfo, SIGNAL(triggered()), this, SLOT(EfsGetDeviceInfo()));
-	QObject::connect(ui->actionEfsQuery, SIGNAL(triggered()), this, SLOT(EfsQuery()));
-	QObject::connect(ui->actionEfsExtractFactoryImage, SIGNAL(triggered()), this, SLOT(EfsExtractFactoryImage()));
-	QObject::connect(ui->actionEfsMakeGoldenCopy, SIGNAL(triggered()), this, SLOT(EfsMakeGoldenCopy()));
-	QObject::connect(ui->actionEfsFilesystemImage, SIGNAL(triggered()), this, SLOT(EfsFilesystemImage()));
+	QObject::connect(ui->actionEfsHello, SIGNAL(triggered()), this, SLOT(efsHello()));
+	QObject::connect(ui->actionEfsGetDeviceInfo, SIGNAL(triggered()), this, SLOT(efsGetDeviceInfo()));
+	QObject::connect(ui->actionEfsQuery, SIGNAL(triggered()), this, SLOT(efsQuery()));
+	QObject::connect(ui->actionEfsExtractFactoryImage, SIGNAL(triggered()), this, SLOT(efsExtractFactoryImage()));
+	QObject::connect(ui->actionEfsMakeGoldenCopy, SIGNAL(triggered()), this, SLOT(efsMakeGoldenCopy()));
+	QObject::connect(ui->actionEfsFilesystemImage, SIGNAL(triggered()), this, SLOT(efsFilesystemImage()));
 
 	
 	// Help Action Menu
@@ -90,8 +107,8 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 
 
 	// TODO: remov eme
-	QObject::connect(ui->sendCommandButton, SIGNAL(clicked()), this, SLOT(SendCommand()));
-	QObject::connect(ui->readButton, SIGNAL(clicked()), this, SLOT(ReadSome()));
+	QObject::connect(ui->sendCommandButton, SIGNAL(clicked()), this, SLOT(sendCommand()));
+	QObject::connect(ui->readButton, SIGNAL(clicked()), this, SLOT(readSome()));
 
 	
 	
@@ -100,8 +117,23 @@ QcdmWindow::QcdmWindow(QWidget *parent) :
 	qRegisterMetaType<QcdmEfsFileWriteWorkerRequest>("QcdmEfsFileWriteWorkerRequest");
 	qRegisterMetaType<QcdmMemoryReadWorkerRequest>("QcdmMemoryReadWorkerRequest");
 	qRegisterMetaType<QcdmPrlWriteWorkerRequest>("QcdmPrlWriteWorkerRequest");
-	
+	qRegisterMetaType<QcdmNvItemReadWorkerRequest>("QcdmNvItemReadWorkerRequest");
+	qRegisterMetaType<QcdmNvItemReadWorkerResponse>("QcdmNvItemReadWorkerResponse");
 
+	// load nv item selection list
+	QFile nvItemXmlList(":/xml/nv_items.xml");
+	QDomDocument document;
+	document.setContent(&nvItemXmlList);
+	QDomNodeList nodes = document.elementsByTagName("NvItem");
+	QString tmp;
+	for (int i = 0; i < nodes.count(); i++){
+		QDomNode elm = nodes.at(i);
+		QDomElement e = elm.toElement();
+		QListWidgetItem* item = new QListWidgetItem(ui->nvReadSelectionList);
+		item->setText(tmp.sprintf("Item #%d - %s", e.attribute("id").toInt(), e.text().toStdString().c_str()));
+		item->setData(1, e.attribute("id").toInt());
+		ui->nvReadSelectionList->addItem(item);
+	}
 }
 
 /**
@@ -114,9 +146,9 @@ QcdmWindow::~QcdmWindow()
 
 
 /**
-* @brief QcdmWindow::UpdatePortList
+* @brief QcdmWindow::updatePortList
 */
-void QcdmWindow::UpdatePortList()
+void QcdmWindow::updatePortList()
 {
     std::vector<serial::PortInfo> devices = serial::list_ports();
     std::vector<serial::PortInfo>::iterator iter = devices.begin();
@@ -144,11 +176,13 @@ void QcdmWindow::UpdatePortList()
 }
 
 /**
-* @brief QcdmWindow::ConnectToPort
+* @brief QcdmWindow::connectPort
 */
-void QcdmWindow::ConnectToPort()
+void QcdmWindow::connectPort()
 {
-    QString selected = ui->portListComboBox->currentData().toString();
+	QString tmp;
+	QString selected = ui->portListComboBox->currentData().toString();
+	QcdmVersionResponse version;
 
     if (selected.compare("0") == 0) {
         log(kLogTypeWarning, "Select a Port First");
@@ -174,31 +208,38 @@ void QcdmWindow::ConnectToPort()
     try {
         port.setPort(currentPort.port);
 
-        if (!port.isOpen()){
-            port.open();
+        port.open();
 
-            ui->portConnectButton->setEnabled(false);
-            ui->portDisconnectButton->setEnabled(true);
-            ui->portListRefreshButton->setEnabled(false);
-            ui->portListComboBox->setEnabled(false);
-            EnableUiButtons();
+        ui->portConnectButton->setEnabled(false);
+        ui->portDisconnectButton->setEnabled(true);
+        ui->portListRefreshButton->setEnabled(false);
+        ui->portListComboBox->setEnabled(false);
+        enableUI();
 
-            QString connectedText = "Connected to ";
-            connectedText.append(currentPort.port.c_str());
-            log(kLogTypeInfo, connectedText);
-        }
-    }
-    catch (serial::IOException e) {
+        QString connectedText = "Connected to ";
+        connectedText.append(currentPort.port.c_str());
+        log(kLogTypeInfo, connectedText);
+     
+
+    } catch (serial::IOException e) {
         log(kLogTypeError, "Error Connecting To Serial Port");
         log(kLogTypeError, e.getErrorNumber() == 13 ? "Permission Denied. Try Running With Elevated Privledges." : e.what());
-        return;
-    }
+		return;
+	} catch(std::exception e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	getVersionInfo();
+	getStatus();
+	getGuid();
+
 }
 
 /**
-* @brief QcdmWindow::DisconnectPort
+* @brief QcdmWindow::disconnectPort
 */
-void QcdmWindow::DisconnectPort()
+void QcdmWindow::disconnectPort()
 {
     if (port.isOpen()) {
         QString closeText = "Disconnected from ";
@@ -211,113 +252,225 @@ void QcdmWindow::DisconnectPort()
         ui->portDisconnectButton->setEnabled(false);
         ui->portListRefreshButton->setEnabled(true);
         ui->portListComboBox->setEnabled(true);
-        DisableUiButtons();
+        disableUI();
     }
 }
 
 /**
-* @brief QcdmWindow::SendSpc
+* @brief QcdmWindow::getVersion
 */
-void QcdmWindow::SendSpc()
+void QcdmWindow::getVersionInfo()
 {
-    if (ui->sendSpcValue->text().length() != 6) {
+	QcdmVersionResponse version;
+	QString tmp;
+	uint16_t diagVersion;
+
+	try {
+		version = port.getVersion();
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+
+	log(kLogTypeInfo, "===========\nVersion Info\n===========");
+	log(kLogTypeInfo, tmp.sprintf("Compiled %.11s %.8s", version.cdate, version.ctime));
+	log(kLogTypeInfo, tmp.sprintf("Released %.11s %.8s", version.rdate, version.rtime));
+	log(kLogTypeInfo, tmp.sprintf("Model: %.11s", version.ver_dir));
+	log(kLogTypeInfo, tmp.sprintf("Firmware Rev: %d", version.firmwareRev));
+	log(kLogTypeInfo, tmp.sprintf("HW Version %d.%d", version.hwVersionMajor, version.hwVersionMinor));
+	log(kLogTypeInfo, tmp.sprintf("Station Class Mark: %d", version.caiRev));
+	log(kLogTypeInfo, tmp.sprintf("CAI Rev: %d", version.caiRev));
+	log(kLogTypeInfo, tmp.sprintf("Slot Cycle Index: %d", version.slotCycleIndex));
+
+	try {
+
+		diagVersion = port.getDiagVersion();
+
+		log(kLogTypeInfo, tmp.sprintf("Diag Version: %d", diagVersion));
+
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+	}
+}
+
+/**
+* @brief QcdmWindow::getStatus
+*/
+void QcdmWindow::getStatus()
+{
+	QcdmStatusResponse status;
+	QString tmp;
+
+	try {
+		status = port.getStatus();
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	log(kLogTypeInfo, "===========\nStatus\n===========");
+	log(kLogTypeInfo, tmp.sprintf("MIN1: %d %d", status.min1[0], status.min1[1]));
+	log(kLogTypeInfo, tmp.sprintf("MIN2: %d %d", status.min2[0], status.min2[1]));
+	log(kLogTypeInfo, tmp.sprintf("MIN Index: %d", status.minIndex));
+	log(kLogTypeInfo, tmp.sprintf("CDMA RX State: %04X", status.cdmaRxState));
+	log(kLogTypeInfo, tmp.sprintf("CDMA Good Frames: %d", status.cdmaGoodFrames));
+	log(kLogTypeInfo, tmp.sprintf("Current Channel: %d", status.currentChannel));
+	log(kLogTypeInfo, tmp.sprintf("SID: %d", status.sid));
+	log(kLogTypeInfo, tmp.sprintf("NID: %d", status.nid));
+	log(kLogTypeInfo, tmp.sprintf("Location ID: %d", status.locationId));
+	log(kLogTypeInfo, tmp.sprintf("RSSI Level: %d", status.rssiLevel));
+	log(kLogTypeInfo, tmp.sprintf("Power: %d", status.power));
+}
+/**
+* @brief QcdmWindow::getGuid
+*/
+void QcdmWindow::getGuid()
+{
+	QcdmGuidResponse response;
+	QString tmp;
+
+	try {
+		response = port.getGuid();
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	log(kLogTypeInfo, tmp.sprintf("GUID: %04X-%04X-%04X-%04X", response.guid[0], response.guid[1], response.guid[2], response.guid[3]));
+}
+
+/**
+* @brief QcdmWindow::sendSpc
+*/
+void QcdmWindow::sendSpc()
+{
+	bool valid;
+	
+	if (ui->sendSpcValue->text().length() != 6) {
         log(kLogTypeWarning, "Enter a Valid 6 Digit SPC");
         return;
     }
 
-    int result = port.sendSpc(ui->sendSpcValue->text().toStdString().c_str());
+	try {
+		valid = port.sendSpc(ui->sendSpcValue->text().toStdString());
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
 
-    if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
-        log(kLogTypeError, "Error Sending SPC");
-        return;
-    }
-
-    if (result == DIAG_SPC_REJECT) {
-        log(kLogTypeError, "SPC Not Accepted: " + ui->sendSpcValue->text());
-        return;
-    }
-
-    log(kLogTypeInfo, "SPC Accepted: " + ui->sendSpcValue->text());
+	if (valid) {
+		log(kLogTypeInfo, "SPC Accepted: " + ui->sendSpcValue->text());
+	} else {
+		log(kLogTypeError, "SPC Not Accepted: " + ui->sendSpcValue->text());
+	}
 }
 
 /**
-* @brief QcdmWindow::SendPassword
+* @brief QcdmWindow::sendPassword
 */
-void QcdmWindow::SendPassword()
+void QcdmWindow::sendPassword()
 {
-    if (ui->sendPasswordValue->text().length() != 16) {
+	bool valid;
+	
+	if (ui->sendPasswordValue->text().length() != 16) {
         log(kLogTypeWarning, "Enter a Valid 16 Digit Password");
         return;
     }
 
-    int result = port.sendPassword(ui->sendPasswordValue->text().toStdString().c_str());
+	try {
 
-    if (result == DIAG_CMD_TX_FAIL || result == DIAG_CMD_RX_FAIL) {
-        log(kLogTypeError, "Error Sending Password");
-        return;
-    }
-
-    if (result == DIAG_PASSWORD_REJECT) {
-        log(kLogTypeError, "Password Not Accepted: " + ui->sendPasswordValue->text());
-        return;
-    }
-
-    log(kLogTypeInfo, "Password Accepted: " + ui->sendPasswordValue->text());
+		if (port.sendPassword(ui->sendPasswordValue->text().toStdString())) {
+			log(kLogTypeInfo, "Password Accepted: " + ui->sendPasswordValue->text());
+		} else {
+			log(kLogTypeError, "Password Not Accepted: " + ui->sendPasswordValue->text());
+		}
+	}
+	catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
 }
 
 /**
-* @brief QcdmWindow::SendPhoneMode
+* @brief QcdmWindow::setPhoneMode
 */
-void QcdmWindow::SendPhoneMode()
+void QcdmWindow::setPhoneMode()
 {
-    int rx = port.sendPhoneMode((uint8_t)ui->phoneModeValue->currentIndex());
+	QcdmPhoneMode mode = (QcdmPhoneMode)ui->phoneModeValue->currentIndex();
 
-    if (rx == MODE_RESET_F) {
-        DisconnectPort();
-        UpdatePortList();
+	bool success;
+
+	try {
+		port.setPhoneMode(mode);
+
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	if (success && mode == kQcdmPhoneModeReset) {
+        disconnectPort();
+        updatePortList();
     }
 
-    if (rx == (uint8_t)ui->phoneModeValue->currentIndex()){
-        log(kLogTypeInfo, "Send Phone Mode Success: " + ui->phoneModeValue->currentText());
-    }
-    else {
-        log(kLogTypeInfo, "Send Phone Mode Failure: " + ui->phoneModeValue->currentText());
-    }
+}
+/**
+* @brief QcdmWindow::switchToDload
+*/
+void QcdmWindow::switchToDload()
+{
+	try {
+		port.switchToDload();
+
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	disconnectPort();
+	updatePortList();
 }
 
 /**
-* @brief QcdmWindow::ReadMeid
+* @brief QcdmWindow::readMeid
 */
-void QcdmWindow::ReadMeid()
+void QcdmWindow::readMeid()
 {
-    if (ui->hexMeidValue->text().length() != 0) {
+	QcdmNvResponse nvItem;
+	QString meid;
+	QString tmp;
+
+	int i,t;
+
+	if (ui->hexMeidValue->text().length() != 0) {
         ui->hexMeidValue->setText("");
     }
 
-    uint8_t* resp = nullptr;
+	try {
+		nvItem = port.readNV(NV_MEID_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
 
-    int rx = port.getNvItem(NV_MEID_I, &resp);
+	std::reverse((uint8_t*)&nvItem.data, ((uint8_t*)&nvItem.data) + 7);
 
-    if (rx == DIAG_NV_READ_F){
-        QcdmNvResponse* rxPacket = (QcdmNvResponse*)resp;
+	for (i = 0; i < 7; i++) {
+		meid.append(tmp.sprintf((i == 6 ? "%02X" : "%02X "), nvItem.data[i]));
+	}
 
-        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 6, true);
-        QString result = QString::fromStdString(tmp).toUpper();
+	hexdump((uint8_t*)&nvItem.data, 7);
 
-        ui->hexMeidValue->setText(result);
-
-        log(kLogTypeInfo, "Read Success - MEID: " + result);
-    } else {
-        log(kLogTypeError, "Read Failure - MEID");
-    }
+	ui->hexMeidValue->setText(meid);
 }
 
 /**
-* @brief QcdmWindow::WriteMeid
+* @brief QcdmWindow::writeMeid
 */
-void QcdmWindow::WriteMeid()
+void QcdmWindow::writeMeid()
 {
-    if (ui->hexMeidValue->text().length() != 14) {
+    /*if (ui->hexMeidValue->text().length() != 14) {
         log(kLogTypeWarning, "Enter a Valid 14 Character MEID");
     }
 
@@ -332,57 +485,323 @@ void QcdmWindow::WriteMeid()
         log(kLogTypeInfo, "Write Success - MEID: " + ui->hexMeidValue->text());
     } else {
         log(kLogTypeError, "Write Failure - MEID");
-    }
+    }*/
 }
 
 /**
-* @brief QcdmWindow::ReadImei
+* @brief QcdmWindow::readImei
 */
-void QcdmWindow::ReadImei() {
-    uint8_t* resp = nullptr;
+void QcdmWindow::readImei() {
+	QcdmNvResponse nvItem;
+	QString imei;
+	QString tmp;
+	int i;
 
-    int rx = port.getNvItem(NV_UE_IMEI_I, &resp);
-
-    if (rx == DIAG_NV_READ_F) {
-        QcdmNvResponse* rxPacket = (QcdmNvResponse*)resp;
-
-        std::string tmp = bytesToHex((unsigned char *)rxPacket->data, 8, true);
-        QString result = QString::fromStdString(tmp).remove("a");
-
-        ui->imeiValue->setText(result);
-
-        log(kLogTypeInfo, "Read Success - IMEI: " + result);
-    } else {
-        log(kLogTypeError, "Read Failure - IMEI");
-    }
+	try {
+		nvItem = port.readNV(NV_UE_IMEI_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	for (i = 1; i < 9; i++) {
+		if (i == 1) {
+			imei.append(tmp.sprintf("%X", (nvItem.data[i] & 0xF0) >> 4));
+		} else {
+			imei.append(tmp.sprintf("%X", (nvItem.data[i] & 0xF0) >> 4 | (nvItem.data[i] & 0x0F) << 4));
+		}
+	}  
+	
+	ui->imeiValue->setText(imei);
 }
 
 /**
-* @brief QcdmWindow::ReadNvItem
+* @brief
 */
-void QcdmWindow::ReadNvItem() {
-    if (ui->nvItemValue->text().length() == 0) {
-        log(kLogTypeWarning, "Input a Valid NV Item Number");
-        return;
-    }
+void QcdmWindow::nvReadSelectionToLog()
+{
+	if (nvItemReadWorker != nullptr) {
+		log(kLogTypeError, "Operation currently in progress");
+		return;
+	}
+		
+	QcdmNvItemReadWorkerRequest request = {};
+	QList<QListWidgetItem*> selectedItems;
+	QListWidgetItem* item;
+	QString tmp; 
 
-    uint8_t* resp = nullptr;
+	request.type = QcdmNvItemReadWorkerRequestTypeLog;
 
-    int rx = port.getNvItem(ui->nvItemValue->text().toInt(), &resp);
+	selectedItems = ui->nvReadSelectionList->selectedItems();
 
-    if (rx == DIAG_NV_READ_F){
-        QString result;
+	for (auto item : selectedItems) {
+		request.items.push_back(item->data(1).toInt());
+	}
 
-        hexdump(resp, sizeof(resp) * 16, result, true);
 
-        log(kLogTypeInfo, "Read Success - Item Number: " + ui->nvItemValue->text() + "<br>" + result);
-    }
+	return nvReadRequest(request);
 }
 
 /**
-* @brief QcdmWindow::ReadNam
+* @brief
 */
-void QcdmWindow::ReadNam() {
+void QcdmWindow::nvReadSelectionToText()
+{
+	if (nvItemReadWorker != nullptr) {
+		log(kLogTypeError, "Operation currently in progress");
+		return;
+	}
+
+	QString outPath = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("*.txt"));
+
+	if (!outPath.length()) {
+		log(kLogTypeError, "Operation Cancelled");
+		return;
+	}
+
+	QcdmNvItemReadWorkerRequest request = {};
+	QList<QListWidgetItem*> selectedItems;
+	QListWidgetItem* item;
+	QString tmp;
+
+	request.type = QcdmNvItemReadWorkerRequestTypeText;
+	request.outFilePath = outPath.toStdString();
+
+	selectedItems = ui->nvReadSelectionList->selectedItems();
+
+	for (auto item : selectedItems) {
+		request.items.push_back(item->data(1).toInt());
+	}
+
+	return nvReadRequest(request);
+}
+
+
+/**
+* @brief
+*/
+void QcdmWindow::nvReadSelectionToBinary()
+{
+	if (nvItemReadWorker != nullptr) {
+		log(kLogTypeError, "Operation currently in progress");
+		return;
+	}
+
+	QString outPath = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("*.bin"));
+
+	if (!outPath.length()) {
+		log(kLogTypeError, "Operation Cancelled");
+		return;
+	}
+
+	QcdmNvItemReadWorkerRequest request = {};
+	QList<QListWidgetItem*> selectedItems;
+	QListWidgetItem* item;
+	QString tmp;
+
+	request.type = QcdmNvItemReadWorkerRequestTypeBinary;
+	request.outFilePath = outPath.toStdString();
+
+	selectedItems = ui->nvReadSelectionList->selectedItems();
+
+	for (auto item : selectedItems) {
+		request.items.push_back(item->data(1).toInt());
+	}
+
+	return nvReadRequest(request);
+}
+
+
+
+/**
+* @brief
+*/
+void QcdmWindow::nvReadRangeToLog()
+{
+	QcdmNvItemReadWorkerRequest request = {};
+	QString tmp;
+	int i;
+	int start, end;
+
+	if (nvItemReadWorker != nullptr) {
+		log(kLogTypeError, "Operation currently in progress");
+		return;
+	}
+
+	start = std::stoul(ui->nvReadRangeFromValue->text().toStdString().c_str(), nullptr, 10);
+	end = std::stoul(ui->nvReadRangeToValue->text().toStdString().c_str(), nullptr, 10);
+
+	if (start > end) {
+		log(kLogTypeError, "Starting item must be less than ending item.");
+		return;
+	}
+	
+	request.type = QcdmNvItemReadWorkerRequestTypeLog;
+
+	for (i = start; i <= end; i++) {
+		request.items.push_back(i);
+	}
+
+	return nvReadRequest(request);
+}
+
+/**
+* @brief
+*/
+void QcdmWindow::nvReadRangeToText()
+{
+	QcdmNvItemReadWorkerRequest request = {};
+	QString tmp;
+	QString outPath;
+	int i;
+	int start, end;
+
+	if (nvItemReadWorker != nullptr) {
+		log(kLogTypeError, "Operation currently in progress");
+		return;
+	}
+
+	start = std::stoul(ui->nvReadRangeFromValue->text().toStdString().c_str(), nullptr, 10);
+	end = std::stoul(ui->nvReadRangeToValue->text().toStdString().c_str(), nullptr, 10);
+
+	if (start > end) {
+		log(kLogTypeError, "Starting item must be less than ending item.");
+		return;
+	}
+
+	outPath = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("*.txt"));
+
+	if (!outPath.length()) {
+		log(kLogTypeError, "Operation Cancelled");
+		return;
+	}
+
+	request.type = QcdmNvItemReadWorkerRequestTypeText;
+	request.outFilePath = outPath.toStdString();
+
+	for (i = start; i <= end; i++) {
+		request.items.push_back(i);
+	}
+
+	return nvReadRequest(request);
+}
+
+/**
+* @brief
+*/
+void QcdmWindow::nvReadRangeToBinary()
+{
+	QcdmNvItemReadWorkerRequest request = {};
+	QString tmp; 
+	QString outPath;
+	int i;
+	int start, end;
+
+	if (nvItemReadWorker != nullptr) {
+		log(kLogTypeError, "Operation currently in progress");
+		return;
+	}
+
+	start = std::stoul(ui->nvReadRangeFromValue->text().toStdString().c_str(), nullptr, 10);
+	end = std::stoul(ui->nvReadRangeToValue->text().toStdString().c_str(), nullptr, 10);
+
+	if (start > end) {
+		log(kLogTypeError, "Starting item must be less than ending item.");
+		return;
+	}
+
+	outPath = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("*.bin"));
+
+	if (!outPath.length()) {
+		log(kLogTypeError, "Operation Cancelled");
+		return;
+	}
+
+	request.type = QcdmNvItemReadWorkerRequestTypeBinary;
+	request.outFilePath = outPath.toStdString();
+
+	for (i = start; i <= end; i++) {
+		request.items.push_back(i);
+	}
+
+	return nvReadRequest(request);
+}
+
+void QcdmWindow::nvReadRequest(QcdmNvItemReadWorkerRequest &request)
+{
+	QString tmp;
+	
+	ui->progressBar->reset();
+	ui->progressBar->setMaximum(request.items.size());
+	ui->progressBar->setMinimum(0);
+	ui->progressBar->setValue(0);
+
+	ui->progressBarLabelRight->setText(tmp.sprintf("0 / %lu items", request.items.size()));
+
+	nvItemReadWorker = new QcdmNvItemReadWorker(port, request, this);
+
+	connect(nvItemReadWorker, &QcdmNvItemReadWorker::update, this, &QcdmWindow::nvItemReadUpdate, Qt::QueuedConnection);
+	connect(nvItemReadWorker, &QcdmNvItemReadWorker::complete, this, &QcdmWindow::nvItemReadComplete);
+	connect(nvItemReadWorker, &QcdmNvItemReadWorker::error, this, &QcdmWindow::nvItemReadError);
+	connect(nvItemReadWorker, &QcdmNvItemReadWorker::finished, nvItemReadWorker, &QObject::deleteLater);
+
+	disableUI();
+
+	nvItemReadWorker->start();
+}
+
+
+void QcdmWindow::nvItemReadUpdate(QcdmNvItemReadWorkerResponse response)
+{
+	QString tmp;
+	QString result;
+
+	ui->progressBar->setValue(ui->progressBar->value() + 1);
+
+	ui->progressBarLabelRight->setText(tmp.sprintf("%lu / %lu items", ui->progressBar->value(), ui->progressBar->maximum()));
+	
+	if (response.type == QcdmNvItemReadWorkerRequestTypeLog) {
+		log(kLogTypeInfo, tmp.sprintf("===========\nItem %d - %s\n===========", response.item, ui->nvReadSelectionList->item(response.item)->text().toStdString().c_str()));
+		hexdump(response.data, DIAG_NV_ITEM_SIZE, result, true);
+		log(kLogTypeInfo, result);
+	}
+}
+
+/**
+* @brief
+*/
+void QcdmWindow::nvItemReadComplete(QcdmNvItemReadWorkerRequest request)
+{
+	nvItemReadWorker = nullptr;
+	enableUI();
+}
+
+/**
+* @brief
+*/
+void QcdmWindow::nvItemReadError(QcdmNvItemReadWorkerRequest request, QString msg)
+{
+	QString tmp;
+
+	ui->progressBar->setValue(ui->progressBar->value() + 1);
+
+	ui->progressBarLabelRight->setText(tmp.sprintf("%lu / %lu items", ui->progressBar->value(), ui->progressBar->maximum())); 
+	
+
+	if (request.type == QcdmNvItemReadWorkerRequestTypeLog) {
+		log(kLogTypeError, tmp.sprintf("===========\nError Reading Item %d - %s\n===========", request.current, ui->nvReadSelectionList->item(request.current)->text().toStdString().c_str()));
+		log(kLogTypeError, msg);
+	} else {
+		log(kLogTypeError, tmp.sprintf("Error reading item %d: %s", request.current, msg.toStdString().c_str()));
+	}
+
+}
+
+
+/**
+* @brief QcdmWindow::readNam
+*/
+void QcdmWindow::readNam() {
     // readMdn();
     // readMin();
     // readSid();
@@ -403,9 +822,9 @@ void QcdmWindow::ReadNam() {
 }
 
 /**
-* @brief QcdmWindow::WriteNam
+* @brief QcdmWindow::writeNam
 */
-void QcdmWindow::WriteNam() {
+void QcdmWindow::writeNam() {
     // writeMdn();
     // writeSystemPref();
     // writePrefServ();
@@ -416,7 +835,27 @@ void QcdmWindow::WriteNam() {
 * @brief QcdmWindow::ReadMdn
 */
 void QcdmWindow::ReadMdn() {
-    uint8_t* resp = nullptr;
+
+	QcdmNvResponse nvItem;
+	QString hex;
+
+	if (ui->nvItemValue->text().length() == 0) {
+		log(kLogTypeWarning, "Input a Valid NV Item Number");
+		return;
+	}
+
+	try {
+		nvItem = port.readNV(NV_DIR_NUMBER_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	/*
+	log(kLogTypeInfo, "Read Success - Item Number: " + ui->nvItemValue->text() + "<br>" + hex);
+	
+	
+	uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_DIR_NUMBER_I, &resp);
 
@@ -431,7 +870,7 @@ void QcdmWindow::ReadMdn() {
         log(kLogTypeInfo, "Read Success - MDN: " + mdnValue);
     } else {
         log(kLogTypeError, "Read Failure - MDN");
-    }
+    }*/
 }
 
 /**
@@ -439,7 +878,7 @@ void QcdmWindow::ReadMdn() {
 */
 void QcdmWindow::WriteMdn()
 {
-    if (ui->mdnValue->text().length() != 10) {
+    /*if (ui->mdnValue->text().length() != 10) {
         log(kLogTypeWarning, "Enter a Valid 10 Digit MDN");
         return;
     }
@@ -453,14 +892,26 @@ void QcdmWindow::WriteMdn()
         log(kLogTypeInfo, "Write Success - MDN: " + ui->mdnValue->text());
     } else {
         log(kLogTypeError, "Write Failure - MDN");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadMin
 */
 void QcdmWindow::ReadMin() {
-    unsigned char min1Chunk[3], min2Chunk[1];
+	
+	QcdmNvResponse min1;
+	QcdmNvResponse min2;
+
+	try {
+		min1 = port.readNV(NV_MIN1_I);
+		min2 = port.readNV(NV_MIN2_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*unsigned char min1Chunk[3], min2Chunk[1];
     std::string min1, min2;
 
     uint8_t* resp = nullptr;
@@ -501,14 +952,23 @@ void QcdmWindow::ReadMin() {
         log(kLogTypeInfo, "Read Success - MIN: " + decodedMin);
     } else {
         log(kLogTypeError, "Read Failure - MIN");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadSid
 */
 void QcdmWindow::ReadSid() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_HOME_SID_NID_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HOME_SID_NID_I, &resp);
 
@@ -529,7 +989,7 @@ void QcdmWindow::ReadSid() {
         log(kLogTypeInfo, "Read Success - SID: " + result);
     } else {
         log(kLogTypeError, "Read Failure - SID");
-    }
+    }*/
 }
 
 /**
@@ -537,7 +997,16 @@ void QcdmWindow::ReadSid() {
 */
 void QcdmWindow::ReadSystemPref()
 {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem; 
+	
+	try {
+		nvItem = port.readNV(NV_SYSTEM_PREF_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_SYSTEM_PREF_I, &resp);
 
@@ -549,7 +1018,7 @@ void QcdmWindow::ReadSystemPref()
         log(kLogTypeInfo, "Read Success - System Pref: " + ui->systemPrefValue->currentText());
     } else {
         log(kLogTypeError, "Read Failure - System Pref");
-    }
+    }*/
 }
 
 /**
@@ -557,7 +1026,7 @@ void QcdmWindow::ReadSystemPref()
 */
 void QcdmWindow::WriteSystemPref()
 {
-    int mode = ui->systemPrefValue->currentIndex() - 1;
+    /*int mode = ui->systemPrefValue->currentIndex() - 1;
 
     if (mode < 0) {
         log(kLogTypeWarning, "Select a System Pref to Write");
@@ -579,7 +1048,7 @@ void QcdmWindow::WriteSystemPref()
         log(kLogTypeInfo, "Write Success - System Pref: " + ui->systemPrefValue->currentText());
     } else {
         log(kLogTypeError, "Write Failure - System Pref");
-    }
+    }*/
 }
 
 /**
@@ -587,7 +1056,16 @@ void QcdmWindow::WriteSystemPref()
 */
 void QcdmWindow::ReadPrefMode()
 {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_PREF_MODE_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PREF_MODE_I, &resp);
 
@@ -691,7 +1169,7 @@ void QcdmWindow::ReadPrefMode()
         log(kLogTypeInfo, "Read Success - Pref Mode: " + result);
     } else {
         log(kLogTypeError, "Read Failure - Pref Mode");
-    }
+    }*/
 }
 
 /**
@@ -699,7 +1177,16 @@ void QcdmWindow::ReadPrefMode()
 */
 void QcdmWindow::ReadPrefServ()
 {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_CDMA_PREF_SERV_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_CDMA_PREF_SERV_I, &resp);
 
@@ -711,7 +1198,7 @@ void QcdmWindow::ReadPrefServ()
         log(kLogTypeInfo, "Read Success - Pref Serv: " + ui->prefServValue->currentText());
     } else {
         log(kLogTypeError, "Read Failure - Pref Serv");
-    }
+    }*/
 }
 
 /**
@@ -719,7 +1206,7 @@ void QcdmWindow::ReadPrefServ()
 */
 void QcdmWindow::WritePrefServ()
 {
-    int mode = ui->prefServValue->currentIndex() - 1;
+    /*int mode = ui->prefServValue->currentIndex() - 1;
 
     if (mode < 0) {
         log(kLogTypeWarning, "Select a System Pref to Write");
@@ -741,7 +1228,7 @@ void QcdmWindow::WritePrefServ()
         log(kLogTypeInfo, "Write Success - System Pref: " + ui->prefServValue->currentText());
     } else {
         log(kLogTypeError, "Write Failure - System Pref");
-    }
+    }*/
 }
 
 /**
@@ -749,7 +1236,16 @@ void QcdmWindow::WritePrefServ()
 */
 void QcdmWindow::ReadRoamPref()
 {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_ROAM_PREF_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_ROAM_PREF_I, &resp);
 
@@ -775,7 +1271,7 @@ void QcdmWindow::ReadRoamPref()
         log(kLogTypeInfo, "Read Success - Roam Pref: " + ui->roamPrefValue->currentText());
     } else {
         log(kLogTypeError, "Read Failure - Roam Pref");
-    }
+    }*/
 }
 
 /**
@@ -783,7 +1279,7 @@ void QcdmWindow::ReadRoamPref()
 */
 void QcdmWindow::WriteRoamPref()
 {
-    int mode = ui->roamPrefValue->currentIndex() - 1;
+   /* int mode = ui->roamPrefValue->currentIndex() - 1;
 
     if (mode < 0) {
         log(kLogTypeWarning, "Select a Roam Pref to Write");
@@ -830,59 +1326,56 @@ void QcdmWindow::WriteRoamPref()
         log(kLogTypeInfo, "Write Success - Roam Pref: " + ui->roamPrefValue->currentText());
     } else {
         log(kLogTypeError, "Write Failure - Roam Pref");
-    }
+    }*/
 }
 
 /**
-* @brief QcdmWindow::ReadSpc
+* @brief QcdmWindow::readSpc
 */
-void QcdmWindow::ReadSpc()
+void QcdmWindow::readSpc()
 {
-    uint8_t* resp = nullptr;
 
-    int rx = 0;
+	/*QcdmNvResponse resp = {};
 
-    switch (ui->readSpcMethod->currentIndex()) {
-    case 0:
-        rx = port.getNvItem(NV_SEC_CODE_I, &resp);
-        break;
-    case 1:
-        // EFS Method
+    int ret = 0;
 
-        break;
-    case 2:
-        port.sendHtcNvUnlock(&resp); // HTC Method
-        rx = port.getNvItem(NV_SEC_CODE_I, &resp);
-        break;
-    case 3:
-        port.sendLgNvUnlock(&resp); // LG Method
-        rx = port.getLgSpc(&resp);
-        break;
-    case 4:
-        // Samsung Method
-
-        break;
+	switch (ui->readSpcMethod->currentIndex()) {
+		case kSpcReadTypeNv:
+			ret = port.getNvItem(NV_SEC_CODE_I, &resp);
+			break;
+		case kSpcReadTypeHtc:
+			port.sendHtcNvUnlock(); // HTC Method
+			ret = port.getNvItem(NV_SEC_CODE_I, &resp);
+			break;
+/*case kSpcReadTypeLg:
+			port.sendLgNvUnlock(); // LG Method
+			ret = port.getLgSpc(&resp);
+			break;
+		case kSpcReadTypeSamsung:
+		case kSpcReadTypeEfs:
+			LOGD("Method not implemented");
+			break;
     }
 
-    if (rx == DIAG_NV_READ_F){
+    if (ret != DIAG_NV_READ_F){
         QcdmNvResponse* rxPacket = (QcdmNvResponse*)resp;
 
         std::string result = hexToString((char *)rxPacket->data, 5);
-
+		
         ui->decSpcValue->setText(QString::fromStdString(result));
 
         log(kLogTypeInfo, "Read Success - SPC: " + result);
     } else {
         log(kLogTypeError, "Read Failure - SPC");
-    }
+    }*/
 }
 
 /**
-* @brief QcdmWindow::WriteSpc
+* @brief QcdmWindow::writeSpc
 */
-void QcdmWindow::WriteSpc()
+void QcdmWindow::writeSpc()
 {
-    if (ui->decSpcValue->text().length() != 6) {
+   /* if (ui->decSpcValue->text().length() != 6) {
         log(kLogTypeWarning, "Enter a Valid 6 Digit SPC");
         return;
     }
@@ -893,62 +1386,69 @@ void QcdmWindow::WriteSpc()
         log(kLogTypeInfo, "Write Success - SPC: " + ui->decSpcValue->text());
     } else {
         log(kLogTypeError, "Write Failure - SPC");
-    }
+    }*/
 }
 
 /**
-* @brief QcdmWindow::ReadSubscription
+* @brief QcdmWindow::readSubscription
 */
-void QcdmWindow::ReadSubscription() {
-    uint8_t* resp = nullptr;
+void QcdmWindow::readSubscription() {
+	QcdmNvResponse nvItem;
 
-    int rx = port.getNvItem(NV_RTRE_CONFIG_I, &resp);
-
-    if (rx == DIAG_NV_READ_F) {
-        QcdmNvResponse* rxPacket = (QcdmNvResponse*)resp;
-
-        ui->subscriptionValue->setCurrentIndex(rxPacket->data[0] + 1);
-
-        log(kLogTypeInfo, "Read Success - Subscription Mode: " + ui->subscriptionValue->currentText());
-    } else {
-        log(kLogTypeError, "Read Failure - Subscription Mode");
-    }
+	try {
+		nvItem = port.readNV(NV_RTRE_CONFIG_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}	
+	
+	ui->subscriptionValue->setCurrentIndex(ui->subscriptionValue->findData(nvItem.data[0]));
 }
 
 /**
-* @brief QcdmWindow::WriteSubscription
+* @brief QcdmWindow::writeSubscription
 */
-void QcdmWindow::WriteSubscription()
+void QcdmWindow::writeSubscription()
 {
-    int mode = ui->subscriptionValue->currentIndex() - 1;
+	bool result;
+	QcdmNvRequest packet = {};
 
-    if (mode < 0) {
-        log(kLogTypeWarning, "Select a Subsciption Mode to Write");
+	int mode = ui->subscriptionValue->currentData().toUInt();
+
+	if (mode < 0) {
+        log(kLogTypeError, "Select a Subsciption Mode to Write");
         return;
     }
 
-    uint8_t* resp = nullptr;
+	packet.data[0] = mode;
 
-    const char* data = static_cast<const char *>(static_cast<void*>(&mode));
+	try {
+		port.writeNV(NV_RTRE_CONFIG_I, &packet.data[0], sizeof(packet.data));	
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
 
-    int rx = port.setNvItem(NV_RTRE_CONFIG_I, data, 1, &resp);
+	ui->subscriptionValue->setCurrentIndex(ui->subscriptionValue->findData(packet.data[0]));
+	
+	log(kLogTypeInfo, "Write Success - Subscription Mode: " + ui->subscriptionValue->currentText());
 
-    if (rx == DIAG_NV_WRITE_F) {
-        QcdmNvResponse* rxPacket = (QcdmNvResponse*)resp;
-
-        ui->subscriptionValue->setCurrentIndex(rxPacket->data[0] + 1);
-
-        log(kLogTypeInfo, "Write Success - Subscription Mode: " + ui->subscriptionValue->currentText());
-    } else {
-        log(kLogTypeError, "Write Failure - Subscription Mode");
-    }
 }
 
 /**
 * @brief QcdmWindow::ReadPapUserId
 */
 void QcdmWindow::ReadPapUserId() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_PAP_USER_ID_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PAP_USER_ID_I, &resp);
 
@@ -964,15 +1464,23 @@ void QcdmWindow::ReadPapUserId() {
         log(kLogTypeInfo, "Read Success - PAP User ID: " + result);
     } else {
         log(kLogTypeError, "Read Failure - PAP User ID");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadPapPassword
 */
 void QcdmWindow::ReadPapPassword() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
 
+	try {
+		nvItem = port.readNV(NV_PAP_PASSWORD_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	/*
     int rx = port.getNvItem(NV_PAP_PASSWORD_I, &resp);
 
     if (rx == DIAG_NV_READ_F){
@@ -987,14 +1495,23 @@ void QcdmWindow::ReadPapPassword() {
         log(kLogTypeInfo, "Read Success - PAP Password: " + result);
     } else {
         log(kLogTypeError, "Read Failure - PAP Password");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadPppUserId
 */
 void QcdmWindow::ReadPppUserId() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_PPP_USER_ID_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PPP_USER_ID_I, &resp);
 
@@ -1010,14 +1527,25 @@ void QcdmWindow::ReadPppUserId() {
         log(kLogTypeInfo, "Read Success - PPP User ID: " + result);
     } else {
         log(kLogTypeError, "Read Failure - PPP User ID");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadPppPassword
 */
 void QcdmWindow::ReadPppPassword() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+	
+	try {
+		nvItem = port.readNV(NV_PPP_PASSWORD_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	//ui->pppPasswordValue->setText(nvItem.data);
+
+    /*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_PPP_PASSWORD_I, &resp);
 
@@ -1028,20 +1556,28 @@ void QcdmWindow::ReadPppPassword() {
         tmp = tmp.erase(tmp.find_last_not_of("0") + 1);
         QString result = QString::fromStdString(tmp).toUpper();
 
-        ui->pppPasswordValue->setText(result);
+        
 
         log(kLogTypeInfo, "Read Success - PPP Password: " + result);
     } else {
         log(kLogTypeError, "Read Failure - PPP Password");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadHdrAnUserId
 */
 void QcdmWindow::ReadHdrAnUserId() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
 
+	try {
+		nvItem = port.readNV(NV_HDR_AN_AUTH_NAI_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	/*
     int rx = port.getNvItem(NV_HDR_AN_AUTH_NAI_I, &resp);
 
     if (rx == DIAG_NV_READ_F){
@@ -1056,14 +1592,23 @@ void QcdmWindow::ReadHdrAnUserId() {
         log(kLogTypeInfo, "Read Success - HDR AN User ID: " + result);
     } else {
         log(kLogTypeError, "Read Failure - HDR AN User ID");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadHdrAnPassword
 */
 void QcdmWindow::ReadHdrAnPassword() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_HDR_AN_AUTH_PASSWORD_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_PASSWORD_I, &resp);
 
@@ -1079,14 +1624,23 @@ void QcdmWindow::ReadHdrAnPassword() {
         log(kLogTypeInfo, "Read Success - HDR AN Password: " + result);
     } else {
         log(kLogTypeError, "Read Failure - HDR AN Password");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadHdrAnLongUserId
 */
 void QcdmWindow::ReadHdrAnLongUserId() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_HDR_AN_AUTH_USER_ID_LONG_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_LONG_I, &resp);
 
@@ -1102,14 +1656,23 @@ void QcdmWindow::ReadHdrAnLongUserId() {
         log(kLogTypeInfo, "Read Success - HDR AN LONG User ID: " + result);
     } else {
         log(kLogTypeError, "Read Failure - HDR AN LONG User ID");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadHdrAnLongPassword
 */
 void QcdmWindow::ReadHdrAnLongPassword() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_HDR_AN_AUTH_PASSWD_LONG_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_PASSWORD_LONG_I, &resp);
 
@@ -1125,14 +1688,23 @@ void QcdmWindow::ReadHdrAnLongPassword() {
         log(kLogTypeInfo, "Read Success - HDR AN LONG Password: " + result);
     } else {
         log(kLogTypeError, "Read Failure - HDR AN LONG Password");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadHdrAnPppUserId
 */
 void QcdmWindow::ReadHdrAnPppUserId() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_HDR_AN_PPP_USER_ID_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_USER_ID_PPP_I, &resp);
 
@@ -1148,14 +1720,23 @@ void QcdmWindow::ReadHdrAnPppUserId() {
         log(kLogTypeInfo, "Read Success - HDR AN PPP User ID: " + result);
     } else {
         log(kLogTypeError, "Read Failure - HDR AN PPP User ID");
-    }
+    }*/
 }
 
 /**
 * @brief QcdmWindow::ReadHdrAnPppPassword
 */
 void QcdmWindow::ReadHdrAnPppPassword() {
-    uint8_t* resp = nullptr;
+	QcdmNvResponse nvItem;
+
+	try {
+		nvItem = port.readNV(NV_HDR_AN_PPP_PASSWORD_I);
+	} catch (std::exception &e) {
+		log(kLogTypeError, e.what());
+		return;
+	}
+	
+	/*uint8_t* resp = nullptr;
 
     int rx = port.getNvItem(NV_HDR_AN_AUTH_PASSWORD_PPP_I, &resp);
 
@@ -1171,13 +1752,13 @@ void QcdmWindow::ReadHdrAnPppPassword() {
         log(kLogTypeInfo, "Read Success - HDR AN PPP Password: " + result);
     } else {
         log(kLogTypeError, "Read Failure - HDR AN PPP Password");
-    }
+    }*/
 }
 
 /**
-* @brief QcdmWindow::SpcTextChanged
+* @brief QcdmWindow::onSpcTextChanged
 */
-void QcdmWindow::SpcTextChanged(QString value) {
+void QcdmWindow::onSpcTextChanged(QString value) {
     if (value.length() == 6) {
         std::string tmp = bytesToHex((unsigned char *)value.toStdString().c_str(), 6, false);
         QString result = QString::fromStdString(tmp);
@@ -1187,7 +1768,7 @@ void QcdmWindow::SpcTextChanged(QString value) {
 }
 
 /**
-* @brief QcdmWindow::WriteSubscription
+* @brief QcdmWindow::writeSubscription
 * Fix odd QString::trimmed() behavior
 */
 QString QcdmWindow::FixedEmptyTrim(QString input) {
@@ -1195,9 +1776,9 @@ QString QcdmWindow::FixedEmptyTrim(QString input) {
 }
 
 /**
-* @brief QcdmWindow::DisableUiButtons
+* @brief QcdmWindow::disableUI
 */
-void QcdmWindow::DisableUiButtons() {
+void QcdmWindow::disableUI() {
 
 	ui->securityGroupBox->setEnabled(false);
 	ui->modeGroupBox->setEnabled(false);
@@ -1205,18 +1786,18 @@ void QcdmWindow::DisableUiButtons() {
 }
 
 /**
-* @brief QcdmWindow::EnableUiButtons
+* @brief QcdmWindow::enableUI
 */
-void QcdmWindow::EnableUiButtons() {
+void QcdmWindow::enableUI() {
 	ui->securityGroupBox->setEnabled(true);
 	ui->modeGroupBox->setEnabled(true);
 	ui->qcdmTabWidget->setEnabled(true);
 }
 
 /**
-* @brief QcdmWindow::EfsHello
+* @brief QcdmWindow::efsHello
 */
-void QcdmWindow::EfsHello() {
+void QcdmWindow::efsHello() {
 	
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1224,7 +1805,7 @@ void QcdmWindow::EfsHello() {
 	}
 	
 	QString tmp; 
-	diag_subsys_efs_hello_rx_t response;
+	QcdmEfsHelloResponse response;
 
 	if (!efsManager.hello(response)) {
 		log(kLogTypeError, "Error sending hello");
@@ -1245,16 +1826,16 @@ void QcdmWindow::EfsHello() {
 }
 
 /**
-* @brief QcdmWindow::EfsGetDeviceInfo
+* @brief QcdmWindow::efsGetDeviceInfo
 */
-void QcdmWindow::EfsGetDeviceInfo() {
+void QcdmWindow::efsGetDeviceInfo() {
 
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
 		return;
 	}
 
-	diag_subsys_efs_device_info_rx_t response = {};
+	QcdmEfsDeviceInfoResponse response = {};
 
 	if (!efsManager.getDeviceInfo(response)) {
 		log(kLogTypeError, "Error getting device info");
@@ -1277,16 +1858,16 @@ void QcdmWindow::EfsGetDeviceInfo() {
 }
 
 /**
-* @brief QcdmWindow::EfsQuery
+* @brief QcdmWindow::efsQuery
 */
-void QcdmWindow::EfsQuery() {
+void QcdmWindow::efsQuery() {
 	//efsQueryButton
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
 		return;
 	}
 
-	diag_subsys_efs_query_rx_t response = {};
+	QcdmEfsQueryResponse response = {};
 
 	if (!efsManager.query(response)) {
 		log(kLogTypeError, "Error querying for efs settings");
@@ -1308,16 +1889,16 @@ void QcdmWindow::EfsQuery() {
 
 
 /**
-* @brief QcdmWindow::EfsListDirectories
+* @brief QcdmWindow::efsListDirectories
 */
-void QcdmWindow::EfsListDirectories() {
+void QcdmWindow::efsListDirectories() {
 
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
 		return;
 	}
 
-	DisableUiButtons();
+	disableUI();
 
 	QString tmp;
 
@@ -1338,7 +1919,7 @@ void QcdmWindow::EfsListDirectories() {
 	connect(readWorker, &StreamingDloadReadWorker::finished, readWorker, &QObject::deleteLater);*/
 
 	if (!efsManager.readDir(rootDir, contents, true)){
-		EnableUiButtons();
+		enableUI();
 		log(kLogTypeError, "Error Reading From Directory /");
 		return;
 	}
@@ -1354,12 +1935,12 @@ void QcdmWindow::EfsListDirectories() {
 
 	EfsAddTreeNodes(rootNode, contents);
 
-	EnableUiButtons();
+	enableUI();
 }
 /**
-* @brief QcdmWindow::EfsReadAll
+* @brief QcdmWindow::efsReadAll
 */
-void QcdmWindow::EfsReadAll()
+void QcdmWindow::efsReadAll()
 {
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1381,9 +1962,9 @@ void QcdmWindow::EfsReadAll()
 }
 
 /**
-* @brief QcdmWindow::EfsExtractFactoryImage
+* @brief QcdmWindow::efsExtractFactoryImage
 */
-void QcdmWindow::EfsExtractFactoryImage()
+void QcdmWindow::efsExtractFactoryImage()
 {	
 	
 	if (!port.isOpen()) {
@@ -1413,7 +1994,7 @@ void QcdmWindow::EfsExtractFactoryImage()
 
 
 }
-void QcdmWindow::EfsMakeGoldenCopy()
+void QcdmWindow::efsMakeGoldenCopy()
 {
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1428,7 +2009,7 @@ void QcdmWindow::EfsMakeGoldenCopy()
 	log(kLogTypeInfo, "Golden Copy Generating. Device should restart upon successfuly generation.");
 }
 
-void QcdmWindow::EfsFilesystemImage()
+void QcdmWindow::efsFilesystemImage()
 {
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1444,7 +2025,7 @@ void QcdmWindow::EfsFilesystemImage()
 	log(kLogTypeError, "Operation Success. Unimplemented functionality required to continue, stopping.");
 }
 
-void QcdmWindow::EfsGetFileInfo()
+void QcdmWindow::efsGetFileInfo()
 {
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1460,8 +2041,8 @@ void QcdmWindow::EfsGetFileInfo()
 		return;
 	}
 
-	diag_subsys_efs_stat_rx_t statResponse;
-	diag_subsys_efs_md5_sum_rx_t md5Response;
+	QcdmEfsStatResponse statResponse;
+	QcdmEfsMd5SumResponse md5Response;
 
 	log(kLogTypeInfo, "---------------------------");
 	log(kLogTypeInfo, tmp.sprintf("Info For File: %s", path.toStdString().c_str()));
@@ -1487,7 +2068,7 @@ void QcdmWindow::EfsGetFileInfo()
 	log(kLogTypeInfo, "---------------------------");
 }
 
-void QcdmWindow::EfsGetFile()
+void QcdmWindow::efsGetFile()
 {
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1520,7 +2101,7 @@ void QcdmWindow::EfsGetFile()
 	log(kLogTypeInfo, tmp.sprintf("File %s saved to %s", path.toStdString().c_str(), outFile.toStdString().c_str()));
 }
 
-void QcdmWindow::EfsDeleteFile()
+void QcdmWindow::efsDeleteFile()
 {
 	if (!port.isOpen()) {
 		log(kLogTypeError, "Connect to a port first");
@@ -1624,16 +2205,16 @@ void QcdmWindow::About()
 }
 
 /**
-* @brief QcdmWindow::ClearLog
+* @brief QcdmWindow::clearLog
 */
-void QcdmWindow::ClearLog() {
+void QcdmWindow::clearLog() {
     ui->log->clear();
 }
 
 /**
-* @brief QcdmWindow::SaveLog
+* @brief QcdmWindow::saveLog
 */
-void QcdmWindow::SaveLog() {
+void QcdmWindow::saveLog() {
     log(kLogTypeWarning, "Not Implemented Yet");
 }
 
@@ -1706,38 +2287,38 @@ void QcdmWindow::onEfsTreeNodeRightClick(const QPoint& point)
 
 	if (node != nullptr) {
 		if (node->text(kEfsBrowserColumnType).compare("file", Qt::CaseInsensitive) == 0) {
-			menu.addAction(QIcon(":/images/data-transfer-download-2x.png"), "Save file", this, SLOT(EfsContextMenuSaveFile()))
+			menu.addAction(QIcon(":/images/data-transfer-download-2x.png"), "Save file", this, SLOT(efsContextMenuSaveFile()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 		
-			menu.addAction(QIcon(":/images/trash-2.png"), "Delete", this, SLOT(EfsContextMenuDeleteFile()))
+			menu.addAction(QIcon(":/images/trash-2.png"), "Delete", this, SLOT(efsContextMenuDeleteFile()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
-			menu.addAction(QIcon(":/images/clipboard-2.png"), "Copy path to clipboard", this, SLOT(EfsContextMenuCopyPathToClipboard()))
+			menu.addAction(QIcon(":/images/clipboard-2.png"), "Copy path to clipboard", this, SLOT(efsContextMenuCopyPathToClipboard()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
 			menu.exec(ui->efsDirectoryTree->mapToGlobal(point));
 
 		} else if (node->text(kEfsBrowserColumnType).compare("directory", Qt::CaseInsensitive)== 0) {
 						
-			menu.addAction(QIcon(":/images/data-transfer-download-2x.png"), "Save directory", this, SLOT(EfsContextMenuSaveDirectory()))
+			menu.addAction(QIcon(":/images/data-transfer-download-2x.png"), "Save directory", this, SLOT(efsContextMenuSaveDirectory()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
-			menu.addAction(QIcon(":/images/data-transfer-download-2x.png"), "Save directory as compressed zip", this, SLOT(EfsContextMenuSaveDirectoryCompressed()))
+			menu.addAction(QIcon(":/images/data-transfer-download-2x.png"), "Save directory as compressed zip", this, SLOT(efsContextMenuSaveDirectoryCompressed()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
-			menu.addAction(QIcon(":/images/data-transfer-upload-2x.png"), "Upload file", this, SLOT(EfsContextMenuUploadFile()))
+			menu.addAction(QIcon(":/images/data-transfer-upload-2x.png"), "Upload file", this, SLOT(efsContextMenuUploadFile()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 			
-			menu.addAction(QIcon(":/images/plus-2x.png"), "Create Directory", this, SLOT(EfsContextMenuCreateDirectory()))
+			menu.addAction(QIcon(":/images/plus-2x.png"), "Create Directory", this, SLOT(efsContextMenuCreateDirectory()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 			
-			menu.addAction(QIcon(":/images/link-2x.png"), "Create Link", this, SLOT(EfsContextMenuCreateLink()))
+			menu.addAction(QIcon(":/images/link-2x.png"), "Create Link", this, SLOT(efsContextMenuCreateLink()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
-			menu.addAction(QIcon(":/images/clipboard-2.png"), "Copy path to clipboard", this, SLOT(EfsContextMenuCopyPathToClipboard()))
+			menu.addAction(QIcon(":/images/clipboard-2.png"), "Copy path to clipboard", this, SLOT(efsContextMenuCopyPathToClipboard()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
-			menu.addAction(QIcon(":/images/trash-2x.png"), "Delete", this, SLOT(EfsContextMenuDeleteDirectory()))
+			menu.addAction(QIcon(":/images/trash-2x.png"), "Delete", this, SLOT(efsContextMenuDeleteDirectory()))
 				->setData(node->text(kEfsBrowserColumnFullPath));
 
 			menu.exec(ui->efsDirectoryTree->mapToGlobal(point));
@@ -1746,7 +2327,7 @@ void QcdmWindow::onEfsTreeNodeRightClick(const QPoint& point)
 	
 }
 
-void QcdmWindow::EfsContextMenuSaveFile()
+void QcdmWindow::efsContextMenuSaveFile()
 {
 	QString tmp;
 	QAction* sendingAction = (QAction*)sender();
@@ -1776,7 +2357,7 @@ void QcdmWindow::EfsContextMenuSaveFile()
 
 }
 
-void QcdmWindow::EfsContextMenuSaveDirectory()
+void QcdmWindow::efsContextMenuSaveDirectory()
 {
 	QString tmp;
 	QAction* sendingAction = (QAction*)sender();
@@ -1789,7 +2370,7 @@ void QcdmWindow::EfsContextMenuSaveDirectory()
 
 }
 
-void QcdmWindow::EfsContextMenuSaveDirectoryCompressed()
+void QcdmWindow::efsContextMenuSaveDirectoryCompressed()
 {
 	QString tmp;
 	QAction* sendingAction = (QAction*)sender();
@@ -1803,7 +2384,7 @@ void QcdmWindow::EfsContextMenuSaveDirectoryCompressed()
 
 }
 
-void QcdmWindow::EfsContextMenuUploadFile()
+void QcdmWindow::efsContextMenuUploadFile()
 {
 	QString tmp;
 	QAction* sendingAction = (QAction*)sender();
@@ -1815,7 +2396,7 @@ void QcdmWindow::EfsContextMenuUploadFile()
 	}
 }
 
-void QcdmWindow::EfsContextMenuCopyPathToClipboard()
+void QcdmWindow::efsContextMenuCopyPathToClipboard()
 {
 	QAction* sendingAction = (QAction*)sender();
 	QString path = sendingAction->data().toString();
@@ -1829,7 +2410,7 @@ void QcdmWindow::EfsContextMenuCopyPathToClipboard()
 }
 
 
-void QcdmWindow::EfsContextMenuDeleteDirectory()
+void QcdmWindow::efsContextMenuDeleteDirectory()
 {
 	QString tmp;
 	QAction* sendingAction = (QAction*)sender();
@@ -1856,7 +2437,7 @@ void QcdmWindow::EfsContextMenuDeleteDirectory()
 }
 
 
-void QcdmWindow::EfsContextMenuDeleteFile()
+void QcdmWindow::efsContextMenuDeleteFile()
 {
 
 	QString tmp;
@@ -1883,7 +2464,7 @@ void QcdmWindow::EfsContextMenuDeleteFile()
 }
 
 
-void QcdmWindow::EfsContextMenuCreateDirectory()
+void QcdmWindow::efsContextMenuCreateDirectory()
 {
 
 	QString tmp;
@@ -1921,7 +2502,7 @@ void QcdmWindow::EfsContextMenuCreateDirectory()
 }
 
 
-void QcdmWindow::EfsContextMenuCreateLink()
+void QcdmWindow::efsContextMenuCreateLink()
 {
 	QString tmp;
 	QAction* sendingAction = (QAction*)sender();
@@ -1951,7 +2532,7 @@ void QcdmWindow::EfsContextMenuCreateLink()
 }
 
 
-void QcdmWindow::ProbeCommands()
+void QcdmWindow::probeCommands()
 {
 
 	//port.getLog();
@@ -2045,7 +2626,7 @@ void QcdmWindow::ProbeCommands()
 	}
 }
 
-void QcdmWindow::ReadSome()
+void QcdmWindow::readSome()
 {
 	uint8_t buf[DIAG_MAX_PACKET_SIZE];
 
@@ -2058,7 +2639,7 @@ void QcdmWindow::ReadSome()
 	}
 }
 
-void QcdmWindow::SendCommand()
+void QcdmWindow::sendCommand()
 {
 	uint8_t command = std::stoul(ui->sendCommandValue->text().toStdString().c_str(), nullptr, 16);
 
@@ -2069,5 +2650,5 @@ void QcdmWindow::SendCommand()
 	size_t txSize = port.write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 	hexdump(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-
+	port.read(buf, DIAG_MAX_PACKET_SIZE);
 }

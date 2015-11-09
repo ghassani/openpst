@@ -20,11 +20,11 @@
 */
 int main(int argc, char *argv[])
 {
-	OpenPST::Application application(argc, argv, "qcdm_");
+    OpenPST::Application application(argc, argv, "qcdm_");
 
-	OpenPST::QcdmWindow window;
+    OpenPST::QcdmWindow window;
 
-	window.show();
+    window.show();
 
-	return application.exec();
+    return application.exec();
 }

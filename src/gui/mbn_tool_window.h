@@ -40,6 +40,7 @@ namespace OpenPST{
 			void readX509Chain();
 			void readSignature();
 			void readCode();
+            void parseX509Certificates(pbl_secx509_cert_list_type* certificates);
 
 		private:
 			Ui::MbnToolWindow *ui;

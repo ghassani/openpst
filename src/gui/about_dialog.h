@@ -15,25 +15,25 @@
 #include "ui_about_dialog.h"
 
 namespace Ui {
-	class AboutDialog;
+    class AboutDialog;
 }
 
 namespace OpenPST{
-	class AboutDialog : public QDialog
-	{
+    class AboutDialog : public QDialog
+    {
 
-		Q_OBJECT
+        Q_OBJECT
 
-		public:
-			explicit AboutDialog(QWidget *parent = 0);
-			~AboutDialog();
+        public:
+            explicit AboutDialog(QWidget *parent = 0);
+            ~AboutDialog();
 
 
-		public slots:
+        public slots:
 
-		private:
-			Ui::AboutDialog *ui;
+        private:
+            Ui::AboutDialog *ui;
 
-		};
+        };
 }
 #endif // _GUI_ABOUT_DIALOG_H

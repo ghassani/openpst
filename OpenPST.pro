@@ -6,6 +6,7 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
+
 SUBDIRS = serial libopenpst sahara streaming_dload qcdm mbn_tool 
 
 serial.file 			= qmake/serial.pro
