@@ -73,6 +73,12 @@
     <Filter Include="Header Files\include">
       <UniqueIdentifier>{6c6de087-666f-415e-8f2a-e064d47eb79f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\images">
+      <UniqueIdentifier>{941b0c23-50bb-4c4d-a7c1-da9f20735e0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\xml">
+      <UniqueIdentifier>{f2604644-c5f0-4cec-8630-270e05f1f962}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\gui\qcdm_window.cpp">
@@ -100,18 +106,6 @@
       <Filter>Generated Files\Release_Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\build\x64-Release\generated\moc_about_dialog.cpp">
-      <Filter>Generated Files\Release_x64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_window.cpp">
-      <Filter>Generated Files\Debug_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\x64-Debug\generated\moc_qcdm_window.cpp">
-      <Filter>Generated Files\Debug_x64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\Win32-Release\generated\moc_qcdm_window.cpp">
-      <Filter>Generated Files\Release_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_window.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
     <ClCompile Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\qrc_qcdm.cpp">
@@ -207,6 +201,45 @@
     <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_prl_read_worker.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Source Files\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Source Files\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Debug\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Source Files\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Source Files\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\worker\qcdm_nv_item_read_worker.cpp">
+      <Filter>Source Files\worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Debug\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Generated Files\Debug_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_nv_item_read_worker.cpp">
+      <Filter>Generated Files\Release_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_qcdm_window.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Debug\generated\moc_qcdm_window.cpp">
+      <Filter>Generated Files\Debug_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_qcdm_window.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Release\generated\moc_qcdm_window.cpp">
+      <Filter>Generated Files\Release_x64</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\include\win_stdint.h">
@@ -259,16 +292,24 @@
     <CustomBuild Include="..\src\worker\qcdm_prl_read_worker.h">
       <Filter>Header Files\worker</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\src\worker\qcdm_nv_item_read_worker.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\resources\images\file-2x.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\images</Filter>
     </Image>
     <Image Include="..\resources\images\folder-2x.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\images</Filter>
     </Image>
     <Image Include="..\resources\images\link-intact-2x.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\resources\xml\nv_items.xml">
+      <Filter>Resource Files\xml</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

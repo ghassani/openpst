@@ -69,6 +69,9 @@
     <ClCompile Include="..\src\qc\dm_efs_node.cpp">
       <Filter>Source Files\qc</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\util\meid.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\serial\hdlc_serial.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="..\src\include\definitions.h">
       <Filter>Header Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\meid.h">
+      <Filter>Header Files\util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -98,18 +98,6 @@
     <ClCompile Include="..\build\x64-Release\generated\moc_sahara_memory_read_worker.cpp">
       <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
-    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_image_transfer_worker.cpp">
-      <Filter>Generated Files\Debug_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\x64-Debug\generated\moc_sahara_image_transfer_worker.cpp">
-      <Filter>Generated Files\Debug_x64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_image_transfer_worker.cpp">
-      <Filter>Generated Files\Release_Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\build\x64-Release\generated\moc_sahara_image_transfer_worker.cpp">
-      <Filter>Generated Files\Release_x64</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\gui\application.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
@@ -133,6 +121,18 @@
     </ClCompile>
     <ClCompile Include="..\build\$(PlatformName)-$(ConfigurationName)\generated\qrc_sahara.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Debug\generated\moc_sahara_image_transfer_worker.cpp">
+      <Filter>Generated Files\Debug_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Debug\generated\moc_sahara_image_transfer_worker.cpp">
+      <Filter>Generated Files\Debug_x64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\Win32-Release\generated\moc_sahara_image_transfer_worker.cpp">
+      <Filter>Generated Files\Release_Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\x64-Release\generated\moc_sahara_image_transfer_worker.cpp">
+      <Filter>Generated Files\Release_x64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

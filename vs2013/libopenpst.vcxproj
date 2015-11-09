@@ -29,6 +29,7 @@
     <ClCompile Include="..\src\util\convert.cpp" />
     <ClCompile Include="..\src\util\endian.cpp" />
     <ClCompile Include="..\src\util\hexdump.cpp" />
+    <ClCompile Include="..\src\util\meid.cpp" />
     <ClCompile Include="..\src\util\sleep.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +53,7 @@
     <ClInclude Include="..\src\util\convert.h" />
     <ClInclude Include="..\src\util\endian.h" />
     <ClInclude Include="..\src\util\hexdump.h" />
+    <ClInclude Include="..\src\util\meid.h" />
     <ClInclude Include="..\src\util\sleep.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
