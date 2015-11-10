@@ -61,16 +61,16 @@ void usage() {
 * @param int item - The NV item number to delete 
 * @return bool
 */
-bool processItem(int item)
+bool processItem(int item, int sequence)
 {
     ostringstream path;     
     path << "/public/../nvm/num/" << item; // deltree only works in /public
 
     if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
-        if (efsManager.deltree(path.str()) == efsManager.kDmEfsSuccess) {
+        if (efsManager.deltree(path.str(), sequence) == efsManager.kDmEfsSuccess) {
             return true;
         } else {
-            printf("Error removing nv item %d - Path: %s\n", item, path.str().c_str());
+            printf("[-] Error removing nv item %d - Path: %s\n", item, path.str().c_str());
             return false;
         }
     }
@@ -90,7 +90,8 @@ int main(int argc, char **argv) {
     QcdmEfsGetSyncStatusResponse syncStatusResponse;
     int syncMaxRetries           = 10;
     int syncRetries              = 0;
-
+    int sequence                 = 0;
+    
     if (argc < 2) {
         usage();
         return 0;
@@ -101,50 +102,62 @@ int main(int argc, char **argv) {
         port.setPort(argv[1]);
         port.open();
 
-    } catch (serial::IOException e) {
-        cout << e.what() << endl;
-        return 1;
+    } catch (serial::IOException e) {        
+        printf("[-] Error connecting to device %s. Error: %s\n", argv[1], e.what());
+        goto exit;
     }   
 
     if (efsManager.statfs("/", statResponse) == efsManager.kDmEfsSuccess) {
         
-        if (!processItem(10080) || !processItem(10074) || !processItem(10073)) {
-            printf("Operation Failed!\n");
-            port.close();
-            return 1;
+        if (!processItem(10080, ++sequence) || !processItem(10074, ++sequence) || !processItem(10073, ++sequence)) {
+            printf("[-] Delete NV Operation Failed!\n");
+            goto error;
         }
         
     } else {
-        printf("Error checking for EFS access\n");
-        port.close();
-        return 1;
+        printf("[-] Error checking for EFS access\n");
+        goto error;
     }
 
     try {
         
         syncResponse = efsManager.syncNoWait("/");
 
+        printf("[+] Sync initiated. Received token %08X\n", syncResponse.token);
+
+    } catch (std::exception e) {
+        printf("[-] Error encountered initiating filysystem sync: Error: %s\n", e.what());
+        goto error;
+    }
+
+    try {
+        
         while (syncMaxRetries > syncRetries) {
             
             syncStatusResponse = efsManager.getSyncStatus(syncResponse.token);
 
             if (syncStatusResponse.status) {
-                printf("Sync Complete\n");
-                printf("Operation Successful. Reboot device and insert a different carriers SIM.\n");
-                port.close();
-                return 0;
+                printf("[+] Sync Complete\n");
+                printf("[+] Operation Successful. Reboot device and insert a different carriers SIM.\n");
+                goto exit;
             } else {
                 sleep(1000); // wait and check again
                 syncRetries++;
             }
         }
 
-        printf("Sync Error. Device may still have been unlocked. Reboot and insert a different carriers SIM.\n");
+        printf("[-] Sync Check Error. Device may still have been unlocked. Reboot and insert a different carriers SIM.\n");
 
     } catch (std::exception e) {
-        printf("Error encountered during sync: %s\n", e.what());
-        return 1;
+        printf("[-] Error encountered during sync check: %s\n", e.what());
+        goto error;
     }
 
+  exit:
+    port.close();
     return 0;
+
+  error:
+    port.close();
+    return 1;
 }
