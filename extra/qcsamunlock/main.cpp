@@ -69,8 +69,7 @@ bool processItem(int item, int sequence)
     if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
         if (efsManager.deltree(path.str(), sequence) == efsManager.kDmEfsSuccess) {
             return true;
-        } else {
-            printf("[-] Error removing nv item %d - Path: %s\n", item, path.str().c_str());
+        } else {            
             return false;
         }
     }
@@ -91,7 +90,7 @@ int main(int argc, char **argv) {
     int syncMaxRetries           = 10;
     int syncRetries              = 0;
     int sequence                 = 0;
-    
+
     if (argc < 2) {
         usage();
         return 0;
@@ -109,11 +108,19 @@ int main(int argc, char **argv) {
 
     if (efsManager.statfs("/", statResponse) == efsManager.kDmEfsSuccess) {
         
-        if (!processItem(10080, ++sequence) || !processItem(10074, ++sequence) || !processItem(10073, ++sequence)) {
-            printf("[-] Delete NV Operation Failed!\n");
-            goto error;
+        if (!processItem(10080, ++sequence)) {
+            printf("[-] Error removing nv item 10080\n");
         }
-        
+
+        if (!processItem(10074, ++sequence)) {
+             printf("[-] Error removing nv item 10074\n");
+        }
+
+        if (!processItem(10073, ++sequence)) {
+            printf("[-] Error removing nv item 10073\n");
+        }
+
+
     } else {
         printf("[-] Error checking for EFS access\n");
         goto error;
