@@ -110,11 +110,13 @@ int main(int argc, char **argv) {
 		
 		if (!processItem(10080) || !processItem(10074) || !processItem(10073)) {
 			printf("Operation Failed!\n");
+			port.close();
 			return 1;
 		}
 		
 	} else {
 		printf("Error checking for EFS access\n");
+		port.close();
 		return 1;
 	}
 
@@ -129,11 +131,15 @@ int main(int argc, char **argv) {
 			if (syncStatusResponse.status) {
 				printf("Sync Complete\n");
 				printf("Operation Successful. Reboot device and insert a different carriers SIM.\n");
+				port.close();
+				return 0;
 			} else {
 				sleep(1000); // wait and check again
 				syncRetries++;
 			}
 		}
+
+		printf("Sync Error. Device may still have been unlocked. Reboot and insert a different carriers SIM.\n");
 
 	} catch (std::exception e) {
 		printf("Error encountered during sync: %s\n", e.what());
