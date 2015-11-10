@@ -1,9 +1,31 @@
+/**
+* @file main.cpp
+* @package qcsamunlock
+* @brief QCDM response conversion helper functions
+*
+*  Copyright (C) Gassan Idriss <ghassani@gmail.com>
+*
+* This program is free software ; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation ; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY ; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with the program ; if not, write to the Free Software
+* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include <iostream>
 #include <string>
 #include <stdio.h>
 #include "include/definitions.h"
+#include "util/sleep.h"
 #include "serial/qcdm_serial.h"
-#include "util/hexdump.h"
 #include "qc/dm.h"
 #include "qc/dm_efs_manager.h"
 
@@ -14,81 +36,109 @@ using namespace OpenPST;
 QcdmSerial port("", 115200, serial::Timeout::simpleTimeout(500));
 DmEfsManager efsManager(port);
 
-void usage();
-bool processItem(int item);
-int main(int argc, char **argv);
-
+/**
+* @brief usage - Show program usage information
+* @return void
+*/
 void usage() {
-	printf("\n\nSamsung SIM Unlock for Qualcomm SOC:\n");
-	printf("Usage:\n\n");
+	printf("---------------------------------------------------\n");
+	printf(" Samsung SIM Unlock for Qualcomm SOC:              \n");
+	printf("---------------------------------------------------\n");
+	printf(" Usage:\n");
 	printf("\tqcsamunlock [PORT]\n");
 	printf("\tqcsamunlock\\\\.\\COM10\n");
 	printf("\tqcsamunlock /dev/ttyUSB0\n");
+	printf("---------------------------------------------------\n");
+	printf(" Copyright 2015 Gassan Idriss <ghassani@gmail.com> \n");
+	printf(" This software is distributed with OpenPST.        \n");
+	printf(" See http://www.github.com/ghassani/openpst        \n");	
+	printf(" This software is free and licensed under GPL.     \n");
+	printf("---------------------------------------------------\n");
 }
 
+/**
+* @brief processItem - Delete an NV item by deltree traversal exploit
+* @param int item - The NV item number to delete 
+* @return bool
+*/
+bool processItem(int item)
+{
+	ostringstream path; 	
+	path << "/public/../nvm/num/" << item; // deltree only works in /public
 
+	if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
+		if (efsManager.deltree(path.str()) == efsManager.kDmEfsSuccess) {
+			return true;
+		} else {
+			printf("Error removing nv item %d - Path: %s\n", item, path.str().c_str());
+			return false;
+		}
+	}
+
+	return false;
+}
+
+/**
+* @brief main - Program entry point
+* @param int argc
+* @param char **argv
+* @return int
+*/
 int main(int argc, char **argv) {
-	
+	QcdmEfsStatfsResponse 		 statResponse;
+	QcdmEfsSyncResponse 		 syncResponse;
+	QcdmEfsGetSyncStatusResponse syncStatusResponse;
+	int syncMaxRetries			 = 10;
+	int syncRetries			 	 = 0;
+
 	if (argc < 2) {
         usage();
         return 0;
     }
 
     try {
+        
         port.setPort(argv[1]);
         port.open();
+
     } catch (serial::IOException e) {
         cout << e.what() << endl;
         return 1;
-    }
-
-	QcdmEfsStatfsResponse statResponse;
+    }	
 
 	if (efsManager.statfs("/", statResponse) == efsManager.kDmEfsSuccess) {
 		
 		if (!processItem(10080) || !processItem(10074) || !processItem(10073)) {
-			cout << "Operation Failed!" << endl;
+			printf("Operation Failed!\n");
 			return 1;
 		}
-
+		
 	} else {
-		cout << "Error checking for EFS access" << endl;
+		printf("Error checking for EFS access\n");
 		return 1;
 	}
 
-
-	QcdmEfsSyncResponse syncResponse;
-	QcdmEfsGetSyncStatusResponse syncStatusResponse;
 	try {
+		
 		syncResponse = efsManager.syncNoWait("/");
-	}
-	catch (std::exception e) {
-		cout << "Exception: " << e.what() << endl;
+
+		while (syncMaxRetries > syncRetries) {
+			
+			syncStatusResponse = efsManager.getSyncStatus(syncResponse.token);
+
+			if (syncStatusResponse.status) {
+				printf("Sync Complete\n");
+				printf("Operation Successful. Reboot device and insert a different carriers SIM.\n");
+			} else {
+				sleep(1000); // wait and check again
+				syncRetries++;
+			}
+		}
+
+	} catch (std::exception e) {
+		printf("Error encountered during sync: %s\n", e.what());
 		return 1;
 	}
-	
-	syncStatusResponse = efsManager.getSyncStatus(syncResponse.token);
-
-	cout << "SYNC STATUS: " << syncStatusResponse.status << endl;
 
     return 0;
-}
-
-bool processItem(int item)
-{
-	ostringstream itemStrStream; 
-	std::string path = "/public/../nvm/num/";
-	itemStrStream << item;
-	path.append(itemStrStream.str());
-
-	if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
-		if (efsManager.deltree(path) == efsManager.kDmEfsSuccess) {
-			return true;
-		} else {
-			cout << "Error removing nv item " << itemStrStream.str() << endl;
-			return false;
-		}
-	}
-
-	return false;
 }

@@ -29,6 +29,7 @@ SOURCES += \
     src/worker/qcdm_memory_read_worker.cpp \
     src/worker/qcdm_prl_read_worker.cpp \
     src/worker/qcdm_prl_write_worker.cpp \
+    src/worker/qcdm_nv_item_read_worker.cpp \
     src/qcdm.cpp
 
 HEADERS  += \
@@ -41,6 +42,7 @@ HEADERS  += \
     src/worker/qcdm_memory_read_worker.h \
     src/worker/qcdm_prl_read_worker.h \
     src/worker/qcdm_prl_write_worker.h \
+    src/worker/qcdm_nv_item_read_worker.h \
     src/gui/application.h 
 
 

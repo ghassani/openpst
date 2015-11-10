@@ -20,7 +20,6 @@
 #include "qc/dm.h"
 #include "qc/dm_nv.h"
 #include "util/hexdump.h"
-#include <mutex>
 
 namespace OpenPST {
     class QcdmSerial : public HdlcSerial {
