@@ -775,6 +775,7 @@ PACKED(typedef struct QcdmEfsGetSyncStatusRequest{
     QcdmSubsysHeader header;
     uint16_t sequence;
     uint32_t token;
+    char path[1];
 }) QcdmEfsGetSyncStatusRequest;
 
 PACKED(typedef struct QcdmEfsGetSyncStatusResponse{
@@ -783,7 +784,6 @@ PACKED(typedef struct QcdmEfsGetSyncStatusResponse{
     uint8_t status;
     int32_t error;
 }) QcdmEfsGetSyncStatusResponse;
-
 
 /**
 * Truncate64

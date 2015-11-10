@@ -1561,34 +1561,38 @@ QcdmEfsSyncResponse DmEfsManager::syncNoWait(std::string path, uint16_t sequence
 	return ret;	
 }
 
-QcdmEfsGetSyncStatusResponse DmEfsManager::getSyncStatus(uint32_t token, uint16_t sequence)
+QcdmEfsGetSyncStatusResponse DmEfsManager::getSyncStatus(std::string path, uint32_t token, uint16_t sequence)
 {
-	QcdmEfsGetSyncStatusResponse ret = {};
-	QcdmEfsGetSyncStatusRequest packet = {};
+    QcdmEfsGetSyncStatusResponse ret = {};
+    size_t packetSize = sizeof(QcdmEfsGetSyncStatusRequest) + path.size() + 1;
+    QcdmEfsGetSyncStatusRequest* packet = (QcdmEfsGetSyncStatusRequest*) new uint8_t[packetSize]();
 
-	packet.header	= getHeader(DIAG_EFS_SYNC_GET_STATUS);
-	packet.sequence = sequence;
-	packet.token	= token;
+    packet->header = getHeader(DIAG_EFS_SYNC_GET_STATUS);
+    packet->sequence = sequence;
+    packet->token    = token;
+    std::memcpy(packet->path, path.c_str(), path.size() + 1);
 
-	int commandResult = sendCommand(packet.header.subsysCommand, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+    int commandResult = sendCommand(packet->header.subsysCommand, reinterpret_cast<uint8_t*>(packet), packetSize);
 
-	if (commandResult != kDmEfsSuccess) {
-		throw QcdmResponseError("Command Error");
-	}
+    delete packet;
 
-	QcdmEfsSyncResponse* response = (QcdmEfsSyncResponse*)buffer;
+    if (commandResult != kDmEfsSuccess) {
+        throw QcdmResponseError("Command Error");
+    }
 
-	if (response->error) {
-		throw QcdmResponseError(port.getErrorString(response->header.command));
-	}
+    QcdmEfsGetSyncStatusResponse* response = (QcdmEfsGetSyncStatusResponse*)buffer;
 
-	if (response->sequence != sequence) {
-		throw QcdmResponseError("Invalid Sequence");
-	}
-	
-	std::memcpy(&ret, response, sizeof(packet));
+    if (response->error) {
+        throw QcdmResponseError(port.getErrorString(response->header.command));
+    }
 
-	return ret;
+    if (response->sequence != sequence) {
+        throw QcdmResponseError("Invalid Sequence");
+    }
+
+    std::memcpy(&ret, response, sizeof(QcdmEfsGetSyncStatusResponse));
+
+    return ret; 
 }
 
 

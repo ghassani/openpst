@@ -139,9 +139,11 @@ int main(int argc, char **argv) {
 
     try {
         
+        sequence = 0;
+
         while (syncMaxRetries > syncRetries) {
             
-            syncStatusResponse = efsManager.getSyncStatus(syncResponse.token);
+            syncStatusResponse = efsManager.getSyncStatus("/", syncResponse.token, ++sequence);
 
             if (syncStatusResponse.status) {
                 printf("[+] Sync Complete\n");

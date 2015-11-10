@@ -477,9 +477,9 @@ namespace OpenPST {
 			*/
 
 
-			QcdmEfsSyncResponse syncNoWait(std::string path, uint16_t sequence = 1);
+		QcdmEfsSyncResponse syncNoWait(std::string path, uint16_t sequence = 1);
 
-			QcdmEfsGetSyncStatusResponse getSyncStatus(uint32_t token, uint16_t sequence = 1);
+		QcdmEfsGetSyncStatusResponse getSyncStatus(std::string path, uint32_t token, uint16_t sequence = 1);
             
 			/*int truncate64();
             int ftruncate64(int32_t fp);
