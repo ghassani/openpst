@@ -41,19 +41,19 @@ DmEfsManager efsManager(port);
 * @return void
 */
 void usage() {
-	printf("---------------------------------------------------\n");
-	printf(" Samsung SIM Unlock for Qualcomm SOC:              \n");
-	printf("---------------------------------------------------\n");
-	printf(" Usage:\n");
-	printf("\tqcsamunlock [PORT]\n");
-	printf("\tqcsamunlock\\\\.\\COM10\n");
-	printf("\tqcsamunlock /dev/ttyUSB0\n");
-	printf("---------------------------------------------------\n");
-	printf(" Copyright 2015 Gassan Idriss <ghassani@gmail.com> \n");
-	printf(" This software is distributed with OpenPST.        \n");
-	printf(" See http://www.github.com/ghassani/openpst        \n");	
-	printf(" This software is free and licensed under GPL.     \n");
-	printf("---------------------------------------------------\n");
+    printf("---------------------------------------------------\n");
+    printf(" Samsung SIM Unlock for Qualcomm SOC:              \n");
+    printf("---------------------------------------------------\n");
+    printf(" Usage:\n");
+    printf("\tqcsamunlock [PORT]\n");
+    printf("\tqcsamunlock\\\\.\\COM10\n");
+    printf("\tqcsamunlock /dev/ttyUSB0\n");
+    printf("---------------------------------------------------\n");
+    printf(" Copyright 2015 Gassan Idriss <ghassani@gmail.com> \n");
+    printf(" This software is distributed with OpenPST.        \n");
+    printf(" See http://www.github.com/ghassani/openpst        \n");    
+    printf(" This software is free and licensed under GPL.     \n");
+    printf("---------------------------------------------------\n");
 }
 
 /**
@@ -63,19 +63,19 @@ void usage() {
 */
 bool processItem(int item)
 {
-	ostringstream path; 	
-	path << "/public/../nvm/num/" << item; // deltree only works in /public
+    ostringstream path;     
+    path << "/public/../nvm/num/" << item; // deltree only works in /public
 
-	if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
-		if (efsManager.deltree(path.str()) == efsManager.kDmEfsSuccess) {
-			return true;
-		} else {
-			printf("Error removing nv item %d - Path: %s\n", item, path.str().c_str());
-			return false;
-		}
-	}
+    if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
+        if (efsManager.deltree(path.str()) == efsManager.kDmEfsSuccess) {
+            return true;
+        } else {
+            printf("Error removing nv item %d - Path: %s\n", item, path.str().c_str());
+            return false;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -85,13 +85,13 @@ bool processItem(int item)
 * @return int
 */
 int main(int argc, char **argv) {
-	QcdmEfsStatfsResponse 		 statResponse;
-	QcdmEfsSyncResponse 		 syncResponse;
-	QcdmEfsGetSyncStatusResponse syncStatusResponse;
-	int syncMaxRetries			 = 10;
-	int syncRetries			 	 = 0;
+    QcdmEfsStatfsResponse        statResponse;
+    QcdmEfsSyncResponse          syncResponse;
+    QcdmEfsGetSyncStatusResponse syncStatusResponse;
+    int syncMaxRetries           = 10;
+    int syncRetries              = 0;
 
-	if (argc < 2) {
+    if (argc < 2) {
         usage();
         return 0;
     }
@@ -104,47 +104,47 @@ int main(int argc, char **argv) {
     } catch (serial::IOException e) {
         cout << e.what() << endl;
         return 1;
-    }	
+    }   
 
-	if (efsManager.statfs("/", statResponse) == efsManager.kDmEfsSuccess) {
-		
-		if (!processItem(10080) || !processItem(10074) || !processItem(10073)) {
-			printf("Operation Failed!\n");
-			port.close();
-			return 1;
-		}
-		
-	} else {
-		printf("Error checking for EFS access\n");
-		port.close();
-		return 1;
-	}
+    if (efsManager.statfs("/", statResponse) == efsManager.kDmEfsSuccess) {
+        
+        if (!processItem(10080) || !processItem(10074) || !processItem(10073)) {
+            printf("Operation Failed!\n");
+            port.close();
+            return 1;
+        }
+        
+    } else {
+        printf("Error checking for EFS access\n");
+        port.close();
+        return 1;
+    }
 
-	try {
-		
-		syncResponse = efsManager.syncNoWait("/");
+    try {
+        
+        syncResponse = efsManager.syncNoWait("/");
 
-		while (syncMaxRetries > syncRetries) {
-			
-			syncStatusResponse = efsManager.getSyncStatus(syncResponse.token);
+        while (syncMaxRetries > syncRetries) {
+            
+            syncStatusResponse = efsManager.getSyncStatus(syncResponse.token);
 
-			if (syncStatusResponse.status) {
-				printf("Sync Complete\n");
-				printf("Operation Successful. Reboot device and insert a different carriers SIM.\n");
-				port.close();
-				return 0;
-			} else {
-				sleep(1000); // wait and check again
-				syncRetries++;
-			}
-		}
+            if (syncStatusResponse.status) {
+                printf("Sync Complete\n");
+                printf("Operation Successful. Reboot device and insert a different carriers SIM.\n");
+                port.close();
+                return 0;
+            } else {
+                sleep(1000); // wait and check again
+                syncRetries++;
+            }
+        }
 
-		printf("Sync Error. Device may still have been unlocked. Reboot and insert a different carriers SIM.\n");
+        printf("Sync Error. Device may still have been unlocked. Reboot and insert a different carriers SIM.\n");
 
-	} catch (std::exception e) {
-		printf("Error encountered during sync: %s\n", e.what());
-		return 1;
-	}
+    } catch (std::exception e) {
+        printf("Error encountered during sync: %s\n", e.what());
+        return 1;
+    }
 
     return 0;
 }
