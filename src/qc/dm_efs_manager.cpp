@@ -1541,7 +1541,7 @@ QcdmEfsSyncResponse DmEfsManager::syncNoWait(std::string path, uint16_t sequence
 	packet->sequence = sequence;
 	std::memcpy(packet->path, path.c_str(), path.size());
 
-	int commandResult = sendCommand(packet->header.command, reinterpret_cast<uint8_t*>(packet), packetSize);
+	int commandResult = sendCommand(packet->header.subsysCommand, reinterpret_cast<uint8_t*>(packet), packetSize);
 
 	delete packet;
 
@@ -1570,7 +1570,7 @@ QcdmEfsGetSyncStatusResponse DmEfsManager::getSyncStatus(uint32_t token, uint16_
 	packet.sequence = sequence;
 	packet.token	= token;
 
-	int commandResult = sendCommand(packet.header.command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+	int commandResult = sendCommand(packet.header.subsysCommand, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
 	if (commandResult != kDmEfsSuccess) {
 		throw QcdmResponseError("Command Error");
