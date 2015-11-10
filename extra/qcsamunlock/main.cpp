@@ -66,7 +66,7 @@ bool processItem(int item, int sequence)
     ostringstream path;     
     path << "/public/../nvm/num/" << item; // deltree only works in /public
 
-    if (efsManager.mkdir("public", 0x00) == efsManager.kDmEfsSuccess) {
+    if (efsManager.mkdir("public", 0x01FF) == efsManager.kDmEfsSuccess) {
         if (efsManager.deltree(path.str(), sequence) == efsManager.kDmEfsSuccess) {
             return true;
         } else {            

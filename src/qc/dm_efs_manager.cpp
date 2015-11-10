@@ -1534,12 +1534,12 @@ int DmEfsManager::shred(std::string path, int32_t sequence)
 QcdmEfsSyncResponse DmEfsManager::syncNoWait(std::string path, uint16_t sequence)
 {
 	QcdmEfsSyncResponse ret = {};
-	size_t packetSize = sizeof(QcdmEfsSyncRequest) + path.size();
+	size_t packetSize = sizeof(QcdmEfsSyncRequest) + path.size() + 1;
 	QcdmEfsSyncRequest* packet = (QcdmEfsSyncRequest*) new uint8_t[packetSize]();
 
 	packet->header = getHeader(DIAG_EFS_SYNC_NO_WAIT);
 	packet->sequence = sequence;
-	std::memcpy(packet->path, path.c_str(), path.size());
+	std::memcpy(packet->path, path.c_str(), path.size() + 1);
 
 	int commandResult = sendCommand(packet->header.subsysCommand, reinterpret_cast<uint8_t*>(packet), packetSize);
 
