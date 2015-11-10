@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
 
     } else {
         printf("[-] Error checking for EFS access\n");
-        goto error;
+        goto exit;
     }
 
     try {
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
 
     } catch (std::exception e) {
         printf("[-] Error encountered initiating filysystem sync: Error: %s\n", e.what());
-        goto error;
+        goto exit;
     }
 
     try {
@@ -159,14 +159,10 @@ int main(int argc, char **argv) {
 
     } catch (std::exception e) {
         printf("[-] Error encountered during sync check: %s\n", e.what());
-        goto error;
+        goto exit;
     }
 
   exit:
     port.close();
     return 0;
-
-  error:
-    port.close();
-    return 1;
 }
